@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+@import './styles/kit.css';
+
+/* Paper and ink, hairlines, and the lineup blue as the one accent */
+@theme {
+  --color-paper: #f4f3ef;
+  --color-ink: #121212;
+  --color-accent: #1d1dff;
+  --color-mist: #e6e5e0;
+  --color-muted: #8b8a85;
+  --color-rule: rgb(18 18 18 / 0.12);
+
+  --font-sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+
+  --radius-kit: 0px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+html {
+  background: var(--color-paper);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+/* Small uppercase mono: every label, the nav, captions */
+.label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* 4 columns, 10px gutters and margins; 2 columns on phones */
+.cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 10px;
+  padding-inline: 10px;
+}
+@media (max-width: 759px) {
+  .cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+video,
+img {
+  display: block;
+}

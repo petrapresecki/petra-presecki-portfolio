@@ -1,0 +1,6 @@
+node_modules
+dist
+*.tsbuildinfo
+.netlify
+.wrangler
+.DS_Store

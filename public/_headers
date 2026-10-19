@@ -1,0 +1,6 @@
+# Cloudflare Pages headers (the Netlify equivalent was in netlify.toml)
+/work/*
+  Cache-Control: public, max-age=604800
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
