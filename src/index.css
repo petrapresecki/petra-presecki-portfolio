@@ -1,53 +1,103 @@
 @import 'tailwindcss';
 @import './styles/kit.css';
 
-/* Paper and ink, hairlines, and the lineup blue as the one accent */
+/* Paper and ink, one grey, hairlines; no accent colour */
 @theme {
-  --color-paper: #f4f3ef;
-  --color-ink: #121212;
-  --color-accent: #1d1dff;
-  --color-mist: #e6e5e0;
-  --color-muted: #8b8a85;
-  --color-rule: rgb(18 18 18 / 0.12);
+  --color-paper: #f2f0ea;
+  --color-ink: #151514;
+  --color-mist: #e3e0d8;
+  --color-muted: #77746d;
+  --color-accent: #151514;
+  --color-rule: rgb(21 21 20 / 0.16);
 
-  --font-sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Geist', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+  --font-sans: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
 
   --radius-kit: 0px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+:root {
+  --gap: 16px;
+  --margin: 20px;
+}
+@media (max-width: 759px) {
+  :root {
+    --gap: 12px;
+    --margin: 16px;
+  }
+}
+
 html {
   background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 450;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--color-accent);
+  background: var(--color-ink);
   color: var(--color-paper);
 }
 
-/* Small uppercase mono: every label, the nav, captions */
-.label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+/* 12 columns everywhere; sections put their label in the first three */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  padding-inline: var(--margin);
 }
 
-/* 4 columns, 10px gutters and margins; 2 columns on phones */
-.cols {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 10px;
-  padding-inline: 10px;
+.label {
+  font-size: 12px;
+  color: var(--color-muted);
 }
-@media (max-width: 759px) {
-  .cols {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+
+.statement {
+  font-size: clamp(24px, 2.6vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 450;
+  text-wrap: pretty;
+}
+
+.rule-top {
+  border-top: 1px solid var(--color-rule);
+}
+.rule-bottom {
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* Links are underlined only while you point at them; the underline is the only hover state on the page */
+.link {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.15s;
+}
+.link:hover,
+.link:focus-visible {
+  text-decoration-color: currentColor;
+}
+.statement .link {
+  text-decoration-color: var(--color-rule);
+}
+.statement .link:hover {
+  text-decoration-color: currentColor;
+}
+
+.still-video {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.still:hover .still-video {
+  opacity: 1;
 }
 
 video,

@@ -7,7 +7,7 @@ React 19, TypeScript, Vite, Tailwind 4, GSAP and Lenis, with blocks from my crea
 ```sh
 pnpm install
 pnpm dev
-pnpm build   # VITE_IVA_URL / VITE_BYKRESO_URL set the "open live" links
+pnpm build   # VITE_IVA_URL / VITE_BYKRESO_URL override the live links
 ```
 
 - `src/data/site.ts`: every word on the site

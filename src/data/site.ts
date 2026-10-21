@@ -10,9 +10,9 @@ export const person = {
   cv: '/Petra-Presecki-CV.pdf',
 }
 
-// Live builds. Iva and bykreso get their Netlify URLs at deploy time.
-const IVA_URL = import.meta.env.VITE_IVA_URL ?? 'http://localhost:4301/v3'
-const BYKRESO_URL = import.meta.env.VITE_BYKRESO_URL ?? 'http://localhost:4302/'
+// Live builds; VITE_IVA_URL / VITE_BYKRESO_URL override them (e.g. to point at local servers)
+const IVA_URL = import.meta.env.VITE_IVA_URL ?? 'https://iva-presecki.pages.dev/v3'
+const BYKRESO_URL = import.meta.env.VITE_BYKRESO_URL ?? 'https://bykreso.pages.dev/'
 
 export interface Media {
   src: string
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     title: 'creative-kit',
     kind: 'Library · motion blocks',
     year: '2026',
-    note: 'Private repo · recordings',
+    note: 'Private repo · opens the recording',
     hero: clip('kit-orbit'),
     cells: [clip('kit-dither'), clip('kit-strips'), clip('kit-index'), clip('kit-inspo')],
     wide: [clip('kit-home'), clip('kit-blocks')],
@@ -125,13 +125,13 @@ export const about = {
     ['Studied', 'BSc Computer Science, FER Zagreb'],
     ['Languages', 'English, Croatian'],
   ] as [string, string][],
-  colophon: 'React, Vite, GSAP and Lenis, with blocks from creative-kit. Type: Geist and Geist Mono.',
 }
 
 export const experience = [
   {
     company: 'Coinme',
     note: 'acquired by Polygon',
+    links: [{ label: 'Polygon Labs', url: 'https://polygon.technology/' }],
     role: 'Web Engineer',
     dates: '2024 — 2026',
     context:
@@ -172,6 +172,7 @@ export const experience = [
   {
     company: 'Endava',
     note: 'ex FIVE',
+    links: [{ label: 'Endava', url: 'https://www.endava.com/' }],
     role: 'React / React Native Developer',
     dates: '2021 — 2026',
     context:
