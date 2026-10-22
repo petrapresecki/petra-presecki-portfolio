@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "record": "node scripts/record.mjs"
+    "record": "node scripts/record.mjs",
+    "cv": "node scripts/cv.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
