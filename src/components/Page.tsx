@@ -69,6 +69,9 @@ export default function Page() {
           <a className="link" href={person.linkedin} target="_blank" rel="noreferrer">
             LinkedIn
           </a>
+          <a className="link" href={person.github} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
         </div>
       </section>
 
@@ -134,6 +137,9 @@ export default function Page() {
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-1">
             <a className="link" href={person.linkedin} target="_blank" rel="noreferrer">
               LinkedIn
+            </a>
+            <a className="link" href={person.github} target="_blank" rel="noreferrer">
+              GitHub
             </a>
             <a className="link" href={person.cv} target="_blank" rel="noreferrer">
               CV (PDF)
@@ -262,7 +268,7 @@ function ProjectView({ project, onClose, onProject }: { project: Project; onClos
                 Visit {host(project.url)} ↗
               </a>
             ) : (
-              <span className="text-muted">{project.note?.replace(' · opens the recording', '')}</span>
+              project.note && <span className="text-muted">{project.note}</span>
             )}
           </p>
         </aside>

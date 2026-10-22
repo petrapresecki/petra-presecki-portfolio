@@ -8,6 +8,7 @@ export const person = {
   place: 'Zagreb, CET · remote',
   email: 'petra.presecki123@gmail.com',
   linkedin: 'https://www.linkedin.com/in/petra-prese%C4%8Dki-a4039932b',
+  github: 'https://github.com/petrapresecki',
   cv: '/Petra-Presecki-CV.pdf',
 }
 
@@ -94,7 +95,6 @@ export const projects: Project[] = [
     title: 'creative-kit',
     kind: 'Library · motion blocks',
     year: '2026',
-    note: 'Private repo · opens the recording',
     hero: clip('kit-home'),
     cells: [clip('kit-dither'), clip('kit-strips'), clip('kit-index'), clip('kit-inspo')],
     wide: [clip('kit-orbit'), clip('kit-blocks')],
