@@ -360,7 +360,7 @@ export const experience = [
 ]
 
 export const skills: [string, string][] = [
-  ['Product engineering', 'React, React Native, TypeScript, Next.js (SSR), Expo, react-native-web, Redux Toolkit, TanStack Query, Node.js'],
+  ['Product engineering', 'React, React Native, TypeScript, Next.js, Expo, react-native-web, Redux Toolkit, TanStack Query, Node.js'],
   ['UI systems & motion', 'Design tokens, theming, accessibility (WCAG), Storybook, Reanimated, Gesture Handler, GSAP, three.js, Tailwind'],
   ['AI & delivery', 'Claude Code (agents, skills, hooks, plugins), MCP, AI review in CI, Vitest, Jest, MSW, Vite, Turborepo, GitLab CI'],
 ]
