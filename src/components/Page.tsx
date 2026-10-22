@@ -11,6 +11,9 @@ const NAV = [
   ['contact', 'Contact'],
 ] as const
 
+/** U+FE0E asks for the text glyph, so iOS doesn't swap the arrow for an emoji. */
+const ARROW = '\u2197\uFE0E'
+
 type Open = { kind: 'case'; id: string } | { kind: 'project'; id: string } | null
 
 /** The whole site on one page: who, experience, side work, about, contact. A closer look at Coinme work and side projects opens in a full-screen view. */
@@ -187,7 +190,7 @@ function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void
           <p className="statement">{study.summary}</p>
           {study.link && (
             <a className="link mt-4 block w-fit" href={study.link.url} target="_blank" rel="noreferrer">
-              {study.link.label} ↗
+              {study.link.label} {ARROW}
             </a>
           )}
         </div>
@@ -236,7 +239,7 @@ function ProjectView({ project, onClose, onProject }: { project: Project; onClos
           <p className="max-md:hidden md:col-span-4">
             {project.url && (
               <a className="link" href={project.url} target="_blank" rel="noreferrer">
-                Visit the site ↗
+                Visit the site {ARROW}
               </a>
             )}
           </p>
@@ -265,7 +268,7 @@ function ProjectView({ project, onClose, onProject }: { project: Project; onClos
           <p className="mt-6">
             {project.url ? (
               <a className="link font-semibold" href={project.url} target="_blank" rel="noreferrer">
-                Visit {host(project.url)} ↗
+                Visit {host(project.url)} {ARROW}
               </a>
             ) : (
               project.note && <span className="text-muted">{project.note}</span>
@@ -304,13 +307,13 @@ function Job({ job, first, onCase }: { job: Job; first: boolean; onCase: (id: st
           {job.links.map(l =>
             l.label === job.company ? (
               <a key={l.url} className="link" href={l.url} target="_blank" rel="noreferrer">
-                {job.company} ↗
+                {job.company} {ARROW}
               </a>
             ) : (
               <span key={l.url}>
                 {job.company} <span className="font-normal text-muted">→</span>{' '}
                 <a className="link" href={l.url} target="_blank" rel="noreferrer">
-                  {l.label} ↗
+                  {l.label} {ARROW}
                 </a>
               </span>
             ),
@@ -331,7 +334,7 @@ function Job({ job, first, onCase }: { job: Job; first: boolean; onCase: (id: st
               return c ? [c] : []
             }).map(c => (
               <button key={c.id} className="link" onClick={() => onCase(c.id)}>
-                {c.short} ↗
+                {c.short} {ARROW}
               </button>
             ))}
           </p>
@@ -351,7 +354,7 @@ function Job({ job, first, onCase }: { job: Job; first: boolean; onCase: (id: st
                   {g.title}
                   {g.case && (
                     <button className="link ml-2 text-ink" onClick={() => onCase(g.case!)}>
-                      A closer look ↗
+                      A closer look {ARROW}
                     </button>
                   )}
                 </h4>
