@@ -4,3 +4,6 @@ dist
 .netlify
 .wrangler
 .DS_Store
+
+# Private reference material: never commit, never reference publicly
+private/
