@@ -7,3 +7,6 @@ dist
 
 # Private reference material: never commit, never reference publicly
 private/
+
+# CVs and letters tailored to one application
+applications/

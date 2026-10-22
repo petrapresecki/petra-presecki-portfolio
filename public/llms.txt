@@ -1,0 +1,47 @@
+# Petra Presečki
+
+> Frontend and product engineer in Zagreb, Croatia (CET, remote). Five years of React, React Native and TypeScript. Builds SDKs, product flows and design systems from zero to production, and tools that coding agents use: MCP integrations, Claude Code agents and agent-readable docs.
+
+This file is for AI agents and LLMs. The human version is the portfolio at https://petra-presecki.pages.dev.
+
+## Contact
+
+- Email: petra.presecki123@gmail.com
+- [GitHub](https://github.com/petrapresecki)
+- [LinkedIn](https://www.linkedin.com/in/petra-prese%C4%8Dki-a4039932b)
+- [CV (PDF)](https://petra-presecki.pages.dev/Petra-Presecki-CV.pdf)
+
+## Experience
+
+- Web Engineer, Coinme (acquired by Polygon), 2024–2026: the front end of a white-label crypto widget that fintech and wallet apps embed in their iOS, Android and web apps. One deployment, rebranded per partner at runtime. Frontend team of 7–10; about 270 merged merge requests across 11 repositories.
+- React / React Native Developer, Endava (ex FIVE), 2021–2026: consulting on web and mobile products for clients in fintech, hospitality and entertainment. Seconded to Coinme from October 2024.
+
+## Built for agents
+
+- An MCP integration and agent that syncs missing translation keys to Tolgee, plus a post-push hook that flags them. Adopted across the frontend organization, with least-privilege credentials.
+- The first Claude Code commands and agents for code review, tests, component scaffolding and merge request submission, which grew into the team's shared plugin marketplace.
+- An incremental CI code reviewer that reviews only what changed since its last pass.
+- Contributed to a context layer for coding agents, generated from git, that maps a 27-repo platform and cuts loaded context 6–16×.
+- Agent skills and TSDoc for the partner SDKs, on a public partner docs site.
+
+## SDKs and product flows
+
+- Customer-onboarding SDK for JS and React Native; the React Native version went from first commit to production v1.0 in six days.
+- Most of a card-collection SDK for vanilla JS, React and React Native. Card numbers and SSNs stay in vault-hosted fields, so partners stay out of PCI DSS scope.
+- Owned three regulated flows end to end (identity verification, enhanced due diligence, cash-out at ATMs), each an explicit state machine that fails closed.
+- Main developer of a multi-chain crypto wallet. Trust Wallet's Cash Deposits runs on the widget, from the Coinme sign-in onward.
+- Founded and led a cross-platform design system: one React Native codebase on iOS, Android and web, across 137 releases, rebranded per partner through design tokens.
+
+## Open source
+
+- [PostHog/posthog-js#5390](https://github.com/PostHog/posthog-js/pull/5390): error tracking suppression rules for the React Native SDK.
+
+## Side projects
+
+- [Iva Presečki](https://iva-presecki.pages.dev/): portfolio for a graphic designer, built with React Three Fiber; projects hang from a chrome keyring as charms.
+- [bykreso](https://bykreso.pages.dev/): portfolio for a videographer; films run past in a film strip and the page takes on each film's colour.
+- creative-kit: a personal library of 33 motion and effect blocks, 8 themes and a CLI that copies blocks into new sites as source.
+
+## Skills
+
+React, React Native, TypeScript, Next.js, Expo, react-native-web, Node.js, Model Context Protocol (MCP), Claude Code (agents, skills, hooks, plugins), design tokens and theming, Reanimated, GSAP, three.js, Tailwind, Storybook, Vitest, Jest, accessibility (WCAG).

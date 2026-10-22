@@ -1,12 +1,16 @@
 // Prints cv/cv.html to public/Petra-Presecki-CV.pdf (A4) with the installed Google Chrome.
 //   pnpm cv
+// A tailored copy prints next to its source:
+//   pnpm cv applications/posthog/cv.html
 import { chromium } from 'playwright-core'
 import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-const SRC = path.resolve('cv/cv.html')
-const OUT = path.resolve('public/Petra-Presecki-CV.pdf')
+const SRC = path.resolve(process.argv[2] ?? 'cv/cv.html')
+const OUT = process.argv[2]
+  ? path.join(path.dirname(SRC), 'Petra-Presecki-CV.pdf')
+  : path.resolve('public/Petra-Presecki-CV.pdf')
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
 const page = await browser.newPage()
