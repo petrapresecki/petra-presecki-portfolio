@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { initLenis, destroyLenis } from '@/lib/kit/lenis'
 import Page from '@/components/Page'
+import AsciiField from '@/components/AsciiField'
 
 export default function App() {
   useEffect(() => {
@@ -9,5 +10,12 @@ export default function App() {
     return destroyLenis
   }, [])
 
-  return <Page />
+  return (
+    <>
+      <AsciiField />
+      <div className="relative z-[1]">
+        <Page />
+      </div>
+    </>
+  )
 }
