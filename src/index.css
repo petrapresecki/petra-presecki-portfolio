@@ -10,9 +10,10 @@
   --color-accent: #151514;
   --color-rule: rgb(21 21 20 / 0.16);
 
-  --font-sans: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  /* A light grotesk for the few big lines, a grotesk mono for everything else */
+  --font-sans: 'Reddit Mono', ui-monospace, Menlo, monospace;
+  --font-display: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Reddit Mono', ui-monospace, Menlo, monospace;
 
   --radius-kit: 0px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -34,9 +35,9 @@ html {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 450;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -59,11 +60,18 @@ html {
 }
 
 .statement {
+  font-family: var(--font-display);
   font-size: clamp(24px, 2.6vw, 40px);
   line-height: 1.12;
   letter-spacing: -0.02em;
-  font-weight: 450;
+  font-weight: 300;
   text-wrap: pretty;
+}
+/* the hello at the top reads as a sentence, not a headline */
+.statement.intro {
+  font-size: clamp(20px, 1.8vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .rule-top {
@@ -102,7 +110,7 @@ html {
 
 /* Exhibits: code in the system mono, a small widget that reads its own tokens */
 .code {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.5;
   background: var(--color-mist);

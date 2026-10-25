@@ -53,10 +53,10 @@ export default function Page() {
       </header>
 
       <section className="grid-12 pb-20 md:pb-32">
-        <h1 className="statement col-span-12 md:col-[4/span_8]">
-          Frontend engineer. I build the foundations other teams and partners build on: design systems, regulated
-          product flows, partner SDKs and AI agent tooling. Five years in React, React Native and TypeScript, most
-          recently at Coinme, now part of{' '}
+        <h1 className="statement intro col-span-12 md:col-[4/span_7]">
+          Hi, I’m Petra, a frontend engineer from Zagreb with five years of React, React Native and TypeScript behind
+          me. I mostly build the stuff other teams and partners build on top of: design systems, regulated product
+          flows, partner SDKs, and lately a lot of AI agent tooling. Most recently at Coinme, now part of{' '}
           <a className="link" href="https://polygon.technology/" target="_blank" rel="noreferrer">
             Polygon Labs
           </a>
@@ -183,11 +183,11 @@ function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void
     >
       <article className="grid-12 mt-8 gap-y-8">
         <div className="col-span-12 md:col-span-3">
-          <h2 className="max-w-[28ch] font-semibold">{study.title}</h2>
-          <p className="text-muted">{study.kind}</p>
+          <h2 className="max-w-[20ch] font-display text-[26px] leading-[1.1] font-light tracking-[-0.015em]">{study.title}</h2>
+          <p className="mt-2 text-muted">{study.kind}</p>
         </div>
         <div className="col-span-12 md:col-[4/span_5]">
-          <p className="statement">{study.summary}</p>
+          <p className="statement intro">{study.summary}</p>
           {study.link && (
             <a className="link mt-4 block w-fit" href={study.link.url} target="_blank" rel="noreferrer">
               {study.link.label} {ARROW}
