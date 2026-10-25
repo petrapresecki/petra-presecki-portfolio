@@ -36,7 +36,7 @@ export default function Page() {
     <main>
       <header className="grid-12 pt-5 pb-24 md:pb-36">
         <div className="col-span-6 md:col-span-3">
-          <p className="font-semibold">{person.name}</p>
+          <p className="text-[16px] leading-[1.3]">{person.name}</p>
           <p className="text-muted">{person.role}</p>
         </div>
         <nav className="col-span-6 md:col-span-3" aria-label="Sections">

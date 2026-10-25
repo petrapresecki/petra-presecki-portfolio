@@ -10,8 +10,8 @@
   --color-accent: #151514;
   --color-rule: rgb(21 21 20 / 0.16);
 
-  /* A light grotesk for the few big lines, a grotesk mono for everything else */
-  --font-sans: 'Reddit Mono', ui-monospace, Menlo, monospace;
+  /* One grotesk for the page, light for the few big lines; the mono only for code */
+  --font-sans: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Reddit Mono', ui-monospace, Menlo, monospace;
 
@@ -35,8 +35,8 @@ html {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
