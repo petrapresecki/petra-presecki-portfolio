@@ -10,9 +10,10 @@
   --color-accent: #151514;
   --color-rule: rgb(21 21 20 / 0.16);
 
-  --font-sans: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  /* One grotesk for the page, light for the few big lines; the mono only for code */
+  --font-sans: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Reddit Mono', ui-monospace, Menlo, monospace;
 
   --radius-kit: 0px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -35,8 +36,8 @@ html {
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 14px;
-  line-height: 1.4;
-  font-weight: 450;
+  line-height: 1.45;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -59,11 +60,18 @@ html {
 }
 
 .statement {
+  font-family: var(--font-display);
   font-size: clamp(24px, 2.6vw, 40px);
   line-height: 1.12;
   letter-spacing: -0.02em;
-  font-weight: 450;
+  font-weight: 300;
   text-wrap: pretty;
+}
+/* the hello at the top reads as a sentence, not a headline */
+.statement.intro {
+  font-size: clamp(20px, 1.8vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .rule-top {
@@ -99,10 +107,21 @@ html {
 .still:hover .still-video {
   opacity: 1;
 }
+/* the three stills read as one set in grey; the one you point at comes back in colour */
+@media (hover: hover) {
+  .still img {
+    filter: grayscale(1) contrast(1.04);
+    transition: filter 0.35s;
+  }
+  .still:hover img,
+  .still:focus-visible img {
+    filter: none;
+  }
+}
 
 /* Exhibits: code in the system mono, a small widget that reads its own tokens */
 .code {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.5;
   background: var(--color-mist);
@@ -182,4 +201,46 @@ html {
 video,
 img {
   display: block;
+}
+
+/* The CV as a sheet of paper over the page */
+.cv-paper {
+  background: rgb(242 240 234 / 0.94);
+  backdrop-filter: blur(4px);
+}
+.cv-stage {
+  perspective: 2200px;
+}
+.cv-sheet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 794px;
+  height: 1123px;
+  margin: -561.5px 0 0 -397px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.cv-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 0 0 0.5px rgb(21 21 20 / 0.08);
+}
+.cv-back {
+  transform: rotateY(180deg);
+}
+.cv-shadow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 70px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(21 21 20 / 0.28), rgb(21 21 20 / 0));
+  filter: blur(14px);
+  pointer-events: none;
 }

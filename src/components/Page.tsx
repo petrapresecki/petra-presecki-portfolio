@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { about, cases, experience, person, projects, skills, type Case, type Project } from '@/data/site'
 import Exhibit from '@/components/Exhibits'
 import View from '@/components/View'
+import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
 
 const NAV = [
@@ -19,6 +20,13 @@ type Open = { kind: 'case'; id: string } | { kind: 'project'; id: string } | nul
 /** The whole site on one page: who, experience, side work, about, contact. A closer look at Coinme work and side projects opens in a full-screen view. */
 export default function Page() {
   const [open, setOpen] = useState<Open>(null)
+  const [cv, setCv] = useState(false)
+  // the CV opens as paper; a modified click (new tab, save) still gets the PDF
+  const openCv = (e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+    setCv(true)
+  }
   const show = setOpen
   const openCase = (id: string) => show({ kind: 'case', id })
   const study = open?.kind === 'case' ? cases.find(c => c.id === open.id) : undefined
@@ -28,7 +36,7 @@ export default function Page() {
     <main>
       <header className="grid-12 pt-5 pb-24 md:pb-36">
         <div className="col-span-6 md:col-span-3">
-          <p className="font-semibold">{person.name}</p>
+          <p className="text-[16px] leading-[1.3]">{person.name}</p>
           <p className="text-muted">{person.role}</p>
         </div>
         <nav className="col-span-6 md:col-span-3" aria-label="Sections">
@@ -53,10 +61,10 @@ export default function Page() {
       </header>
 
       <section className="grid-12 pb-20 md:pb-32">
-        <h1 className="statement col-span-12 md:col-[4/span_8]">
-          Frontend engineer. I build the foundations other teams and partners build on: design systems, regulated
-          product flows, partner SDKs and AI agent tooling. Five years in React, React Native and TypeScript, most
-          recently at Coinme, now part of{' '}
+        <h1 className="statement intro col-span-12 md:col-[4/span_7]">
+          Hi, I’m Petra, a frontend engineer from Zagreb with five years of React, React Native and TypeScript behind
+          me. I mostly build the stuff other teams and partners build on top of: design systems, regulated product
+          flows, partner SDKs, and lately a lot of AI agent tooling. Most recently at Coinme, now part of{' '}
           <a className="link" href="https://polygon.technology/" target="_blank" rel="noreferrer">
             Polygon Labs
           </a>
@@ -66,7 +74,7 @@ export default function Page() {
           <a className="link" href={`mailto:${person.email}`}>
             {person.email}
           </a>
-          <a className="link" href={person.cv} target="_blank" rel="noreferrer">
+          <a className="link" href={person.cv} target="_blank" rel="noreferrer" onClick={openCv}>
             CV (PDF)
           </a>
           <a className="link" href={person.linkedin} target="_blank" rel="noreferrer">
@@ -144,7 +152,7 @@ export default function Page() {
             <a className="link" href={person.github} target="_blank" rel="noreferrer">
               GitHub
             </a>
-            <a className="link" href={person.cv} target="_blank" rel="noreferrer">
+            <a className="link" href={person.cv} target="_blank" rel="noreferrer" onClick={openCv}>
               CV (PDF)
             </a>
           </div>
@@ -152,6 +160,7 @@ export default function Page() {
         <p className="col-span-12 mt-32 text-muted md:col-[10/span_3] md:text-right">© 2026 {person.name}</p>
       </footer>
 
+      {cv && <CvPaper onClose={() => setCv(false)} />}
       {study && <CaseView key={study.id} study={study} onClose={() => show(null)} onCase={openCase} />}
       {project && (
         <ProjectView key={project.id} project={project} onClose={() => show(null)} onProject={id => show({ kind: 'project', id })} />
@@ -183,11 +192,11 @@ function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void
     >
       <article className="grid-12 mt-8 gap-y-8">
         <div className="col-span-12 md:col-span-3">
-          <h2 className="max-w-[28ch] font-semibold">{study.title}</h2>
-          <p className="text-muted">{study.kind}</p>
+          <h2 className="max-w-[20ch] font-display text-[26px] leading-[1.1] font-light tracking-[-0.015em]">{study.title}</h2>
+          <p className="mt-2 text-muted">{study.kind}</p>
         </div>
         <div className="col-span-12 md:col-[4/span_5]">
-          <p className="statement">{study.summary}</p>
+          <p className="statement intro">{study.summary}</p>
           {study.link && (
             <a className="link mt-4 block w-fit" href={study.link.url} target="_blank" rel="noreferrer">
               {study.link.label} {ARROW}

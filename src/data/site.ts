@@ -224,36 +224,27 @@ export const cases: Case[] = [
   {
     id: 'ai',
     short: 'AI agent tooling',
-    title: 'AI agent tooling for the whole frontend team',
+    title: 'How our frontend team works with coding agents',
     kind: 'Built and contributed · 2026',
     summary:
-      'I was among the first on the team to build coding agents into everyday work. What started as commands in three repos grew into the team’s shared Claude Code plugins, with commands, agents, hooks and an MCP server, plus a context layer that tells every session how the platform’s 27 repos fit together. A conversation becomes a ticket, a tested change and a merge request, and a human still merges.',
+      'Over six months our frontend team moved most of its routine into Claude Code: a shared plugin every repo loads, a context repo we call the spine, and an AI reviewer in CI. I was among the first to use agents every day, and the commands I started grew into the shared plugin.',
     visual: 'agent',
     sections: [
       {
-        title: 'Built',
+        title: 'How it fits together',
         items: [
-          'An MCP integration and agent that syncs missing translation keys to Tolgee, a post-push hook that flags them, and least-privilege credentials when it went org-wide',
-          'A CLI that bumps every pinned package across the platform’s repos on matching release channels; the team’s standard update command',
-          'The first Claude Code commands and agents for review, tests, component scaffolding and MR submission',
-          'An incremental CI code reviewer that reviews only what changed since its last pass',
+          'One shared plugin marketplace, enabled in 12 frontend repos: skills for tickets, shipping, reviews, scaffolding and releases, each handing its work to an agent with a pinned model',
+          'The spine tells every session how the platform’s 27 repos fit together, from one hand-curated manifest and a map generated from git. It cut the context each session loads 6–16×',
+          'Nothing merges or deploys on its own. Every path ends in a merge request a person reviews',
         ],
       },
       {
-        title: 'Contributed to',
+        title: 'My part',
         items: [
-          'The plugin marketplace: 2 plugins, 17 commands and 11 agents covering tickets, shipping a change end to end, release promotion, code review, scaffolding, and docs and translations that stay in step with code',
-          'Shared rules synced into every repo, so each agent writes components, tests and types the way the team does',
-          'The context layer: one hand-curated file, a map generated from git, and a session-start hook that loads a short card for each neighbouring repo, cutting loaded context 6–16×',
-        ],
-      },
-      {
-        title: 'How it’s designed',
-        items: [
-          'A command asks every question up front, then hands the work to an agent with a pinned model and only the tools it needs. If the agent hits an open question, it comes back to you and resumes',
-          'Nothing merges or deploys on its own: every path ends in a merge request. Release promotion runs in a throwaway git worktree and stops if the code has drifted',
-          'The right model for each job: a stronger one for breaking work into tickets, a cheaper one for mechanical git, Jira and Slack steps',
-          'Waiting for a merge is a background shell loop that costs nothing, instead of an agent polling at about a dollar an hour',
+          'The team’s first Claude Code commands and agents for review, tests, scaffolding and merge requests, which grew into the shared plugin',
+          'The Tolgee MCP integration and agent and the post-push hook, moved to least-privilege credentials when the whole org started using it',
+          'The incremental CI reviewer, which finds its last reviewed commit from a marker in the merge request thread and reviews only what changed since',
+          'Contributions to the shared plugin and the spine; a Figma-to-component prototype; the CLI that became the team’s standard update command',
         ],
       },
     ],
@@ -262,9 +253,9 @@ export const cases: Case[] = [
 
 export const about = {
   lines: [
-    'I’m Petra, a frontend engineer in Zagreb. For five years I’ve built web and mobile products in React, React Native and TypeScript, mostly in consulting teams next to designers, strategists and clients.',
+    'Most of those five years were in consulting, building web and mobile products next to designers, strategists and clients.',
     'At Coinme I founded and led a cross-platform design system, one React Native codebase on iOS, Android and web, and owned regulated product flows from the first commit to production. AI is part of how I build: agents, MCP integrations and AI code review that became shared tooling for the frontend team.',
-    'Outside client work I build sites for creative people and keep creative-kit, my library of motion blocks, themes and inspiration.',
+    'Outside client work I make my own things for the web: sites, tools and experiments, mostly on the more visual, playful side of frontend.',
   ],
   facts: [
     ['Based', 'Zagreb, Croatia'],

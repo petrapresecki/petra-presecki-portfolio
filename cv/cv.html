@@ -6,7 +6,7 @@
     <title>Petra Presečki — CV</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300..600&display=swap" />
     <style>
       @page {
         size: A4;
@@ -26,7 +26,7 @@
       html {
         background: var(--paper);
         color: var(--ink);
-        font-family: 'Schibsted Grotesk', 'Helvetica Neue', Arial, sans-serif;
+        font-family: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
         font-size: 9.3pt;
         line-height: 1.45;
         -webkit-font-smoothing: antialiased;
@@ -51,7 +51,7 @@
         text-decoration: none;
       }
       b {
-        font-weight: 600;
+        font-weight: 500;
       }
       .muted {
         color: var(--muted);
@@ -66,10 +66,10 @@
         gap: 24px;
       }
       h1 {
-        font-size: 27pt;
-        font-weight: 600;
+        font-size: 30pt;
+        font-weight: 300;
         line-height: 1.05;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.025em;
       }
       .title {
         margin-top: 8px;
@@ -102,8 +102,9 @@
       }
 
       h2 {
-        font-size: 14pt;
-        font-weight: 500;
+        font-size: 15pt;
+        font-weight: 300;
+        letter-spacing: -0.01em;
         margin: 20px 0 8px;
         break-after: avoid;
       }
@@ -116,11 +117,11 @@
         break-after: avoid;
       }
       h3 b {
-        font-weight: 600;
+        font-weight: 500;
       }
       .dates {
         font-size: 7.6pt;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.03em;
         text-transform: uppercase;
         margin-top: 2px;
@@ -132,7 +133,7 @@
       }
       h4 {
         font-size: inherit;
-        font-weight: 600;
+        font-weight: 500;
         margin: 10px 0 3px;
         break-after: avoid;
       }
@@ -164,7 +165,7 @@
         break-inside: avoid;
       }
       .skills dt {
-        font-weight: 600;
+        font-weight: 500;
       }
       .split {
         display: grid;
@@ -202,46 +203,40 @@
     <h2>Experience</h2>
 
     <article class="job">
-      <h3>Web Engineer - <b>Coinme (acquired by Polygon)</b></h3>
+      <h3>Web Engineer, <b>Coinme (now Polygon Labs)</b></h3>
       <p class="dates">Oct 2024 – Oct 2026</p>
       <p class="context">
-        A white-label crypto widget that fintech and wallet apps embed in their iOS, Android and web apps; one
-        deployment, rebranded per partner at runtime. Joined through Endava; hired directly by Polygon in Feb 2026.
-        Frontend team of 7–10; about 270 merged MRs across 11 repositories.
+        A white-label crypto widget that fintech and wallet apps embed in their iOS, Android and web apps, rebranded per
+        partner at runtime. Joined through Endava; hired directly by Polygon in Feb 2026. Frontend team of 7–10; about 270
+        merged MRs across 11 repositories.
       </p>
 
-      <h4>Design system &amp; UI craft</h4>
+      <h4>Design system &amp; platform</h4>
       <ul>
-        <li><b>Founded and led the cross-platform design system</b> for two years. One React Native codebase (react-native-web) sits behind every screen on iOS, Android and web, across 137 releases.</li>
-        <li>Built 13+ of its 34 components, including an <b>interactive price chart</b> for web and native (Reanimated, Gesture Handler).</li>
-        <li>Designed the <b>theming and white-label model</b> with design tokens, dark mode and a “host theme wins” merge order, so partners rebrand through configuration instead of code.</li>
+        <li><b>Founded and led the cross-platform design system</b> for two years: one React Native codebase behind every screen on iOS, Android and web, across 137 releases. Built 13+ of its 34 components, including an interactive price chart.</li>
+        <li>Set the <b>theming model</b> (design tokens, dark mode and a “host theme wins” merge order) that became the platform’s contract for white-labelling, so partners rebrand through configuration instead of forking code.</li>
+        <li><b>Led much of the team’s React Native work</b>, the part that lets partners put Coinme into their own mobile apps.</li>
         <li>Documented components in Storybook and worked with the designers on how the system looks and feels.</li>
       </ul>
 
-      <h4>AI-native engineering</h4>
+      <h4>Product flows &amp; partner SDKs</h4>
       <ul>
-        <li>Among the first on the team to use <b>Claude Code agents</b> every day. Wrote the first commands for code review, test and component scaffolding and MR submission across GitLab, Jira and Slack, which grew into the team’s <b>shared plugin marketplace</b>.</li>
-        <li>Built an <b>MCP integration and agent</b> that syncs missing translation keys to Tolgee, plus a post-push hook that flags them. Adopted org-wide, with least-privilege credentials.</li>
-        <li>Made the <b>CI AI code reviewer incremental</b>. Also contributed to a git-generated <b>context layer for coding agents</b> that maps a 27-repo platform and cuts loaded context about 6–16×.</li>
+        <li><b>Owned the regulated flows</b> for identity verification (KYC), enhanced due diligence (AML) and cash-out at ATMs, each an <b>explicit state machine</b> that fails closed when the backend isn’t clear. Main developer of the multi-chain crypto wallet.</li>
+        <li>Built the <b>customer-onboarding SDK</b> for JS and React Native and took the React Native version from first commit to production <b>v1.0 in six days</b>, with over 200 tests. For its phone-verification step I defined the shared interfaces first, so the screens, the logic and the backend were built at the same time.</li>
+        <li>Built most of the <b>card-collection SDK</b> for vanilla JS, React and React Native. Card numbers and SSNs stay in vault-hosted fields, keeping partners <b>out of PCI DSS scope</b>; it became the company’s preferred way for partners to collect card data.</li>
+        <li>Ran end-to-end security testing on iOS and Android, found where the partner security guidance didn’t match how the SDK behaved, and corrected it before partners hit the problem.</li>
       </ul>
 
-      <h4>Product flows</h4>
+      <h4>AI-native engineering &amp; tooling</h4>
       <ul>
-        <li><b>Owned the regulated flows</b> for identity verification (KYC), enhanced due diligence (AML) and cash-out at ATMs, with live quotes, OTP and real-time status over server-sent events. Each one is an <b>explicit state machine</b> that fails closed when the backend isn’t clear.</li>
-        <li>Main developer of the <b>multi-chain crypto wallet</b> (dashboard, QR send, address validation). Also built the cash-buy screens, tax documents and the cash-location finder.</li>
-        <li>Wrote four of the <b>orchestrator’s</b> eighteen flow integrations, including the routing that holds flagged users before any transaction. The orchestrator mounts each partner’s flows from config.</li>
-      </ul>
-
-      <h4>SDKs, tooling &amp; delivery</h4>
-      <ul>
-        <li>Built most of the <b>card-collection SDK</b> for vanilla JS, React and React Native. Card numbers and SSNs go into vault-hosted fields, so partners stay <b>out of PCI DSS scope</b>.</li>
-        <li>Built the <b>customer-onboarding SDK</b> for JS and React Native, with a framework-free core for Vue, Angular and vanilla JS. Took the React Native version from first commit to production <b>v1.0 in six days</b>.</li>
-        <li>Built a <b>Node.js CLI</b> that became the team’s standard package-update command, and wrote the SDK docs and agent skills for the public partner docs site.</li>
+        <li>Among the first on the team to use <b>Claude Code agents</b> every day. The commands I wrote for code review, scaffolding and merge requests grew into the team’s <b>shared plugin marketplace</b>, now in 12 repos.</li>
+        <li>Built an <b>MCP integration</b> that syncs missing translation keys to Tolgee and made the <b>CI AI code reviewer incremental</b>. Contributed to a context layer for coding agents that cuts loaded context about 6–16× across 27 repos.</li>
+        <li>Wrote the <b>Node.js CLI</b> that became the team’s standard package-update command, and the SDK docs and agent skills for the public partner docs site.</li>
       </ul>
     </article>
 
     <article class="job">
-      <h3>React / React Native Developer - <b>Endava (ex FIVE)</b></h3>
+      <h3>React / React Native Developer, <b>Endava (ex FIVE)</b></h3>
       <p class="dates">Sep 2021 – Feb 2026</p>
       <p class="context">
         Consulting; from Oct 2024 seconded to Coinme. Before that, web and mobile products for clients in fintech,
@@ -263,13 +258,11 @@
 
     <h2>Skills</h2>
     <dl class="skills">
-      <div><dt>Frontend &amp; mobile</dt><dd>React, React Native, Next.js, Expo, TypeScript, JavaScript, react-native-web</dd></div>
-      <div><dt>UI, motion &amp; design systems</dt><dd>design tokens and theming, Reanimated, Gesture Handler, Lottie, GSAP, three.js, Tailwind, NativeWind, styled-components, Material UI, Storybook, responsive design, accessibility (WCAG)</dd></div>
+      <div><dt>Frontend &amp; mobile</dt><dd>TypeScript, JavaScript, React, React Native, Next.js, Expo, react-native-web, Node.js</dd></div>
+      <div><dt>UI, motion &amp; design systems</dt><dd>design systems and design tokens, theming, accessibility (WCAG), responsive design, Storybook, Tailwind, styled-components, NativeWind, Material UI, Reanimated, Gesture Handler, GSAP, three.js, Lottie</dd></div>
       <div><dt>AI-assisted development</dt><dd>Claude Code (agents, skills, hooks, plugins), Model Context Protocol (MCP), AI code review in CI, context engineering for coding agents</dd></div>
-      <div><dt>State &amp; data</dt><dd>Redux Toolkit, RTK Query, TanStack Query, Jotai, React Hook Form, server-sent events</dd></div>
-      <div><dt>Backend &amp; tooling</dt><dd>Node.js, CLI tooling, npm publishing</dd></div>
+      <div><dt>State &amp; architecture</dt><dd>Redux Toolkit, RTK Query, TanStack Query, Jotai, React Hook Form, server-sent events, state machines, monorepos, micro-frontends, configuration-driven multi-tenant UI, SDK design</dd></div>
       <div><dt>Testing &amp; delivery</dt><dd>Jest, Vitest, React Testing Library, MSW, Vite, Turborepo, GitLab CI/CD, semantic-release</dd></div>
-      <div><dt>Architecture</dt><dd>component-based architecture, monorepos, micro-frontends, configuration-driven multi-tenant UI, state machines, SDK design, WebView and iframe embedding</dd></div>
     </dl>
 
     <div class="split">
