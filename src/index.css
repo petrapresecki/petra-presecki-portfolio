@@ -107,6 +107,17 @@ html {
 .still:hover .still-video {
   opacity: 1;
 }
+/* the three stills read as one set in grey; the one you point at comes back in colour */
+@media (hover: hover) {
+  .still img {
+    filter: grayscale(1) contrast(1.04);
+    transition: filter 0.35s;
+  }
+  .still:hover img,
+  .still:focus-visible img {
+    filter: none;
+  }
+}
 
 /* Exhibits: code in the system mono, a small widget that reads its own tokens */
 .code {
@@ -190,4 +201,46 @@ html {
 video,
 img {
   display: block;
+}
+
+/* The CV as a sheet of paper over the page */
+.cv-paper {
+  background: rgb(242 240 234 / 0.94);
+  backdrop-filter: blur(4px);
+}
+.cv-stage {
+  perspective: 2200px;
+}
+.cv-sheet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 794px;
+  height: 1123px;
+  margin: -561.5px 0 0 -397px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.cv-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 0 0 0.5px rgb(21 21 20 / 0.08);
+}
+.cv-back {
+  transform: rotateY(180deg);
+}
+.cv-shadow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 70px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(21 21 20 / 0.28), rgb(21 21 20 / 0));
+  filter: blur(14px);
+  pointer-events: none;
 }

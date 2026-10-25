@@ -262,7 +262,7 @@ export const cases: Case[] = [
 
 export const about = {
   lines: [
-    'I’m Petra, a frontend engineer in Zagreb. For five years I’ve built web and mobile products in React, React Native and TypeScript, mostly in consulting teams next to designers, strategists and clients.',
+    'Most of those five years were in consulting, building web and mobile products next to designers, strategists and clients.',
     'At Coinme I founded and led a cross-platform design system, one React Native codebase on iOS, Android and web, and owned regulated product flows from the first commit to production. AI is part of how I build: agents, MCP integrations and AI code review that became shared tooling for the frontend team.',
     'Outside client work I build sites for creative people and keep creative-kit, my library of motion blocks, themes and inspiration.',
   ],
