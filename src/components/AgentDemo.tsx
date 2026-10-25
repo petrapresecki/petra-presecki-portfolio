@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 
 /**
- * How one command runs: the command asks up front, an agent with a pinned model and scoped tools
- * does the work, an open question comes back to the person, and it always ends in a merge request.
+ * The whole workflow, from opening a session to a release: the spine loads context, skills hand work to agents
+ * with pinned models, hooks and the translation MCP step in when they're needed, and a person always merges.
  */
 
-type Step = { who: string; what: string; note?: string; loop?: boolean }
+type Step = { who: string; what: string; note?: string; code?: boolean; keys?: boolean }
 
 const STEPS: Step[] = [
-  { who: 'You', what: '/ship PROJ-2241', note: 'in the middle of a conversation about the change' },
-  { who: 'Command', what: 'Asks every question at once', note: 'target branch, template, reviewers; saved per repo on first run' },
+  { who: 'Session start', what: 'A hook loads the spine', note: 'a short compass, plus a card for each neighbouring repo' },
+  { who: 'You', what: '/ticket', code: true, note: 'the discussion becomes Jira tickets, on a stronger model' },
+  { who: 'You', what: '/ship PROJ-2241', code: true, note: 'the skill asks every question once, then hands over to an agent' },
   { who: 'Agent', what: 'Branch, change, then typecheck · lint · tests until green', note: 'pinned model, only the tools it needs' },
-  { who: 'Agent → you', what: 'Needs input: “Split this into two tickets?”', note: 'the agent pauses, you answer, the same agent resumes', loop: true },
-  { who: 'Tools', what: 'Push, open the MR, move the ticket, post to the team', note: 'git · GitLab · Jira · Slack' },
+  { who: 'Hook', what: 'After the push: 3 translation keys missing', note: 'warns, never blocks the push', keys: true },
+  { who: 'MCP', what: 'Creates the missing keys in Tolgee', note: 'asks before it changes a production value', keys: true },
+  { who: 'Agent', what: 'Opens the MR, moves the ticket, posts to the team', note: 'GitLab · Jira · Slack' },
+  { who: 'CI', what: 'The AI reviewer reads only what changed since its last pass' },
   { who: 'A person', what: 'Reviews and merges', note: 'nothing merges or deploys on its own' },
+  { who: 'You', what: '/promote', code: true, note: 'in a throwaway worktree, stops if the code drifted; production stays a manual, QA-gated deploy' },
 ]
 
 const KIT: [string, string][] = [
   ['Plugins', '2'],
-  ['Commands', '17'],
+  ['Slash-command skills', '17'],
   ['Agents, each with a pinned model', '11'],
   ['Hooks', 'post-push · session start'],
   ['MCP server', 'translations'],
@@ -26,15 +30,15 @@ const KIT: [string, string][] = [
 ]
 
 export default function AgentDemo() {
-  const [stuck, setStuck] = useState(true)
+  const [keys, setKeys] = useState(true)
   const [at, setAt] = useState(0)
   const [run, setRun] = useState(0)
-  const steps = STEPS.filter(s => stuck || !s.loop)
+  const steps = STEPS.filter(s => keys || !s.keys)
 
   // walk through the steps once per run; the last one stays lit
   useEffect(() => {
     setAt(0)
-    const id = setInterval(() => setAt(i => (i < steps.length - 1 ? i + 1 : i)), 900)
+    const id = setInterval(() => setAt(i => (i < steps.length - 1 ? i + 1 : i)), 800)
     return () => clearInterval(id)
   }, [run, steps.length])
 
@@ -42,7 +46,7 @@ export default function AgentDemo() {
     <div className="grid gap-x-[var(--gap)] gap-y-10 md:grid-cols-9">
       <div className="md:col-span-5">
         <div className="flex items-baseline justify-between gap-4">
-          <p className="label">One command, start to finish</p>
+          <p className="label">The workflow, start to finish</p>
           <button className="link" onClick={() => setRun(r => r + 1)}>
             Replay
           </button>
@@ -51,16 +55,13 @@ export default function AgentDemo() {
           {steps.map((s, i) => (
             <li
               key={s.what}
-              className={`grid grid-cols-[6.5rem_1fr] gap-x-3 py-2 rule-top transition-opacity duration-300 ${i <= at ? '' : 'opacity-25'} ${
-                s.loop ? 'pl-3' : ''
-              }`}
+              className={`grid grid-cols-[6.5rem_1fr] gap-x-3 py-2 rule-top transition-opacity duration-300 ${i <= at ? '' : 'opacity-25'}`}
             >
               <span className={`label ${i === at ? 'text-ink' : ''}`}>
-                {s.loop ? '↺ ' : ''}
                 {s.who}
               </span>
               <span>
-                <span className={s.who === 'You' ? 'code inline-block px-1.5 py-0' : ''}>{s.what}</span>
+                <span className={s.code ? 'code inline-block px-1.5 py-0' : ''}>{s.what}</span>
                 {s.note && <span className="block text-muted">{s.note}</span>}
               </span>
             </li>
@@ -68,16 +69,16 @@ export default function AgentDemo() {
         </ol>
         <button
           role="switch"
-          aria-checked={stuck}
+          aria-checked={keys}
           onClick={() => {
-            setStuck(v => !v)
+            setKeys(v => !v)
             setRun(r => r + 1)
           }}
-          className={`mt-1 flex w-full items-center justify-between py-2 text-left rule-top ${stuck ? '' : 'text-muted'}`}
+          className={`mt-1 flex w-full items-center justify-between py-2 text-left rule-top ${keys ? '' : 'text-muted'}`}
         >
-          The agent hits an open question
-          <span className={`relative h-3.5 w-6 border border-current transition-colors ${stuck ? 'bg-ink' : ''}`}>
-            <span className={`absolute top-px size-2.5 transition-[left] ${stuck ? 'left-[11px] bg-paper' : 'left-px bg-current'}`} />
+          The change adds new translation keys
+          <span className={`relative h-3.5 w-6 border border-current transition-colors ${keys ? 'bg-ink' : ''}`}>
+            <span className={`absolute top-px size-2.5 transition-[left] ${keys ? 'left-[11px] bg-paper' : 'left-px bg-current'}`} />
           </span>
         </button>
       </div>
