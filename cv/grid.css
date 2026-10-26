@@ -1,0 +1,138 @@
+/*
+ * The CV in the Grid version's type (after abgd.it), laid over cv.html so the words stay in one place.
+ * `pnpm cv --grid` prints it to public/Petra-Presecki-CV-Grid.pdf and public/cv/grid/.
+ * Inter Tight throughout, small capitals for labels, sections as black bars numbered /1.0, bullets as /1.1.
+ */
+:root {
+  --paper: #f2f0ea;
+  --ink: #1a1a1a;
+  --muted: #6e6c66;
+  --rule: rgb(26 26 26 / 0.18);
+}
+html {
+  font-family: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 8.9pt;
+  line-height: 1.4;
+}
+body {
+  counter-reset: sec;
+}
+b {
+  font-weight: 600;
+}
+
+/* header: the name big and tight, the rest as small capitals on a rule */
+header {
+  align-items: flex-end;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+h1 {
+  font-size: 40pt;
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+.title {
+  margin-top: 10px;
+  font-size: 7.4pt;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.site {
+  margin-top: 4px;
+  font-size: 7.4pt;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.contact {
+  font-size: 7.4pt;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* sections: a black bar, numbered */
+h2 {
+  counter-increment: sec;
+  display: inline-block;
+  margin: 18px 0 8px;
+  padding: 1px 5px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 7.4pt;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+h2::before {
+  content: '/' counter(sec) '.0 ';
+}
+
+h3 {
+  font-size: 13pt;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+h3 b {
+  font-weight: 500;
+}
+.dates {
+  margin-top: 3px;
+  font-size: 7.2pt;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.job + .job {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+h4 {
+  margin: 10px 0 2px;
+  padding-top: 4px;
+  border-top: 1px solid var(--rule);
+  font-size: 7.2pt;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* bullets numbered like the page's index rows: /section.item, running through each section */
+h2 {
+  counter-reset: item;
+}
+li {
+  counter-increment: item;
+  padding-left: 24px;
+}
+li::before {
+  content: '/' counter(sec) '.' counter(item);
+  left: 0;
+  top: 0.18em;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  font-size: 6.6pt;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.skills div {
+  padding-top: 3px;
+  border-top: 1px solid var(--rule);
+}
+.skills dt {
+  font-size: 7.2pt;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding-top: 1px;
+}

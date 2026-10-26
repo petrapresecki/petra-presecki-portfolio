@@ -13,7 +13,7 @@ const NAV = [
 ] as const
 
 /** U+FE0E asks for the text glyph, so iOS doesn't swap the arrow for an emoji. */
-const ARROW = '\u2197\uFE0E'
+export const ARROW = '\u2197\uFE0E'
 
 type Open = { kind: 'case'; id: string } | { kind: 'project'; id: string } | null
 
@@ -62,13 +62,7 @@ export default function Page() {
 
       <section className="grid-12 pb-20 md:pb-32">
         <h1 className="statement intro col-span-12 md:col-[4/span_7]">
-          Hi, I’m Petra, a frontend engineer from Zagreb with five years of React, React Native and TypeScript behind
-          me. I mostly build the stuff other teams and partners build on top of: design systems, regulated product
-          flows, partner SDKs, and lately a lot of AI agent tooling. Most recently at Coinme, now part of{' '}
-          <a className="link" href="https://polygon.technology/" target="_blank" rel="noreferrer">
-            Polygon Labs
-          </a>
-          .
+          <Intro />
         </h1>
         <div className="col-span-12 mt-8 flex flex-wrap gap-x-6 gap-y-1 md:col-[4/span_8]">
           <a className="link" href={`mailto:${person.email}`}>
@@ -169,9 +163,25 @@ export default function Page() {
   )
 }
 
+/** The hello at the top; the versions in src/versions reuse it, some with the greeting set as its own headline */
+export function Intro({ greeting = true }: { greeting?: boolean }) {
+  return (
+    <>
+      {greeting ? 'Hi, I’m Petra, a frontend engineer' : 'A frontend engineer'} from Zagreb with five years of React,
+      React Native and TypeScript behind me. I
+      mostly build the stuff other teams and partners build on top of: design systems, regulated product flows, partner
+      SDKs, and lately a lot of AI agent tooling. Most recently at Coinme, now part of{' '}
+      <a className="link" href="https://polygon.technology/" target="_blank" rel="noreferrer">
+        Polygon Labs
+      </a>
+      .
+    </>
+  )
+}
+
 const host = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 
-function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void; onCase: (id: string) => void }) {
+export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void; onCase: (id: string) => void }) {
   const n = cases.indexOf(study) + 1
   const next = cases[n % cases.length]
   const wide = study.visual !== 'sdk'
@@ -234,7 +244,7 @@ function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void
   )
 }
 
-function ProjectView({ project, onClose, onProject }: { project: Project; onClose: () => void; onProject: (id: string) => void }) {
+export function ProjectView({ project, onClose, onProject }: { project: Project; onClose: () => void; onProject: (id: string) => void }) {
   const next = projects[(projects.indexOf(project) + 1) % projects.length]
   return (
     <View
@@ -356,18 +366,19 @@ function Job({ job, first, onCase }: { job: Job; first: boolean; onCase: (id: st
           {open ? '− Less' : '+ What I did'}
         </button>
         {open && (
-          <div className="col-span-9 mt-4 grid gap-x-[var(--gap)] gap-y-5 md:col-[4/span_6] md:grid-cols-2">
-            {job.groups.map(g => (
-              <div key={g.title}>
-                <h4 className="label">
-                  {g.title}
+          // one row per group: its title under the company, the bullets in the wide column beside it
+          <div className="col-span-9 mt-6">
+            {job.groups.map((g, i) => (
+              <div key={g.title} className={`grid grid-cols-9 gap-x-[var(--gap)] py-4 ${i ? 'rule-top' : ''}`}>
+                <div className="col-span-9 md:col-span-3">
+                  <h4>{g.title}</h4>
                   {g.case && (
-                    <button className="link ml-2 text-ink" onClick={() => onCase(g.case!)}>
+                    <button className="link mt-1 text-muted" onClick={() => onCase(g.case!)}>
                       A closer look {ARROW}
                     </button>
                   )}
-                </h4>
-                <ul className="mt-1.5 space-y-1.5">
+                </div>
+                <ul className="col-span-9 mt-2 max-w-[62ch] space-y-2.5 text-muted md:col-[4/span_6] md:mt-0">
                   {g.items.map(item => (
                     <li key={item}>{item}</li>
                   ))}
@@ -421,9 +432,9 @@ function Still({ project, onOpen }: { project: Project; onOpen: () => void }) {
   )
 }
 
-const firstSentence = (s: string) => s.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? s
+export const firstSentence = (s: string) => s.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? s
 
-function Clock() {
+export function Clock() {
   const [now, setNow] = useState(() => time())
   useEffect(() => {
     const t = setInterval(() => setNow(time()), 15000)

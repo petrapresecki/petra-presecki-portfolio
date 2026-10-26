@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './styles/kit.css';
+@import './versions/versions.css';
 
 /* Paper and ink, one grey, hairlines; no accent colour */
 @theme {
