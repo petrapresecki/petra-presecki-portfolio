@@ -148,7 +148,7 @@ export default function Grid() {
           {
             title: 'Know more',
             links: [
-              ['See my CV', GRID_CV],
+              ['CV', GRID_CV],
               ['GitHub', person.github],
             ],
           },
