@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { about, experience, person, projects, skills } from '@/data/site'
-import { ARROW, Clock, Intro, firstSentence } from '@/components/Page'
+import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
 import { Clip, go, jobCases, pad, useOverlays } from '@/versions/parts'
 import StripeMark, { SHAPES } from '@/versions/StripeMark'
@@ -15,9 +15,9 @@ import CutType from '@/components/kit/cut-type/CutType'
  */
 const INDEX = [
   ['experience', 'Experience'],
-  ['work', 'Side work'],
-  ['capabilities', 'Capabilities'],
   ['about', 'About'],
+  ['capabilities', 'Capabilities'],
+  ['work', 'Side work'],
   ['contact', 'Contact'],
 ] as const
 
@@ -93,13 +93,24 @@ export default function Grid() {
 
       <Star />
 
-      <section id="work">
-        <p className="grid-12 cap pb-2">
-          <span className="col-span-12 md:col-[4/span_6]">/ Side work /</span>
-        </p>
-        {projects.map((p, i) => (
-          <SideRow key={p.id} project={p} n={i + 6} onOpen={() => openProject(p.id)} />
-        ))}
+      {/* built like an experience row: the label where the years go, the words in the middle, the facts where the tag sits */}
+      <section id="about" className="list-row">
+        <p className="cap col-span-12 md:col-span-3">/ About /</p>
+        <div className="col-span-12 mt-3 md:col-span-6 md:mt-0">
+          <p className="lead-l max-w-[30em]">{about.lines[0]}</p>
+          <div className="dense about-body mt-6 max-w-[34em]">
+            <p>{about.lines[2]}</p>
+            <p className="indent">{about.lines[3]}</p>
+          </div>
+        </div>
+        <dl className="col-span-12 mt-8 grid grid-cols-2 gap-x-[var(--gap)] md:col-span-3 md:mt-0 md:block">
+          {about.facts.map(([k, v], i) => (
+            <div key={k} className={`cap py-1.5 ${i ? 'rule-top' : 'max-md:rule-top'}`}>
+              <dt className="text-muted">{k}</dt>
+              <dd className="mt-0.5">{v}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <Star />
@@ -122,24 +133,13 @@ export default function Grid() {
 
       <Star />
 
-      {/* built like an experience row: the label where the years go, the words in the middle, the facts where the tag sits */}
-      <section id="about" className="list-row">
-        <p className="cap col-span-12 md:col-span-3">/ About /</p>
-        <div className="col-span-12 mt-3 md:col-span-6 md:mt-0">
-          <p className="lead-l max-w-[30em]">{about.lines[0]}</p>
-          <div className="dense about-body mt-6 max-w-[34em]">
-            <p>{about.lines[2]}</p>
-            <p className="indent">{about.lines[3]}</p>
-          </div>
-        </div>
-        <dl className="col-span-12 mt-8 grid grid-cols-2 gap-x-[var(--gap)] md:col-span-3 md:mt-0 md:block">
-          {about.facts.map(([k, v], i) => (
-            <div key={k} className={`cap py-1.5 ${i ? 'rule-top' : 'max-md:rule-top'}`}>
-              <dt className="text-muted">{k}</dt>
-              <dd className="mt-0.5">{v}</dd>
-            </div>
-          ))}
-        </dl>
+      <section id="work">
+        <p className="grid-12 cap pb-2">
+          <span className="col-span-12 md:col-[4/span_6]">/ Side work /</span>
+        </p>
+        {projects.map(p => (
+          <SideRow key={p.id} project={p} onOpen={() => openProject(p.id)} />
+        ))}
       </section>
 
       <Star />
@@ -206,20 +206,21 @@ export default function Grid() {
 }
 
 /** A side project: its film plays inline on phones while on screen, and in the right-hand column on desktop while you point at the row */
-function SideRow({ project: p, n, onOpen }: { project: (typeof projects)[number]; n: number; onOpen: () => void }) {
+function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; onOpen: () => void }) {
   const [pointed, setPointed] = useState(false)
   return (
     <button
-      className="group list-row w-full text-left"
+      className="group side-row list-row w-full text-left"
       onClick={onOpen}
       onMouseEnter={() => setPointed(true)}
       onMouseLeave={() => setPointed(false)}
     >
       <span className="cap col-span-6 md:col-span-3">{p.year}</span>
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
-        <span className="title-l block">{p.title}</span>
-        <span className="cap sub mt-2 block">
-          / P.{pad(n)} · {firstSentence(p.summary)}
+        {/* first names only: the row is a quick index, the project page has the rest */}
+        <span className="title-m block">
+          <span className="side-title">{p.title.split(' ')[0]}</span>
+          <span className="side-arrow"> ↗</span>
         </span>
         <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
       </span>
