@@ -1,11 +1,11 @@
 import { cases, type Case } from '@/data/site'
 import { ARROW } from '@/components/Page'
-import Exhibit from '@/components/Exhibits'
+import CaseFilm from '@/components/films/CaseFilm'
 import GridView from '@/versions/GridView'
 import { pad } from '@/versions/parts'
 
 /**
- * A case study in Grid: the original's simple order (title, summary, the live exhibit, then the work), set in Grid's
+ * A case study in Grid: the original's simple order (title, summary, the case's film, then the work), set in Grid's
  * own style. The opening is a list row like the home page's, the role in a black tag; each part of the work is a
  * row with a black /1.0 bar and dense numbered points, as in Capabilities.
  */
@@ -13,8 +13,6 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
   const n = cases.indexOf(study) + 1
   const next = cases[n % cases.length]
   const [role, years] = study.kind.split(' · ')
-  // the SDK exhibit is a narrow form, so it sits beside the work rather than across the page
-  const wide = study.visual !== 'sdk'
   return (
     <GridView
       label={study.title}
@@ -45,16 +43,16 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
         </span>
       </div>
 
-      {study.visual && wide && (
+      {study.visual && (
         <div className="grid-12 pt-4 pb-12">
           <div className="col-span-12 md:col-[4/span_9]">
-            <Exhibit kind={study.visual} />
+            <CaseFilm kind={study.visual} />
           </div>
         </div>
       )}
 
       <div className="grid-12">
-        <div className={`col-span-12 ${wide ? '' : 'md:col-span-9'}`}>
+        <div className="col-span-12">
           {study.sections.map((sec, i) => (
             <section key={sec.title} className="grid grid-cols-12 gap-x-[var(--gap)] rule-top py-3 md:grid-cols-9">
               <h3 className="col-span-12 md:col-span-3">
@@ -75,11 +73,6 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
             </section>
           ))}
         </div>
-        {study.visual && !wide && (
-          <div className="col-span-12 mt-8 md:col-span-3 md:mt-3">
-            <Exhibit kind={study.visual} />
-          </div>
-        )}
       </div>
     </GridView>
   )
