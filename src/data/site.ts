@@ -317,7 +317,6 @@ export const experience = [
         items: [
           'A Node.js CLI that bumps every pinned flow package on matching release channels. The team switched to it for every update',
           'Brought API mocking (MSW) into Storybook and into the template every new flow starts from',
-          'First project: led the consumer web wallet’s move from i18next to Tolgee across about 43 components',
         ],
       },
     ],

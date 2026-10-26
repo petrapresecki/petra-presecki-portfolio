@@ -97,7 +97,7 @@ export default function Grid() {
         </div>
         <dl className="col-span-12 mt-8 grid grid-cols-2 gap-x-[var(--gap)] md:col-span-3 md:mt-0 md:block">
           {about.facts.map(([k, v], i) => (
-            <div key={k} className={`cap py-1.5 ${i ? 'rule-top' : 'max-md:rule-top'}`}>
+            <div key={k} className={`cap border-(--color-rule) py-1.5 ${i ? 'border-t' : 'max-md:border-t'}`}>
               <dt className="text-muted">{k}</dt>
               <dd className="mt-0.5">{v}</dd>
             </div>
