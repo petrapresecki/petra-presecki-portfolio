@@ -20,12 +20,6 @@ export const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2)
 /** 0 before a, 1 after b, eased between */
 export const ramp = (t: number, a: number, b: number, ease = easeOut) => ease(clamp01((t - a) / (b - a)))
 export const lerp = (a: number, b: number, p: number) => a + (b - a) * p
-/** two #rrggbb colours mixed */
-export function mix(a: string, b: string, p: number) {
-  const ch = (s: string, i: number) => parseInt(s.slice(1 + i * 2, 3 + i * 2), 16)
-  return `rgb(${[0, 1, 2].map(i => Math.round(lerp(ch(a, i), ch(b, i), p))).join(' ')})`
-}
-
 export function Film({
   length,
   still,
@@ -59,7 +53,8 @@ export function Film({
     if (!on) return
     const from = performance.now()
     let raf = requestAnimationFrame(function tick(now) {
-      setT(((now - from) / 1000) % length)
+      // the first frame's timestamp can come before `from`, which would put t below zero
+      setT((Math.max(0, now - from) / 1000) % length)
       raf = requestAnimationFrame(tick)
     })
     return () => cancelAnimationFrame(raf)
@@ -69,34 +64,6 @@ export function Film({
     <svg ref={box} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="block h-auto w-full select-none" style={{ fontFamily: 'var(--font-sans)' }}>
       {children(t)}
     </svg>
-  )
-}
-
-/** a value that changes by sliding: the old one leaves upwards as the new one comes in from below */
-export function Swap({
-  from,
-  to,
-  p,
-  x,
-  y,
-  ...rest
-}: Omit<React.SVGProps<SVGTextElement>, 'from' | 'to'> & { from: string; to: string; p: number; x: number; y: number }) {
-  if (from === to || p >= 1) {
-    return (
-      <text x={x} y={y} {...rest}>
-        {to}
-      </text>
-    )
-  }
-  return (
-    <g>
-      <text x={x} y={y - p * 16} opacity={1 - p} {...rest}>
-        {from}
-      </text>
-      <text x={x} y={y + (1 - p) * 16} opacity={p} {...rest}>
-        {to}
-      </text>
-    </g>
   )
 }
 
