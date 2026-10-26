@@ -1,142 +1,104 @@
-import { Cap, Film, INK, MUTED, PAPER, RULE, easeInOut, lerp, ramp } from '@/components/films/Film'
+import { Film, INK, MUTED, RULE, Slats, Swap, easeInOut, lerp, mix, ramp } from '@/components/films/Film'
 
 /**
- * One library of flows, a different app for every partner: the partner's config picks its flows, they leave
- * the library and stack up in its app. No new code, only a new config.
+ * One library of flows, a different app for every partner: the partner's colour closes over the app in slats,
+ * and the flows its config picks leave the library one after another and settle into it. No new code.
  */
 
 const FLOWS: [string, string][] = [
-  ['IDENTITY', 'Verify identity'],
-  ['CASH BUY', 'Buy with cash'],
-  ['ATM CASH-OUT', 'Cash out at an ATM'],
-  ['CARD BUY', 'Buy with a card'],
-  ['WALLET', 'Wallet'],
-  ['LOCATIONS', 'Find a store'],
-  ['HISTORY', 'History'],
+  ['Identity', 'Verify identity'],
+  ['Cash buy', 'Buy with cash'],
+  ['ATM cash-out', 'Cash out at an ATM'],
+  ['Card buy', 'Buy with a card'],
+  ['Wallet', 'Wallet'],
+  ['Locations', 'Find a store'],
+  ['History', 'History'],
 ]
 
 const PARTNERS = [
-  { name: 'Harbor', kind: 'A SELF-CUSTODY WALLET', primary: '#2f4bd8', landing: 'BUY', flows: [0, 1, 5] },
-  { name: 'Ember', kind: 'A CASH-FIRST APP', primary: '#e0531f', landing: 'CASH BUY', flows: [0, 1, 2, 5, 6] },
-  { name: 'Orchid', kind: 'A FULL CRYPTO APP', primary: '#a3247c', landing: 'WALLET', flows: [0, 1, 2, 3, 4, 5, 6] },
+  { name: 'Harbor', kind: 'A self-custody wallet', color: '#2f4bd8', flows: [0, 1, 5] },
+  { name: 'Ember', kind: 'A cash-first app', color: '#e0531f', flows: [0, 1, 2, 5, 6] },
+  { name: 'Orchid', kind: 'A full crypto app', color: '#a3247c', flows: [0, 1, 2, 3, 4, 5, 6] },
 ]
-const EACH = 4.4
+const EACH = 4.6
 
-// the library along the bottom, and the app's rows
-const TAG = { y: 492, w: 112, h: 32, gap: 12, x: 60 }
-const SLOT = { x: 626, y: 120, w: 248, h: 34, step: 40 }
+// the library runs along the bottom, one word after another; the app's rows stack in the panel
+const LIB_Y = 548
+const libX: number[] = []
+FLOWS.reduce((x, [w]) => (libX.push(x), x + w.length * 9 + 46), 60)
+const PANEL = { x: 560, h: 470, rows: 160, step: 42 }
 
 export default function FlowsFilm({ play }: { play: boolean | 'view' }) {
   return (
-    <Film length={PARTNERS.length * EACH} still={EACH * 2 + 3} play={play} label="Each partner's config picks its flows from one library">
+    <Film length={PARTNERS.length * EACH} still={EACH * 2 + 3.2} play={play} label="Each partner's config picks its flows from one library">
       {t => {
-        const p = PARTNERS[Math.floor(t / EACH)]
+        const at = Math.floor(t / EACH)
         const u = t % EACH
-        const out = 1 - ramp(u, EACH - 0.45, EACH - 0.05)
+        const from = PARTNERS[(at + PARTNERS.length - 1) % PARTNERS.length]
+        const p = PARTNERS[at]
+        // the rows fade away together before the next partner
+        const leave = ramp(u, EACH - 0.5, EACH - 0.1, easeInOut)
         return (
           <>
             {/* the config */}
-            <g opacity={out}>
-              <Cap x={60} y={70} fill={MUTED}>
-                / PARTNER CONFIG
-              </Cap>
-              <text x={60} y={130} fontSize={48} fontWeight={500} letterSpacing={-0.8} fill={INK} opacity={ramp(u, 0, 0.35)}>
-                {p.name}
-              </text>
-              <Cap x={60} y={160} fill={MUTED}>
-                {p.kind}
-              </Cap>
-              {(
-                [
-                  ['THEME', null],
-                  ['LANDING', p.landing],
-                  ['FLOWS', `${p.flows.length} OF ${FLOWS.length}`],
-                  ['NEW CODE', 'NONE'],
-                ] as const
-              ).map(([k, v], i) => {
-                const y = 222 + i * 42
-                return (
-                  <g key={k}>
-                    <line x1={60} x2={420} y1={y - 24} y2={y - 24} stroke={RULE} />
-                    <Cap x={60} y={y} fill={MUTED}>
-                      {k}
-                    </Cap>
-                    {v ? (
-                      <Cap x={420} y={y} textAnchor="end">
-                        {v}
-                      </Cap>
-                    ) : (
-                      <rect x={404} y={y - 12} width={16} height={16} fill={p.primary} />
-                    )}
-                  </g>
-                )
-              })}
-              <line x1={60} x2={420} y1={366} y2={366} stroke={RULE} />
-            </g>
-
-            {/* the orchestrator reads it and builds the app */}
-            <Cap x={512} y={226} textAnchor="middle" fill={MUTED}>
-              ORCHESTRATOR
-            </Cap>
-            <line x1={448} x2={572} y1={242} y2={242} stroke={INK} strokeDasharray="4 5" strokeDashoffset={-t * 18} />
-            <path d="M566 236 L574 242 L566 248" fill="none" stroke={INK} />
-
-            <rect x={600} y={24} width={300} height={418} rx={30} fill="none" stroke={INK} strokeWidth={1.5} />
-            <g opacity={out}>
-              <rect x={626} y={56} width={12} height={12} fill={p.primary} />
-              <text x={646} y={67} fontSize={14} fontWeight={600} fill={INK}>
-                {p.name}
-              </text>
-              <text x={626} y={102} fontSize={22} fontWeight={600} letterSpacing={-0.3} fill={INK}>
-                Get crypto
-              </text>
-            </g>
+            <Swap x={60} y={116} from={from.name} to={p.name} p={ramp(u, 0, 0.5)} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={INK} />
+            <Swap x={60} y={152} from={from.kind} to={p.kind} p={ramp(u, 0.08, 0.58)} fontSize={17} fill={MUTED} />
+            {(
+              [
+                ['Flows', `${from.flows.length} of ${FLOWS.length}`, `${p.flows.length} of ${FLOWS.length}`],
+                ['New code', 'None', 'None'],
+              ] as const
+            ).map(([k, a, b], i) => {
+              const y = 236 + i * 52
+              return (
+                <g key={k}>
+                  <line x1={60} x2={440} y1={y - 32} y2={y - 32} stroke={RULE} />
+                  <text x={60} y={y} fontSize={17} fill={MUTED}>
+                    {k}
+                  </text>
+                  <Swap x={440} y={y} from={a} to={b} p={ramp(u, 0.2 + i * 0.07, 0.6 + i * 0.07)} textAnchor="end" fontSize={17} fill={INK} />
+                </g>
+              )
+            })}
+            <line x1={60} x2={440} y1={308} y2={308} stroke={RULE} />
 
             {/* the library */}
-            <Cap x={60} y={474} fill={MUTED}>
-              / FLOW LIBRARY · SAME IN EVERY APP
-            </Cap>
-            {FLOWS.map(([tag], i) => {
+            <text x={60} y={508} fontSize={15} fill={MUTED}>
+              The flow library, the same in every app
+            </text>
+            {FLOWS.map(([word], i) => {
               const k = p.flows.indexOf(i)
-              const on = k < 0 ? 0 : ramp(u, 0.3 + k * 0.1, 0.5 + k * 0.1) * out
-              const x = TAG.x + i * (TAG.w + TAG.gap)
+              const on = k < 0 ? 0 : ramp(u, 0.4 + k * 0.08, 0.7 + k * 0.08) * (1 - leave)
               return (
-                <g key={tag}>
-                  <rect x={x} y={TAG.y} width={TAG.w} height={TAG.h} fill="none" stroke={RULE} />
-                  <rect x={x} y={TAG.y} width={TAG.w} height={TAG.h} fill={INK} opacity={on} />
-                  <Cap x={x + TAG.w / 2} y={TAG.y + 21} size={11.5} textAnchor="middle" fill={on > 0.5 ? PAPER : INK}>
-                    {tag}
-                  </Cap>
+                <g key={word}>
+                  <rect x={libX[i]} y={LIB_Y - 12} width={12} height={12} fill={p.color} opacity={on} />
+                  <text x={libX[i] + 20} y={LIB_Y} fontSize={17} fill={on > 0.5 ? INK : MUTED}>
+                    {word}
+                  </text>
                 </g>
               )
             })}
 
-            {/* each picked flow travels up into its row */}
+            {/* the partner's app: its colour closes over the last one in slats */}
+            <rect x={PANEL.x} width={960 - PANEL.x} height={PANEL.h} fill={from.color} />
+            <Slats x={PANEL.x} y={0} w={960 - PANEL.x} h={PANEL.h} fill={p.color} weight={i => 16 * ramp(u, i * 0.014, 0.36 + i * 0.014, easeInOut)} />
+            <text x={PANEL.x + 40} y={112} fontSize={32} fontWeight={500} letterSpacing={-0.6} fill="#fff">
+              Get crypto
+            </text>
             {p.flows.map((f, k) => {
-              const s = 0.9 + k * 0.17
-              const go = ramp(u, s, s + 0.7, easeInOut)
+              const s = 0.95 + k * 0.15
+              const go = ramp(u, s, s + 0.8, easeInOut)
               if (go === 0) return null
-              const land = ramp(u, s + 0.7, s + 1.05)
-              const x = lerp(TAG.x + f * (TAG.w + TAG.gap), SLOT.x, go)
-              const y = lerp(TAG.y, SLOT.y + k * SLOT.step, go)
-              const w = lerp(TAG.w, SLOT.w, go)
-              const h = lerp(TAG.h, SLOT.h, go)
+              const land = ramp(u, s + 0.7, s + 1)
+              // the word leaves the library and arrives as the app's row
+              const x = lerp(libX[f] + 20, PANEL.x + 40, go)
+              const y = lerp(LIB_Y, PANEL.rows + k * PANEL.step, go)
               return (
-                <g key={f} opacity={out}>
-                  <rect x={x} y={y} width={w} height={h} fill={INK} opacity={1 - land} />
-                  <Cap x={x + w / 2} y={y + h / 2 + 4} size={11.5} textAnchor="middle" fill={PAPER} opacity={1 - land}>
-                    {FLOWS[f][0]}
-                  </Cap>
-                  <g opacity={land}>
-                    <line x1={SLOT.x} x2={SLOT.x + SLOT.w} y1={y + h} y2={y + h} stroke={RULE} />
-                    <rect x={SLOT.x} y={y + 11} width={11} height={11} fill={p.primary} />
-                    <text x={SLOT.x + 22} y={y + 21} fontSize={14} fill={INK}>
-                      {FLOWS[f][1]}
-                    </text>
-                    <text x={SLOT.x + SLOT.w} y={y + 21} fontSize={14} textAnchor="end" fill={MUTED}>
-                      ›
-                    </text>
-                  </g>
+                <g key={f} opacity={1 - leave}>
+                  <text x={x} y={y} fontSize={lerp(17, 19, go)} fill={mix('#151514', '#ffffff', ramp(go, 0.5, 0.8))}>
+                    {go < 1 ? FLOWS[f][0] : FLOWS[f][1]}
+                  </text>
+                  <line x1={PANEL.x + 40} x2={920} y1={y + 16} y2={y + 16} stroke="#fff" strokeOpacity={0.25 * land} />
                 </g>
               )
             })}

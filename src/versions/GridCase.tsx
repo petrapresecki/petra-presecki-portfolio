@@ -45,7 +45,7 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
 
       {study.visual && (
         <div className="grid-12 pt-4 pb-12">
-          <div className="col-span-12 md:col-[4/span_9]">
+          <div className="col-span-12 md:col-[4/span_6]">
             <CaseFilm kind={study.visual} />
           </div>
         </div>

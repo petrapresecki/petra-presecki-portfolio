@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { about, experience, person, projects, skills } from '@/data/site'
+import { about, cases, experience, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
 import { Clip, go, jobCases, pad, useOverlays } from '@/versions/parts'
@@ -81,6 +81,18 @@ export default function Grid() {
       <section id="experience">
         {experience.map(job => (
           <Job key={job.company} job={job} onCase={openCase} />
+        ))}
+      </section>
+
+      <Star />
+
+      {/* the Coinme cases, set like the side work but barer: a number, the name, the film */}
+      <section id="cases">
+        <p className="grid-12 cap pb-2">
+          <span className="col-span-12 md:col-[4/span_6]">/ A closer look /</span>
+        </p>
+        {cases.map((c, i) => (
+          <CaseRow key={c.id} n={i + 1} study={c} onOpen={() => openCase(c.id)} />
         ))}
       </section>
 
@@ -224,6 +236,36 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
   )
 }
 
+/** A case: on desktop its film plays in the right-hand column while you point at the row; phones get the name only */
+function CaseRow({ n, study, onOpen }: { n: number; study: (typeof cases)[number]; onOpen: () => void }) {
+  const [pointed, setPointed] = useState(false)
+  return (
+    <button
+      className="group side-row list-row w-full text-left"
+      onClick={onOpen}
+      onMouseEnter={() => setPointed(true)}
+      onMouseLeave={() => setPointed(false)}
+      onFocus={() => setPointed(true)}
+      onBlur={() => setPointed(false)}
+    >
+      <span className="cap col-span-6 md:col-span-3">/{pad(n)}</span>
+      <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
+        <span className="title-m block">
+          <span className="side-title">{study.short}</span>
+          <span className="side-arrow"> ↗︎</span>
+        </span>
+      </span>
+      <span className="hidden md:relative md:col-span-3 md:block">
+        {study.visual && pointed && (
+          <span className="case-peek pointer-events-none md:absolute md:inset-x-0 md:top-0 md:z-10 md:block">
+            <CaseFilm kind={study.visual} play />
+          </span>
+        )}
+      </span>
+    </button>
+  )
+}
+
 /** One line of type sized to fill the width it is given */
 function FitLine({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLSpanElement>(null)
@@ -264,8 +306,6 @@ type Job = (typeof experience)[number]
 
 function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
   const [open, setOpen] = useState(false)
-  // the case pointed at: its film plays under the link, as a side project's plays beside it
-  const [peek, setPeek] = useState<string>()
   const to = job.links.find(l => l.label !== job.company)?.label
   return (
     <article>
@@ -280,32 +320,17 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
             / {job.role} · {job.note}
           </p>
           <p className="dense mt-5 max-w-[56ch]">{job.context}</p>
-          {jobCases(job.groups).length > 0 && (
-            <p className="cap mt-4 flex flex-wrap gap-x-4 gap-y-1">
-              {jobCases(job.groups).map(c => (
-                <span key={c.id} className="relative">
-                  <button
-                    className="case-link"
-                    onClick={() => onCase(c.id)}
-                    onMouseEnter={() => setPeek(c.id)}
-                    onMouseLeave={() => setPeek(undefined)}
-                    onFocus={() => setPeek(c.id)}
-                    onBlur={() => setPeek(undefined)}
-                  >
-                    ↗︎ {c.short}
-                  </button>
-                  {peek === c.id && c.visual && (
-                    <span className="case-peek pointer-events-none absolute top-full left-[-3px] z-10 mt-2 hidden w-[min(380px,32vw)] md:block">
-                      <CaseFilm kind={c.visual} play />
-                    </span>
-                  )}
-                </span>
-              ))}
-            </p>
-          )}
-          <button className="cap link mt-4" aria-expanded={open} onClick={() => setOpen(o => !o)}>
-            {open ? '− Less' : '+ What I did'}
-          </button>
+          {/* the cases have their own section below; here, one quiet pointer to it beside the toggle */}
+          <p className="cap mt-4 flex flex-wrap gap-x-4 gap-y-1">
+            <button className="link" aria-expanded={open} onClick={() => setOpen(o => !o)}>
+              {open ? '− Less' : '+ What I did'}
+            </button>
+            {jobCases(job.groups).length > 0 && (
+              <a href="#cases" className="link text-muted" onClick={e => go(e, 'cases')}>
+                ↓ {jobCases(job.groups).length} case studies
+              </a>
+            )}
+          </p>
         </div>
         <span className="col-span-6 md:col-span-3">
           <span className="tag">{job.company === 'Coinme' ? 'Product' : 'Agency work'}</span>
