@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
 
 /**
@@ -20,6 +20,11 @@ export const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2)
 /** 0 before a, 1 after b, eased between */
 export const ramp = (t: number, a: number, b: number, ease = easeOut) => ease(clamp01((t - a) / (b - a)))
 export const lerp = (a: number, b: number, p: number) => a + (b - a) * p
+/** two #rrggbb colours mixed */
+export function mix(a: string, b: string, p: number) {
+  const ch = (s: string, i: number) => parseInt(s.slice(1 + i * 2, 3 + i * 2), 16)
+  return `rgb(${[0, 1, 2].map(i => Math.round(lerp(ch(a, i), ch(b, i), p))).join(' ')})`
+}
 
 export function Film({
   length,
@@ -67,25 +72,89 @@ export function Film({
   )
 }
 
-/** the site's tiny capitals, at stage size */
-export function Cap({ children, fill = INK, size = 13, ...rest }: React.SVGProps<SVGTextElement> & { size?: number }) {
+/** a value that changes by sliding: the old one leaves upwards as the new one comes in from below */
+export function Swap({
+  from,
+  to,
+  p,
+  x,
+  y,
+  ...rest
+}: Omit<React.SVGProps<SVGTextElement>, 'from' | 'to'> & { from: string; to: string; p: number; x: number; y: number }) {
+  if (from === to || p >= 1) {
+    return (
+      <text x={x} y={y} {...rest}>
+        {to}
+      </text>
+    )
+  }
   return (
-    <text fontSize={size} fontWeight={500} letterSpacing={0.3} fill={fill} {...rest}>
-      {children}
-    </text>
+    <g>
+      <text x={x} y={y - p * 16} opacity={1 - p} {...rest}>
+        {from}
+      </text>
+      <text x={x} y={y + (1 - p) * 16} opacity={p} {...rest}>
+        {to}
+      </text>
+    </g>
   )
 }
 
-/** a black bar with capitals on it, as the page's tags and section bars are */
-export function Bar({ x, y, text, w, anchor = 'start' }: { x: number; y: number; text: string; w?: number; anchor?: 'start' | 'end' }) {
-  const width = w ?? text.length * 8.6 + 14
-  const left = anchor === 'end' ? x - width : x
+/**
+ * The stripe mark's slats, across a box: bars on a fixed pitch, each as heavy as `weight` says (a number, or one
+ * per bar for blinds that close one after another), and thinner inside `shape` where it's given.
+ */
+export function Slats({
+  x,
+  y,
+  w,
+  h,
+  fill,
+  pitch = 16,
+  weight = 10,
+  thin = 3,
+  shape,
+}: {
+  x: number
+  y: number
+  w: number
+  h: number
+  fill: string
+  pitch?: number
+  weight?: number | ((i: number) => number)
+  thin?: number
+  /** drawn in white for a mask: where the slats turn thin */
+  shape?: ReactNode
+}) {
+  const id = useId()
+  const n = Math.ceil(h / pitch)
+  const bars = (k: (i: number) => number) =>
+    Array.from({ length: n }, (_, i) => {
+      // closed slats overlap a hair, so no seam shows between them
+      const height = k(i) >= pitch ? pitch + 1 : Math.max(0, k(i))
+      return height > 0 ? <rect key={i} x={x} y={y + i * pitch + (pitch - height) / 2} width={w} height={height} /> : null
+    })
+  const k = typeof weight === 'number' ? () => weight : weight
   return (
-    <g>
-      <rect x={left} y={y - 14} width={width} height={20} fill={INK} />
-      <Cap x={left + 7} y={y} fill={PAPER}>
-        {text}
-      </Cap>
+    <g fill={fill}>
+      <clipPath id={`${id}-box`}>
+        <rect x={x} y={y} width={w} height={h} />
+      </clipPath>
+      {shape && (
+        <>
+          <mask id={`${id}-out`} maskUnits="userSpaceOnUse" x={x} y={y} width={w} height={h}>
+            <rect x={x} y={y} width={w} height={h} fill="#fff" />
+            <g fill="#000">{shape}</g>
+          </mask>
+          <mask id={`${id}-in`} maskUnits="userSpaceOnUse" x={x} y={y} width={w} height={h}>
+            <g fill="#fff">{shape}</g>
+          </mask>
+        </>
+      )}
+      <g clipPath={`url(#${id}-box)`}>
+        <g mask={shape ? `url(#${id}-out)` : undefined}>{bars(k)}</g>
+        {shape && <g mask={`url(#${id}-in)`}>{bars(() => thin)}</g>}
+      </g>
     </g>
   )
 }
