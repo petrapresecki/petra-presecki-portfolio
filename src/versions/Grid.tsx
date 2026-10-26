@@ -64,10 +64,10 @@ export default function Grid() {
             </p>
             <p className="lead-l indent">{about.lines[1]}</p>
             <p className="cap mt-8 flex flex-wrap gap-x-4 gap-y-1">
-              <a href={`mailto:${person.email}`} className="link">↗ Email</a>
-              <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗ CV</a>
-              <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗ LinkedIn</a>
-              <a href={person.github} target="_blank" rel="noreferrer" className="link">↗ GitHub</a>
+              <a href={`mailto:${person.email}`} className="link">↗︎ Email</a>
+              <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗︎ CV</a>
+              <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗︎ LinkedIn</a>
+              <a href={person.github} target="_blank" rel="noreferrer" className="link">↗︎ GitHub</a>
             </p>
           </div>
           <p className="hero-foot title-l col-span-6 row-start-4 md:col-span-4">2021–2026</p>
@@ -76,7 +76,7 @@ export default function Grid() {
             className="hero-foot title-l col-span-6 row-start-4 text-right md:col-[5/span_4] md:text-left"
             onClick={e => go(e, 'experience')}
           >
-            Experience ↘
+            Experience ↘︎
           </a>
         </section>
       </div>
@@ -160,7 +160,7 @@ export default function Grid() {
           },
         ].map((c, i) => (
           <div key={c.title} className={`col-span-12 md:col-span-4 ${i ? '' : 'md:col-start-3'}`}>
-            <p className="title-l">{c.title} ↘</p>
+            <p className="title-l">{c.title} ↘︎</p>
             <p className="cap mt-3 text-muted">/Contact me</p>
             <ul className="mt-10">
               {c.links.map(([label, href]) => (
@@ -172,7 +172,7 @@ export default function Grid() {
                     rel="noreferrer"
                     onClick={href === GRID_CV ? openCv : undefined}
                   >
-                    ↗ {label}
+                    ↗︎ {label}
                   </a>
                 </li>
               ))}
@@ -218,7 +218,7 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
         {/* first names only: the row is a quick index, the project page has the rest */}
         <span className="title-m block">
           <span className="side-title">{p.title.split(' ')[0]}</span>
-          <span className="side-arrow"> ↗</span>
+          <span className="side-arrow"> ↗︎</span>
         </span>
         <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
       </span>
@@ -287,7 +287,7 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
             <p className="cap mt-4 flex flex-wrap gap-x-4 gap-y-1">
               {jobCases(job.groups).map(c => (
                 <button key={c.id} className="link" onClick={() => onCase(c.id)}>
-                  ↗ {c.short}
+                  ↗︎ {c.short}
                 </button>
               ))}
             </p>

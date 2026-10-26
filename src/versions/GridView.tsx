@@ -64,7 +64,7 @@ export default function GridView({
       {children}
       <button onClick={next.go} className="grid-12 mt-24 w-full rule-top pt-3 pb-16 text-left">
         <span className="cap col-span-12 md:col-span-6">/ {next.label} /</span>
-        <span className="title-l link col-span-12 mt-3 md:col-span-6 md:mt-0">{next.title} ↘</span>
+        <span className="title-l link col-span-12 mt-3 md:col-span-6 md:mt-0">{next.title} ↘︎</span>
       </button>
     </div>
   )
