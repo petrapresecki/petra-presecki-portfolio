@@ -212,7 +212,7 @@ export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () 
             </a>
           )}
         </div>
-        {wide && (
+        {study.visual && wide && (
           <div className="col-span-12 mt-6 md:col-[4/span_9]">
             <Exhibit kind={study.visual} />
           </div>
@@ -233,7 +233,7 @@ export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () 
             ))}
           </div>
         </div>
-        {!wide && (
+        {study.visual && !wide && (
           <div className="col-span-12 md:col-[9/span_4] md:pl-[var(--gap)]">
             <Exhibit kind={study.visual} />
           </div>
