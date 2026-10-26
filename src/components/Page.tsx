@@ -212,7 +212,7 @@ export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () 
           )}
         </div>
         {study.visual && (
-          <div className="col-span-12 mt-6 md:col-[4/span_9]">
+          <div className="col-span-12 mt-6 md:col-[4/span_6]">
             <CaseFilm kind={study.visual} />
           </div>
         )}
