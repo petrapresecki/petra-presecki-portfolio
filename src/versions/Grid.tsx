@@ -6,6 +6,7 @@ import { Clip, go, jobCases, pad, useOverlays } from '@/versions/parts'
 import GridCase from '@/versions/GridCase'
 import GridProject from '@/versions/GridProject'
 import CutType from '@/components/kit/cut-type/CutType'
+import CaseFilm from '@/components/films/CaseFilm'
 
 /**
  * After abgd.it, without its cards: a fixed bar of tiny capitals, a huge grotesk wordmark, a page index,
@@ -263,6 +264,8 @@ type Job = (typeof experience)[number]
 
 function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
   const [open, setOpen] = useState(false)
+  // the case pointed at: its film plays under the link, as a side project's plays beside it
+  const [peek, setPeek] = useState<string>()
   const to = job.links.find(l => l.label !== job.company)?.label
   return (
     <article>
@@ -280,9 +283,23 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
           {jobCases(job.groups).length > 0 && (
             <p className="cap mt-4 flex flex-wrap gap-x-4 gap-y-1">
               {jobCases(job.groups).map(c => (
-                <button key={c.id} className="link" onClick={() => onCase(c.id)}>
-                  ↗︎ {c.short}
-                </button>
+                <span key={c.id} className="relative">
+                  <button
+                    className="case-link"
+                    onClick={() => onCase(c.id)}
+                    onMouseEnter={() => setPeek(c.id)}
+                    onMouseLeave={() => setPeek(undefined)}
+                    onFocus={() => setPeek(c.id)}
+                    onBlur={() => setPeek(undefined)}
+                  >
+                    ↗︎ {c.short}
+                  </button>
+                  {peek === c.id && c.visual && (
+                    <span className="case-peek pointer-events-none absolute top-full left-[-3px] z-10 mt-2 hidden w-[min(380px,32vw)] md:block">
+                      <CaseFilm kind={c.visual} play />
+                    </span>
+                  )}
+                </span>
               ))}
             </p>
           )}

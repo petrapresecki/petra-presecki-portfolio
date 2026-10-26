@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { about, cases, experience, person, projects, skills, type Case, type Project } from '@/data/site'
-import Exhibit from '@/components/Exhibits'
+import CaseFilm from '@/components/films/CaseFilm'
 import View from '@/components/View'
 import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
@@ -183,7 +183,6 @@ const host = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () => void; onCase: (id: string) => void }) {
   const n = cases.indexOf(study) + 1
   const next = cases[n % cases.length]
-  const wide = study.visual !== 'sdk'
   return (
     <View
       next={{ title: next.title, go: () => onCase(next.id) }}
@@ -212,9 +211,9 @@ export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () 
             </a>
           )}
         </div>
-        {study.visual && wide && (
+        {study.visual && (
           <div className="col-span-12 mt-6 md:col-[4/span_9]">
-            <Exhibit kind={study.visual} />
+            <CaseFilm kind={study.visual} />
           </div>
         )}
         <div className="col-span-12 md:col-[4/span_5]">
@@ -233,11 +232,6 @@ export function CaseView({ study, onClose, onCase }: { study: Case; onClose: () 
             ))}
           </div>
         </div>
-        {study.visual && !wide && (
-          <div className="col-span-12 md:col-[9/span_4] md:pl-[var(--gap)]">
-            <Exhibit kind={study.visual} />
-          </div>
-        )}
       </article>
     </View>
   )
