@@ -49,12 +49,6 @@ export default function Grid() {
             ))}
           </nav>
         </section>
-        <div className="grid-12 cap facts mt-3">
-          <span className="col-span-6 md:col-span-3">{person.name}</span>
-          <span className="col-span-6 md:col-span-3">Frontend engineer</span>
-          <span className="col-span-6 md:col-span-4">Based in Zagreb, CET</span>
-          <span className="col-span-6 md:col-span-2 md:text-right">Available remote</span>
-        </div>
 
         {/* as on abgd.it: the copy set line on line from the second third to the edge, the follow-on stepped in twice; even space above and below */}
         <section className="hero-intro grid-12 flex-1 pb-8">
@@ -64,10 +58,10 @@ export default function Grid() {
             </p>
             <p className="lead-l indent">{about.lines[1]}</p>
             <p className="cap mt-8 flex flex-wrap gap-x-4 gap-y-1">
-              <a href={`mailto:${person.email}`} className="link">↗ Email</a>
-              <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗ CV</a>
-              <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗ LinkedIn</a>
-              <a href={person.github} target="_blank" rel="noreferrer" className="link">↗ GitHub</a>
+              <a href={`mailto:${person.email}`} className="link">↗︎ Email</a>
+              <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗︎ CV</a>
+              <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗︎ LinkedIn</a>
+              <a href={person.github} target="_blank" rel="noreferrer" className="link">↗︎ GitHub</a>
             </p>
           </div>
           <p className="hero-foot title-l col-span-6 row-start-4 md:col-span-4">2021–2026</p>
@@ -76,7 +70,7 @@ export default function Grid() {
             className="hero-foot title-l col-span-6 row-start-4 text-right md:col-[5/span_4] md:text-left"
             onClick={e => go(e, 'experience')}
           >
-            Experience ↘
+            Experience ↘︎
           </a>
         </section>
       </div>
@@ -103,7 +97,7 @@ export default function Grid() {
         </div>
         <dl className="col-span-12 mt-8 grid grid-cols-2 gap-x-[var(--gap)] md:col-span-3 md:mt-0 md:block">
           {about.facts.map(([k, v], i) => (
-            <div key={k} className={`cap py-1.5 ${i ? 'rule-top' : 'max-md:rule-top'}`}>
+            <div key={k} className={`cap border-(--color-rule) py-1.5 ${i ? 'border-t' : 'max-md:border-t'}`}>
               <dt className="text-muted">{k}</dt>
               <dd className="mt-0.5">{v}</dd>
             </div>
@@ -154,13 +148,13 @@ export default function Grid() {
           {
             title: 'Know more',
             links: [
-              ['See my CV', GRID_CV],
+              ['CV', GRID_CV],
               ['GitHub', person.github],
             ],
           },
         ].map((c, i) => (
           <div key={c.title} className={`col-span-12 md:col-span-4 ${i ? '' : 'md:col-start-3'}`}>
-            <p className="title-l">{c.title} ↘</p>
+            <p className="title-l">{c.title} ↘︎</p>
             <p className="cap mt-3 text-muted">/Contact me</p>
             <ul className="mt-10">
               {c.links.map(([label, href]) => (
@@ -172,7 +166,7 @@ export default function Grid() {
                     rel="noreferrer"
                     onClick={href === GRID_CV ? openCv : undefined}
                   >
-                    ↗ {label}
+                    ↗︎ {label}
                   </a>
                 </li>
               ))}
@@ -218,7 +212,7 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
         {/* first names only: the row is a quick index, the project page has the rest */}
         <span className="title-m block">
           <span className="side-title">{p.title.split(' ')[0]}</span>
-          <span className="side-arrow"> ↗</span>
+          <span className="side-arrow"> ↗︎</span>
         </span>
         <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
       </span>
@@ -287,7 +281,7 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
             <p className="cap mt-4 flex flex-wrap gap-x-4 gap-y-1">
               {jobCases(job.groups).map(c => (
                 <button key={c.id} className="link" onClick={() => onCase(c.id)}>
-                  ↗ {c.short}
+                  ↗︎ {c.short}
                 </button>
               ))}
             </p>

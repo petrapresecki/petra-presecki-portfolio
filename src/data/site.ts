@@ -254,7 +254,7 @@ export const cases: Case[] = [
 export const about = {
   lines: [
     'I’ve been building for the web for about five years, mostly React and React Native. Frontend is where I’m happiest, and the closer it gets to design, the better.',
-    'These days I do most of my work in Claude Code, and I’ve built a fair few agents and tools around it. They take the boring bits off my plate, like reviews and merge requests, so I get more time for the fun parts.',
+    'I’ve been deep in Claude Code for a while. Most of my day runs through it, along with an ever-growing collection of agents and tools I’ve built along the way.',
     'On the side I build sites for creative people, where I spend way too long on how one thing moves. Every piece I like ends up in my own little library, so no site starts from zero.',
     'Away from the screen it’s music and movies, usually some old Criterion film I’ll try to get you to watch too.',
   ],
@@ -317,7 +317,6 @@ export const experience = [
         items: [
           'A Node.js CLI that bumps every pinned flow package on matching release channels. The team switched to it for every update',
           'Brought API mocking (MSW) into Storybook and into the template every new flow starts from',
-          'First project: led the consumer web wallet’s move from i18next to Tolgee across about 43 components',
         ],
       },
     ],

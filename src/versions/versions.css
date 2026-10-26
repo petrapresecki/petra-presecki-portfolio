@@ -57,11 +57,6 @@ html[data-version='grid'] .label {
 .grid-v .wordmark.foot {
   font-size: clamp(52px, 16.5vw, 280px);
 }
-/* the facts under the wordmark: one ruled row on desktop, two ruled columns on phones */
-.grid-v .facts > * {
-  padding-block: 5px;
-  border-bottom: 1px solid var(--color-rule);
-}
 .grid-v .index-row {
   display: flex;
   justify-content: space-between;
