@@ -3,8 +3,10 @@ import { getLenis } from '@/lib/kit/lenis'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
 import { person } from '@/data/site'
 
-/** The page images come from the printed PDF (`pnpm cv`), so the paper is exactly what you download. */
+/** The page images come from the printed PDF (`pnpm cv`, or `pnpm cv --grid` for the Grid version), so the paper is exactly what you download. */
 const PAGES = ['/cv/page-1.jpg', '/cv/page-2.jpg']
+const GRID_PAGES = ['/cv/grid/page-1.jpg', '/cv/grid/page-2.jpg']
+export const GRID_CV = '/Petra-Presecki-CV-Grid.pdf'
 const W = 794
 const H = 1123
 
@@ -13,6 +15,8 @@ const H = 1123
  * Drag to turn it over (it keeps a little momentum), scroll or pinch to zoom, double-click or arrow keys to flip.
  */
 export default function CvPaper({ onClose }: { onClose: () => void }) {
+  const grid = document.documentElement.dataset.version === 'grid'
+  const pages = grid ? GRID_PAGES : PAGES
   const root = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLDivElement>(null)
   const shadow = useRef<HTMLDivElement>(null)
@@ -114,7 +118,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
         <p className="col-span-6 md:col-span-3">
           CV <span className="text-muted max-md:hidden">· two pages, turn it over</span>
         </p>
-        <a className="link col-span-6 justify-self-end md:col-span-3 md:col-start-4 md:justify-self-start" href={person.cv} download>
+        <a className="link col-span-6 justify-self-end md:col-span-3 md:col-start-4 md:justify-self-start" href={grid ? GRID_CV : person.cv} download>
           Download PDF ↓
         </a>
         <button className="link col-span-12 justify-self-end max-md:hidden md:col-span-1 md:col-start-12" onClick={onClose}>
@@ -132,7 +136,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
       >
         <div ref={shadow} className="cv-shadow" />
         <div ref={sheet} className="cv-sheet">
-          {PAGES.map((src, i) => (
+          {pages.map((src, i) => (
             <img key={src} src={src} alt={`CV, page ${i + 1} of 2`} draggable={false} className={i ? 'cv-face cv-back' : 'cv-face'} />
           ))}
         </div>

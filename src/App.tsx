@@ -1,9 +1,15 @@
 import { useEffect } from 'react'
 import { initLenis, destroyLenis } from '@/lib/kit/lenis'
 import Page from '@/components/Page'
-import AsciiField from '@/components/AsciiField'
+import Grid from '@/versions/Grid'
+import Switch, { useVersion } from '@/versions/Switch'
+
+const PAGES = { original: Page, grid: Grid }
 
 export default function App() {
+  const [version, pick] = useVersion()
+  const Current = PAGES[version]
+
   useEffect(() => {
     const lenis = initLenis()
     if (import.meta.env.DEV) Object.assign(window, { lenis })
@@ -12,10 +18,10 @@ export default function App() {
 
   return (
     <>
-      <AsciiField />
       <div className="relative z-[1]">
-        <Page />
+        <Current key={version} />
       </div>
+      {import.meta.env.DEV && <Switch version={version} onPick={pick} />}
     </>
   )
 }

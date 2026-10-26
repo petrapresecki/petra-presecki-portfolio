@@ -99,16 +99,16 @@ export const projects: Project[] = [
     cells: [clip('kit-dither'), clip('kit-strips'), clip('kit-index'), clip('kit-inspo')],
     wide: [clip('kit-orbit'), clip('kit-blocks')],
     summary:
-      'My library of building blocks for creative websites: 33 motion and effect blocks, 8 themes, grids, a starter template and 86 inspiration pins, with a showcase site that runs everything live. Blocks start from sites I love and get reworked for each project; the best ones started in my own work.',
+      'Where every site I build starts, instead of a template. It collects what I love on other websites as working motion blocks, themes and grids, next to an inspiration library and research on what makes a site look made rather than generated. Nothing goes into a new site unchanged: each piece is reworked to fit it, and the best ones started in my own work.',
     facts: [
       ['Type', 'Personal library'],
-      ['Contents', '33 blocks, 8 themes, 86 pins'],
+      ['Contents', 'Blocks, themes, grids, inspiration, research'],
       ['Stack', 'React, TypeScript, GSAP, three.js, WebGL2, a Node CLI'],
     ],
     details: [
-      'A CLI copies blocks into a new site as source, with their dependencies, so each site can change them freely',
-      'Themes are design tokens in JSON, shared by the CLI and the showcase site',
-      'A Claude Code skill reads the whole library and turns it into concepts for a new site',
+      'Blocks and themes are working versions of things I liked on other sites; a CLI copies them into a new site as source, to be reshaped there',
+      'A manifesto from studying award-winning sites: one loud thing per screen, real material, screens composed rather than stacked, no AI defaults',
+      'A Claude Code skill turns the library into concepts for a new site and checks each one against the manifesto',
       'This portfolio uses it too: scramble text and the column curtain come from the kit',
     ],
   },
@@ -133,7 +133,7 @@ export const cases: Case[] = [
     id: 'design-system',
     short: 'Design system',
     title: 'A design system partners rebrand by config',
-    kind: 'Founded and led · 2025 – 2026',
+    kind: 'Founded and led · 2025–2026',
     summary:
       'One React Native codebase that renders every screen of a white-label crypto widget on iOS, Android and the web. Fintech and wallet apps embed it, and each one rebrands it by sending a partial theme instead of forking the code.',
     visual: 'theme',
@@ -160,7 +160,7 @@ export const cases: Case[] = [
     id: 'flows',
     short: 'Flows & orchestrator',
     title: 'One widget, a different app for every partner',
-    kind: 'Built flows, wired them into the orchestrator · 2025 – 2026',
+    kind: 'Built flows, wired them into the orchestrator · 2025–2026',
     summary:
       'The widget is an orchestrator: it reads a partner’s configuration and mounts self-contained flows, like signing up, verifying identity, buying with cash or selling at an ATM. Each partner gets its own mix without its own code. I built or co-built six of those flows and wired them into the orchestrator. Trust Wallet’s Cash Deposits runs on it, from the Coinme sign-in onward.',
     link: {
@@ -173,8 +173,8 @@ export const cases: Case[] = [
         title: 'What I did',
         items: [
           'Built the identity-verification failure paths (wrong SSN, phone mismatch, declines), the due-diligence questionnaire for flagged users, and most of the cash-out-at-an-ATM flow',
-          'Built the wallet from scratch: balances across several blockchains, sending by QR code, a live price chart',
-          'Built the cash-buy screens, tax documents and the cash-location finder, and cleared the launch blockers for a major wallet partner',
+          'Wrote the wallet from scratch, with balances across several blockchains, sending by QR code and a live price chart',
+          'Also did the cash-buy screens, tax documents and the cash-location finder, and cleared the launch blockers for a major wallet partner',
         ],
       },
       {
@@ -207,7 +207,7 @@ export const cases: Case[] = [
         title: 'What I did',
         items: [
           'Built most of the card-collection SDK, for vanilla JS, React and React Native: a provider and hook API, secure fields on the vault, and a form-validity registry on useSyncExternalStore',
-          'Built the customer-onboarding SDK for JS and React Native, and took the React Native one from first commit to production v1.0 in six days: dual ESM/CJS packaging, CI and releases, typed errors',
+          'Built the customer-onboarding SDK for JS and React Native. The React Native one went from first commit to production v1.0 in six days, packaging and CI included',
           'An accessible masked SSN field in an iframe for the web, a React-free core so Vue, Angular and vanilla JS apps can integrate, and example apps that keep secrets out of the bundle',
           'Ran end-to-end security testing on iOS and Android and corrected the partner security guidance where it didn’t match the SDK',
         ],
@@ -227,7 +227,7 @@ export const cases: Case[] = [
     title: 'How our frontend team works with coding agents',
     kind: 'Built and contributed · 2026',
     summary:
-      'Over six months our frontend team moved most of its routine into Claude Code: a shared plugin every repo loads, a context repo we call the spine, and an AI reviewer in CI. I was among the first to use agents every day, and the commands I started grew into the shared plugin.',
+      'Over six months our frontend team moved most of its routine into Claude Code, built around one shared plugin and a context repo we call the spine. I was among the first to use agents every day, and the commands I started grew into that plugin.',
     visual: 'agent',
     sections: [
       {
@@ -241,10 +241,10 @@ export const cases: Case[] = [
       {
         title: 'My part',
         items: [
-          'The team’s first Claude Code commands and agents for review, tests, scaffolding and merge requests, which grew into the shared plugin',
+          'The team’s first Claude Code commands and agents, for review, tests, scaffolding and merge requests',
           'The Tolgee MCP integration and agent and the post-push hook, moved to least-privilege credentials when the whole org started using it',
           'The incremental CI reviewer, which finds its last reviewed commit from a marker in the merge request thread and reviews only what changed since',
-          'Contributions to the shared plugin and the spine; a Figma-to-component prototype; the CLI that became the team’s standard update command',
+          'Contributions to the shared plugin and the spine, plus a Figma-to-component prototype',
         ],
       },
     ],
@@ -253,9 +253,10 @@ export const cases: Case[] = [
 
 export const about = {
   lines: [
-    'Most of those five years were in consulting, building web and mobile products next to designers, strategists and clients.',
-    'At Coinme I founded and led a cross-platform design system, one React Native codebase on iOS, Android and web, and owned regulated product flows from the first commit to production. AI is part of how I build: agents, MCP integrations and AI code review that became shared tooling for the frontend team.',
-    'Outside client work I make my own things for the web: sites, tools and experiments, mostly on the more visual, playful side of frontend.',
+    'I’ve been building for the web for about five years, mostly React and React Native. Frontend is where I’m happiest, and the closer it gets to design, the better.',
+    'These days I mostly work with Claude Code, and I’ve been building agents and tools around it for a while now. They take care of the boring bits of my day, like reviews and merge requests, so I get more time for the fun parts.',
+    'On the side I build sites for creative people, where I spend way too long on how one thing moves. Every piece I like ends up in my own little library, so no site starts from zero.',
+    'Away from the screen it’s music and movies, usually some old Criterion film I’ll try to get you to watch too.',
   ],
   facts: [
     ['Based', 'Zagreb, Croatia'],
@@ -271,7 +272,7 @@ export const experience = [
     note: 'acquired by Polygon',
     links: [{ label: 'Polygon Labs', url: 'https://polygon.technology/' }],
     role: 'Web Engineer',
-    dates: '2024 — 2026',
+    dates: '2024–2026',
     context:
       'A white-label crypto widget that fintech and wallet apps embed in their iOS, Android and web apps: one deployment, rebranded per partner at runtime. Joined through Endava; hired directly by Polygon in Feb 2026. Frontend team of 7–10; about 270 merged MRs across 11 repositories.',
     groups: [
@@ -288,7 +289,7 @@ export const experience = [
         title: 'Product flows & the orchestrator',
         case: 'flows',
         items: [
-          'Owned identity verification (KYC), enhanced due diligence (AML) and cash-out at ATMs end to end, each an explicit state machine that fails closed',
+          'Owned identity verification (KYC), enhanced due diligence (AML) and cash-out at ATMs, each an explicit state machine that fails closed',
           'Main developer of the multi-chain wallet; large parts of the cash-buy journey that runs in Trust Wallet’s Cash Deposits',
           'Wired them into the orchestrator that mounts each partner’s mix of flows; cleared a major wallet partner’s launch blockers',
         ],
@@ -298,15 +299,15 @@ export const experience = [
         case: 'sdks',
         items: [
           'Built most of the card-collection SDK for vanilla JS, React and React Native: card numbers and SSNs stay in vault-hosted fields, keeping partners out of PCI DSS scope',
-          'Built the customer-onboarding SDK for JS and React Native, taking the React Native one from first commit to production v1.0 in six days',
+          'Built the customer-onboarding SDK for JS and React Native, shipping the React Native one as v1.0 six days after starting it',
           'Ran end-to-end security testing on iOS and Android, corrected the partner security guidance, and wrote the SDK docs and agent skills',
         ],
       },
       {
-        title: 'AI-native engineering',
+        title: 'AI agent tooling',
         case: 'ai',
         items: [
-          'Among the first on the team to build Claude Code agents into daily work; the commands I started grew into the org’s shared plugin marketplace',
+          'Used Claude Code agents daily before most of the team did; my early commands became the base of the team’s shared plugin marketplace',
           'Built an MCP integration that syncs missing translation keys to Tolgee, plus a post-push hook that flags them',
           'Made the CI AI code reviewer incremental; contributed to a context layer that cut agents’ loaded context 6–16× across 27 repos',
         ],
@@ -314,7 +315,7 @@ export const experience = [
       {
         title: 'Tooling & delivery',
         items: [
-          'A Node.js CLI that bumps every pinned flow package on matching release channels; it became the team’s standard update command',
+          'A Node.js CLI that bumps every pinned flow package on matching release channels. The team switched to it for every update',
           'Brought API mocking (MSW) into Storybook and into the template every new flow starts from',
           'First project: led the consumer web wallet’s move from i18next to Tolgee across about 43 components',
         ],
@@ -326,15 +327,16 @@ export const experience = [
     note: 'ex FIVE',
     links: [{ label: 'Endava', url: 'https://www.endava.com/' }],
     role: 'React / React Native Developer',
-    dates: '2021 — 2026',
+    dates: '2021–2026',
     context:
-      'Consulting: web and mobile products for clients in fintech, hospitality and entertainment, working directly with client designers, backend teams and stakeholders. From Oct 2024 seconded to Coinme.',
+      'Agency work on React and React Native apps for clients in fintech, hospitality and entertainment, working straight with their designers and backend teams. From Oct 2024 seconded to Coinme.',
     groups: [
       {
         title: 'Practice',
         items: [
-          'Architecture and development standards in modular monorepos (Redux Toolkit, RTK Query, TanStack Query, Jotai); faster CI/CD with lazy loading and code splitting',
-          'Accessible (WCAG) interfaces with over 80% unit-test coverage',
+          'Set up architecture and coding standards for modular monorepos (Redux Toolkit, RTK Query, TanStack Query, Jotai)',
+          'Lazy loading and code splitting to keep bundles small',
+          'Built accessible interfaces to WCAG and kept unit-test coverage above 80%',
           'Led an in-house project and mentored a junior developer; ran technical interviews and client demos',
         ],
       },

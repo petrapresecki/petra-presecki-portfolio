@@ -1,0 +1,292 @@
+/* Versions to compare against the original. Each one swaps the tokens on <html>, so the case, project and CV views follow. */
+
+/* ---------- Grid: after abgd.it ---------- */
+html[data-version='grid'] {
+  /* the original's warm paper */
+  --color-paper: #f2f0ea;
+  --color-ink: #1a1a1a;
+  --color-mist: #e3e0d8;
+  --color-muted: #6e6e6e;
+  --color-rule: rgb(26 26 26 / 0.18);
+  /* Switzer standing in for abgd.it's PP Neue Montreal */
+  --font-sans: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+html[data-version='grid'] .statement,
+html[data-version='grid'] .label {
+  font-weight: 500;
+}
+/* type measured on abgd.it: small sizes stay fixed at every width, only the titles grow */
+.grid-v .cap {
+  font-size: 10.6px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.grid-v button.cap,
+.grid-v .cap button {
+  text-transform: uppercase;
+}
+.grid-bar {
+  /* see-through, as abgd.it's: the page runs under it, a hairline marks it */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 0.5px solid rgb(26 26 26 / 0.5);
+}
+.grid-v .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.grid-v .wordmark {
+  font-size: clamp(88px, 16.5vw, 280px);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.grid-v .wordmark.hello {
+  font-size: clamp(52px, 8.4vw, 144px);
+  white-space: normal;
+}
+.grid-v .wordmark.foot {
+  font-size: clamp(52px, 16.5vw, 280px);
+}
+/* the facts under the wordmark: one ruled row on desktop, two ruled columns on phones */
+.grid-v .facts > * {
+  padding-block: 5px;
+  border-bottom: 1px solid var(--color-rule);
+}
+.grid-v .index-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 1px;
+}
+.grid-v .index-row:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.grid-v .dense {
+  font-size: 12.4px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+.grid-v .dense-b {
+  font-size: 12.4px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+.grid-v .dense .indent {
+  text-indent: 2.5em;
+  margin-top: 0.9em;
+}
+/* the intro on desktop, set as abgd.it's: small, solid, line on line; the follow-on stepped in twice */
+@media (min-width: 1024px) {
+  .grid-v .intro-ab .indent {
+    margin: 0 0 0 3em;
+    text-indent: 3em;
+  }
+}
+/* a lead under a title, as abgd.it's project summaries: medium, set solid */
+.grid-v .lead-l {
+  font-size: clamp(18px, 1.45vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+/* reading text in the case and project pages: the dense abgd.it setting is for labels, not paragraphs */
+.grid-v .read {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+/* a case row: a rule across the half, the tag bar coming in from the page edge */
+.grid-v .case-row {
+  border-top: 1px solid var(--color-ink);
+}
+.grid-v .tag-bleed {
+  display: inline-block;
+  margin-left: calc(-1 * var(--margin));
+  padding: 1px 8px 1px var(--margin);
+  min-width: 7.5em;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 10.6px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+/* the cut hello: a light serif over the grotesk, as in the kit's demo */
+.grid-v .hello-cut {
+  --font-display: 'Fraunces', Georgia, serif;
+}
+.grid-v .hello-cut .font-display {
+  font-weight: 300;
+}
+.grid-v .title-l {
+  font-size: clamp(32px, 3.42vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+.grid-v .sub {
+  padding-left: 1.8em;
+}
+.grid-v .list-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  padding: 14px var(--margin) 24px;
+  border-top: 1px solid var(--color-rule);
+}
+.grid-v .list-row:last-child {
+  border-bottom: 1px solid var(--color-rule);
+}
+/* the black tag bar runs off the right edge */
+.grid-v .tag {
+  display: block;
+  margin-right: calc(-1 * var(--margin));
+  padding: 2px 6px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 10.5px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.grid-v .bar {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 10.5px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+@media (hover: hover) and (min-width: 768px) {
+  .grid-v .grid-peek {
+    visibility: hidden;
+  }
+  .grid-v .group:hover .grid-peek {
+    visibility: visible;
+  }
+}
+/* the striped mark: black slats, and a disc where the slats turn thin */
+.grid-v .stripes {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+  background: repeating-linear-gradient(to bottom, var(--color-ink) 0 10px, transparent 10px 16px);
+}
+.grid-v .stripes-disc {
+  position: absolute;
+  left: 18%;
+  top: 28%;
+  width: 64%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-linear-gradient(to bottom, var(--color-paper) 0 13px, var(--color-ink) 13px 16px);
+}
+
+/* the CV view's bar in Grid's small capitals */
+.grid-v .cv-paper > .grid-12,
+.grid-v .cv-paper > button {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Grid on phones, after abgd.it's: the hello fills the width, rows stack year and tag over the title */
+@media (max-width: 767px) {
+  .grid-v .wordmark.hello {
+    font-size: 19.5vw;
+    white-space: nowrap;
+  }
+  .grid-v .title-l {
+    font-size: 24.8px;
+    letter-spacing: -0.02em;
+  }
+  .grid-v .list-row {
+    row-gap: 0;
+    padding-top: 10px;
+  }
+  /* the cut letters are wider, so the line steps down to stay on screen */
+  .grid-v .wordmark.hello.hello-cut {
+    font-size: 14.5vw;
+  }
+  .grid-v .hero-foot {
+    white-space: nowrap;
+  }
+}
+/* below desktop the intro gets air: a size up, looser lines, room around the links */
+@media (max-width: 1023px) {
+  .grid-v :is(.intro-ab, .about-body, .case-points) {
+    font-size: 14.5px;
+    line-height: 1.32;
+    font-weight: 500;
+  }
+  .grid-v :is(.intro-ab, .about-body) .indent {
+    margin-top: 1.1em;
+  }
+  .grid-v .intro-ab .cap {
+    margin-top: 32px;
+  }
+}
+
+/* ---------- The switcher ---------- */
+.version-switch {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 60;
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #151514;
+  color: #f2f0ea;
+  font-family: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.5);
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+}
+@media (max-width: 480px) {
+  .version-switch span {
+    display: none;
+  }
+  .version-switch button {
+    padding-inline: 9px;
+  }
+}
+.version-switch span {
+  padding: 8px 6px 8px 10px;
+  opacity: 0.5;
+}
+.version-switch button {
+  padding: 8px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.version-switch button[aria-pressed='true'] {
+  background: #f2f0ea;
+  color: #151514;
+}
