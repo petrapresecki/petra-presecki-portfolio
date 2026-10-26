@@ -49,12 +49,6 @@ export default function Grid() {
             ))}
           </nav>
         </section>
-        <div className="grid-12 cap facts mt-3">
-          <span className="col-span-6 md:col-span-3">{person.name}</span>
-          <span className="col-span-6 md:col-span-3">Frontend engineer</span>
-          <span className="col-span-6 md:col-span-4">Based in Zagreb, CET</span>
-          <span className="col-span-6 md:col-span-2 md:text-right">Available remote</span>
-        </div>
 
         {/* as on abgd.it: the copy set line on line from the second third to the edge, the follow-on stepped in twice; even space above and below */}
         <section className="hero-intro grid-12 flex-1 pb-8">
