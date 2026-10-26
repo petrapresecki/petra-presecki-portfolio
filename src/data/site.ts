@@ -122,8 +122,8 @@ export interface Case {
   short: string
   summary: string
   link?: { label: string; url: string }
-  /** the small exhibit beside the text */
-  visual: 'theme' | 'flows' | 'sdk' | 'agent'
+  /** the small exhibit beside the text, if the case has one */
+  visual?: 'theme' | 'sdk' | 'agent'
   sections: { title: string; items: string[] }[]
 }
 
@@ -167,7 +167,6 @@ export const cases: Case[] = [
       label: 'Trust Wallet: Cash Deposits',
       url: 'https://trustwallet.com/blog/company/introducing-cash-deposits-on-trust-wallet-turn-cash-into-digital-money',
     },
-    visual: 'flows',
     sections: [
       {
         title: 'What I did',

@@ -1,12 +1,10 @@
 import type { Case } from '@/data/site'
 import DesignSystemDemo from '@/components/DesignSystemDemo'
-import FlowsDemo from '@/components/FlowsDemo'
 import AgentDemo from '@/components/AgentDemo'
 
 /** The small exhibit beside each case study */
-export default function Exhibit({ kind }: { kind: Case['visual'] }) {
+export default function Exhibit({ kind }: { kind: NonNullable<Case['visual']> }) {
   if (kind === 'theme') return <DesignSystemDemo />
-  if (kind === 'flows') return <FlowsDemo />
   if (kind === 'agent') return <AgentDemo />
   return <SdkSnippet />
 }

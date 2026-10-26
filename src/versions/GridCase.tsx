@@ -45,7 +45,7 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
         </span>
       </div>
 
-      {wide && (
+      {study.visual && wide && (
         <div className="grid-12 pt-4 pb-12">
           <div className="col-span-12 md:col-[4/span_9]">
             <Exhibit kind={study.visual} />
@@ -75,7 +75,7 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
             </section>
           ))}
         </div>
-        {!wide && (
+        {study.visual && !wide && (
           <div className="col-span-12 mt-8 md:col-span-3 md:mt-3">
             <Exhibit kind={study.visual} />
           </div>
