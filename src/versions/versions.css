@@ -95,6 +95,20 @@ html[data-version='grid'] .label {
     text-indent: 3em;
   }
 }
+/* the first screen fills the viewport under the 31px bar; the intro sits in equal space above and below */
+.grid-v .hero {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 31px);
+}
+.grid-v .hero-intro {
+  grid-template-rows: minmax(56px, 1fr) auto minmax(56px, 1fr) auto;
+}
+@media (min-width: 768px) {
+  .grid-v .hero-intro {
+    grid-template-rows: minmax(96px, 1fr) auto minmax(96px, 1fr) auto;
+  }
+}
 /* a lead under a title, as abgd.it's project summaries: medium, set solid */
 .grid-v .lead-l {
   font-size: clamp(18px, 1.45vw, 26px);
@@ -266,6 +280,9 @@ html[data-version='grid'] .label {
   }
   .grid-v :is(.intro-ab, .about-body) .indent {
     margin-top: 1.1em;
+  }
+  .grid-v .intro-ab .indent {
+    text-indent: 2.5em;
   }
   .grid-v .intro-ab .cap {
     margin-top: 32px;

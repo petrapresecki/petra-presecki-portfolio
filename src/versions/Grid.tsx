@@ -3,7 +3,6 @@ import { about, experience, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
 import { Clip, go, jobCases, pad, useOverlays } from '@/versions/parts'
-import StripeMark, { SHAPES } from '@/versions/StripeMark'
 import GridCase from '@/versions/GridCase'
 import GridProject from '@/versions/GridProject'
 import CutType from '@/components/kit/cut-type/CutType'
@@ -37,51 +36,50 @@ export default function Grid() {
         </div>
       </header>
 
-      <section id="top" className="grid-12 pt-14">
-        <CutType as="h1" text="Hi, I’m Petra" reveal className="wordmark hello hello-cut col-span-12 md:col-span-10" />
-        <nav className="hidden md:col-span-2 md:mt-3 md:block" aria-label="Index">
-          {INDEX.map(([id, label], i) => (
-            <a key={id} href={`#${id}`} className="cap index-row" onClick={e => go(e, id)}>
-              <span>{label}</span>
-              <span>P.{pad(i + 1)}</span>
-            </a>
-          ))}
-        </nav>
-      </section>
-      <div className="grid-12 cap facts mt-3">
-        <span className="col-span-6 md:col-span-3">{person.name}</span>
-        <span className="col-span-6 md:col-span-3">Frontend engineer</span>
-        <span className="col-span-6 md:col-span-4">Based in Zagreb, CET</span>
-        <span className="col-span-6 md:col-span-2 md:text-right">Available remote</span>
-      </div>
+      {/* the first screen: everything down to the foot line, so the experience starts below the fold */}
+      <div className="hero">
+        <section id="top" className="grid-12 pt-14">
+          <CutType as="h1" text="Hi, I’m Petra" reveal className="wordmark hello hello-cut col-span-12 md:col-span-10" />
+          <nav className="hidden md:col-span-2 md:mt-3 md:block" aria-label="Index">
+            {INDEX.map(([id, label], i) => (
+              <a key={id} href={`#${id}`} className="cap index-row" onClick={e => go(e, id)}>
+                <span>{label}</span>
+                <span>P.{pad(i + 1)}</span>
+              </a>
+            ))}
+          </nav>
+        </section>
+        <div className="grid-12 cap facts mt-3">
+          <span className="col-span-6 md:col-span-3">{person.name}</span>
+          <span className="col-span-6 md:col-span-3">Frontend engineer</span>
+          <span className="col-span-6 md:col-span-4">Based in Zagreb, CET</span>
+          <span className="col-span-6 md:col-span-2 md:text-right">Available remote</span>
+        </div>
 
-      {/* as on abgd.it: tight copy in the second third, the slats beside it running down to the foot line */}
-      <section className="grid-12 gap-y-16 pt-14 md:grid-rows-[auto_auto] md:gap-y-16 md:pt-40">
-        <div className="dense intro-ab col-span-12 self-start md:col-[1/span_7] md:row-start-1 lg:col-[5/span_4]">
-          <p>
-            <Intro greeting={false} />
-          </p>
-          <p className="indent">{about.lines[1]}</p>
-          <p className="cap mt-6 flex flex-wrap gap-x-4 gap-y-1">
-            <a href={`mailto:${person.email}`} className="link">↗ Email</a>
-            <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗ CV</a>
-            <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗ LinkedIn</a>
-            <a href={person.github} target="_blank" rel="noreferrer" className="link">↗ GitHub</a>
-          </p>
-        </div>
-        {/* the striped mark, a code tag cut out of the slats; desktop only */}
-        <div className="hidden md:col-[8/span_5] md:row-span-2 md:row-start-1 md:block lg:col-[9/span_4]">
-          <StripeMark shape={SHAPES.tag} w={400} h={340} taper={[11, 3]} />
-        </div>
-        <p className="hero-foot title-l col-span-6 self-end md:col-span-4 md:row-start-2">2021–2026</p>
-        <a
-          href="#experience"
-          className="hero-foot title-l col-span-6 self-end text-right md:col-[5/span_4] md:row-start-2 md:text-left"
-          onClick={e => go(e, 'experience')}
-        >
-          Experience ↘
-        </a>
-      </section>
+        {/* as on abgd.it: the copy set line on line from the second third to the edge, the follow-on stepped in twice; even space above and below */}
+        <section className="hero-intro grid-12 flex-1 pb-8">
+          <div className="intro-ab col-span-12 row-start-2 md:col-[1/span_10] lg:col-[5/span_8]">
+            <p className="lead-l">
+              <Intro greeting={false} />
+            </p>
+            <p className="lead-l indent">{about.lines[1]}</p>
+            <p className="cap mt-8 flex flex-wrap gap-x-4 gap-y-1">
+              <a href={`mailto:${person.email}`} className="link">↗ Email</a>
+              <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗ CV</a>
+              <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗ LinkedIn</a>
+              <a href={person.github} target="_blank" rel="noreferrer" className="link">↗ GitHub</a>
+            </p>
+          </div>
+          <p className="hero-foot title-l col-span-6 row-start-4 md:col-span-4">2021–2026</p>
+          <a
+            href="#experience"
+            className="hero-foot title-l col-span-6 row-start-4 text-right md:col-[5/span_4] md:text-left"
+            onClick={e => go(e, 'experience')}
+          >
+            Experience ↘
+          </a>
+        </section>
+      </div>
 
       <Star />
 

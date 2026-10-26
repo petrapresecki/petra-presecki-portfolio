@@ -254,7 +254,7 @@ export const cases: Case[] = [
 export const about = {
   lines: [
     'I’ve been building for the web for about five years, mostly React and React Native. Frontend is where I’m happiest, and the closer it gets to design, the better.',
-    'These days I mostly work with Claude Code, and I’ve been building agents and tools around it for a while now. They take care of the boring bits of my day, like reviews and merge requests, so I get more time for the fun parts.',
+    'These days I do most of my work in Claude Code, and I’ve built a fair few agents and tools around it. They take the boring bits off my plate, like reviews and merge requests, so I get more time for the fun parts.',
     'On the side I build sites for creative people, where I spend way too long on how one thing moves. Every piece I like ends up in my own little library, so no site starts from zero.',
     'Away from the screen it’s music and movies, usually some old Criterion film I’ll try to get you to watch too.',
   ],
