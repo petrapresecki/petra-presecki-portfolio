@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, Handle, INK, MUTED, Orb, PEACH, PINK, RULE, Tag, along, curve, drift, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, Handle, INK, LEAD, MUTED, Note, Orb, PEACH, PINK, RULE, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
  * The SSN that never reaches the partner. A dotted rule splits the stage: the partner's app on the left, the vault
@@ -46,9 +46,9 @@ export default function VaultFilm({ play }: { play: boolean | 'view' }) {
         return (
           <g>
             {/* the vault, as light */}
-            <Orb at={[VAULT[0] - 30 + vx, VAULT[1] + 40 + vy]} r={190 + held * 24} color={PEACH} strength={0.75 + held * 0.25} />
-            <Orb at={[VAULT[0] + 20 - vx, VAULT[1] - 10 - vy]} r={150 + held * 18} color={CORAL} strength={0.7 + held * 0.3} />
-            <Orb at={[VAULT[0] + 70 + px, VAULT[1] - 90 + py]} r={80} color={PINK} />
+            <Orb at={[VAULT[0] - 20 + vx, VAULT[1] + 30 + vy]} r={200 + held * 24} color={PINK} strength={0.85 + held * 0.15} />
+            <Orb at={[VAULT[0] + 30 - vx, VAULT[1] - 20 - vy]} r={120 + held * 18} color={CORAL} strength={0.45 + held * 0.3} />
+            <Orb at={[VAULT[0] - 80 + px, VAULT[1] + 110 + py]} r={70} color={PEACH} />
 
             {/* the boundary */}
             <Dotted d={`M${RULE_X},36 V564`} color={INK} opacity={0.5} dash={3} />
@@ -63,7 +63,7 @@ export default function VaultFilm({ play }: { play: boolean | 'view' }) {
             </text>
 
             {/* the field: in the app, owned by the vault */}
-            <Tag at={[FIELD.x, 200]} text="Hosted by the vault" />
+            <Note from={[470, FIELD.y + 18]} at={[190, 92]} width={310} color={LEAD.sdk} label="A vault-hosted field" lines={['It belongs to the vault, so the', 'app’s code never sees a digit']} />
             <text x={FIELD.x} y={FIELD.y - 48} fontSize={16} fill={MUTED}>
               Social Security number
             </text>
@@ -82,8 +82,8 @@ export default function VaultFilm({ play }: { play: boolean | 'view' }) {
               const fade = 1 - ramp(p, 0.7, 1)
               return (
                 <g key={i}>
-                  <Dotted d={curve(path)} p={Math.min(1, p * 1.4)} color={CORAL} opacity={0.6 * fade} />
-                  <Orb at={at} r={34} color={CORAL} strength={fade} />
+                  <Dotted d={curve(path)} p={Math.min(1, p * 1.4)} color={CORAL} opacity={0.45 * fade} />
+                  <Orb at={at} r={34} color={PINK} strength={fade} />
                   <text x={at[0]} y={at[1] + 7} fontSize={20} fontWeight={600} textAnchor="middle" fill={INK} opacity={fade}>
                     {d}
                   </text>

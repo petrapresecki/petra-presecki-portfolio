@@ -3,11 +3,13 @@ import { ARROW } from '@/components/Page'
 import CaseFilm from '@/components/films/CaseFilm'
 import GridView from '@/versions/GridView'
 import { pad } from '@/versions/parts'
+import { LEAD } from '@/components/films/Film'
 
 /**
  * A case study in Grid: the original's simple order (title, summary, the case's film, then the work), set in Grid's
  * own style. The opening is a list row like the home page's, the role in a black tag; each part of the work is a
- * row with a black /1.0 bar and dense numbered points, as in Capabilities.
+ * row with a black /1.0 bar and dense numbered points, as in Capabilities. In the bar, a dot for each case, as
+ * asimorb.com marks its parts: this one's in its own colour, and any of them opens that case.
  */
 export default function GridCase({ study, onClose, onCase }: { study: Case; onClose: () => void; onCase: (id: string) => void }) {
   const n = cases.indexOf(study) + 1
@@ -20,9 +22,24 @@ export default function GridCase({ study, onClose, onCase }: { study: Case; onCl
       next={{ label: 'Next case', title: next.short, go: () => onCase(next.id) }}
       bar={
         <>
-          <p className="cap col-span-8 md:col-span-3">
-            /{pad(n)} {study.short}
-          </p>
+          <div className="cap col-span-8 flex items-center gap-3 md:col-span-3">
+            <span>
+              /{pad(n)} {study.short}
+            </span>
+            <nav className="case-dots" aria-label="Cases">
+              {cases.map(c => (
+                <button
+                  key={c.id}
+                  aria-label={c.short}
+                  aria-current={c.id === study.id ? 'page' : undefined}
+                  style={{ '--dot': c.visual ? LEAD[c.visual] : undefined } as React.CSSProperties}
+                  onClick={() => c.id !== study.id && onCase(c.id)}
+                >
+                  <span />
+                </button>
+              ))}
+            </nav>
+          </div>
           <p className="cap hidden md:col-span-5 md:block">A closer look · Coinme</p>
         </>
       }

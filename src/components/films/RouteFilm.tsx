@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, Handle, INK, MUTED, Node, Orb, PEACH, PINK, Tag, along, curve, drift, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, Handle, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PINK, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
  * One widget, a different app for every partner. The flows sit around the orchestrator as nodes; a partner's config
@@ -18,12 +18,12 @@ type Visit = {
   /** the flow it ends up in, or the check it stops at */
   mounts: string | null
   stops?: number
-  says: string
+  says: [string, string[]]
 }
 const VISITS: Visit[] = [
-  { partner: 'Ember', color: PEACH, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'], mounts: 'Cash buy', says: 'Mounted' },
-  { partner: 'Harbor', color: CORAL, asks: 'Sell at an ATM', offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'], mounts: 'Due diligence', says: 'Held: due diligence first' },
-  { partner: 'Orchid', color: PINK, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'], mounts: null, stops: 3, says: 'Region not confirmed: no' },
+  { partner: 'Ember', color: PEACH, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'], mounts: 'Cash buy', says: ['Mounted', ['Every check passed, so the', 'cash buy flow mounts']] },
+  { partner: 'Harbor', color: CORAL, asks: 'Sell at an ATM', offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'], mounts: 'Due diligence', says: ['Held', ['Flagged: due diligence comes', 'before any sale at an ATM']] },
+  { partner: 'Orchid', color: PINK, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'], mounts: null, stops: 3, says: ['Nothing mounted', ['The region isn’t confirmed,', 'and not confirmed counts as no']] },
 ]
 const EACH = 5
 const LENGTH = VISITS.length * EACH
@@ -94,7 +94,7 @@ export default function RouteFilm({ play }: { play: boolean | 'view' }) {
             <Dotted d={`M${START[0]},300 H${HUB[0] - 64}`} color={INK} opacity={0.45} />
             {CHECKS.map((c, g) => {
               const passed = u >= AT_GATE[g] + 0.1 && g < stop
-              return <Node key={c} at={GATES[g]} label={c} color={INK} on={passed ? 1 : 0} side={g % 2 ? 'below' : 'above'} />
+              return <Node key={c} at={GATES[g]} label={c} color={INK} on={passed ? 1 : 0} side={g % 2 ? 'above' : 'below'} />
             })}
 
             {/* the flows; the partner's config lights the ones it offers */}
@@ -114,8 +114,7 @@ export default function RouteFilm({ play }: { play: boolean | 'view' }) {
 
             {/* the request itself */}
             {u > 0.3 && merged < 1 && <Orb at={at} r={38} color={v.color} strength={(1 - refused) * (1 - merged) * ramp(u, 0.3, 0.7)} />}
-            <Tag at={[HUB[0] - 64, 548]} text={v.says} opacity={said * fadeOut} />
-            {!v.mounts && <text x={GATES[stop][0]} y={GATES[stop][1] - 36} fontSize={13} textAnchor="middle" fill={MUTED} opacity={said * fadeOut}>not confirmed</text>}
+            <Note from={v.mounts ? [HUB[0] - 64, HUB[1]] : GATES[stop]} at={[110, 424]} width={330} color={LEAD.flows} label={v.says[0]} lines={v.says[1]} p={said * fadeOut} />
           </g>
         )
       }}

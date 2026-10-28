@@ -7,8 +7,9 @@ import { prefersReducedMotion } from '@/lib/kit/gsap'
  *
  * Every film speaks the same language, after asimorb.com: what matters (a value, a request, a partner, a step) is a
  * soft orb of light that drifts, travels and blends into another; how things connect is a dotted line that draws
- * itself; places are small nodes with a label; the one thing a person does is a ringed handle. One warm palette,
- * no hard boxes, and each loop ends where it began, so nothing blinks out between rounds.
+ * itself; places are small nodes with a label; the one thing a person does is a ringed handle; and the point being
+ * made hangs off where it happens, a dotted line running to a soft panel. One warm palette, each case leading with one
+ * of its colours, no hard boxes, and each loop ends where it began, so nothing blinks out between rounds.
  */
 
 export const W = 960
@@ -19,11 +20,15 @@ export const PAPER = 'var(--color-paper)'
 export const MUTED = 'var(--color-muted)'
 export const RULE = 'var(--color-rule)'
 
-/** the palette: Asim's coral, a peach and a pink; a warm grey for what's left out */
+/** the palette: Asim's coral, a peach, a pink and a lilac; a warm grey for what's left out */
 export const CORAL = '#fd7174'
 export const PEACH = '#f7a072'
 export const PINK = '#fdabd3'
+export const LILAC = '#c3a6f0'
 export const GREY = '#c9c3b8'
+
+/** each case's own colour, as each part of asimorb.com has one: it leads in its film and marks it in the case bar */
+export const LEAD = { theme: CORAL, flows: PEACH, sdk: PINK, agent: LILAC } as const
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 export const easeOut = (x: number) => 1 - (1 - x) ** 3
@@ -194,6 +199,64 @@ export function Tag({ at, text, opacity = 1, anchor = 'start' }: { at: Pt; text:
       <text x={x + 10} y={at[1] + 1} fontSize={14} fontWeight={600} letterSpacing={0.7} fill={PAPER}>
         {text.toUpperCase()}
       </text>
+    </g>
+  )
+}
+
+/**
+ * The point a film makes, hung off the place it happens, as asimorb.com hangs its menu: a node on the thing, a dotted
+ * line that draws out from it, and a soft panel with a label over a hairline and a sentence or two. `p` brings it in.
+ */
+export function Note({
+  from,
+  at,
+  label,
+  lines,
+  color,
+  p = 1,
+  width = 280,
+}: {
+  /** the node on the thing it's about */
+  from: Pt
+  /** the panel's top left */
+  at: Pt
+  label: string
+  lines: string[]
+  color: string
+  p?: number
+  width?: number
+}) {
+  const id = useId()
+  if (p <= 0) return null
+  const h = 56 + lines.length * 24
+  // the line meets the panel at the nearer of its top or bottom edge
+  const end: Pt = [Math.min(at[0] + width - 24, Math.max(at[0] + 24, from[0])), from[1] < at[1] ? at[1] : at[1] + h]
+  const show = ramp(p, 0.45, 1)
+  return (
+    <g>
+      <Dotted d={`M${from[0]},${from[1]} L${end[0]},${end[1]}`} p={ramp(p, 0, 0.5)} color={INK} opacity={0.55} dash={4} />
+      <circle cx={from[0]} cy={from[1]} r={5} fill={PAPER} stroke={INK} strokeWidth={1.5} />
+      <g opacity={show}>
+        <clipPath id={id}>
+          <rect x={at[0]} y={at[1]} width={width} height={h} rx={14} />
+        </clipPath>
+        {/* frosted: the case's colour glowing through a pale pane */}
+        <g clipPath={`url(#${id})`}>
+          <rect x={at[0]} y={at[1]} width={width} height={h} fill={PAPER} />
+          <Orb at={[at[0] + width * 0.3, at[1] + h * 0.2]} r={width * 0.75} color={color} strength={0.75} />
+          <rect x={at[0]} y={at[1]} width={width} height={h} fill="#fff" opacity={0.35} />
+        </g>
+        <rect x={at[0]} y={at[1]} width={width} height={h} rx={14} fill="none" stroke="#fff" strokeOpacity={0.7} />
+        <text x={at[0] + 18} y={at[1] + 28} fontSize={13} fontWeight={600} letterSpacing={0.8} fill={INK}>
+          {label.toUpperCase()}
+        </text>
+        <line x1={at[0] + 18} x2={at[0] + width - 18} y1={at[1] + 40} y2={at[1] + 40} stroke={INK} strokeOpacity={0.25} />
+        {lines.map((l, i) => (
+          <text key={i} x={at[0] + 18} y={at[1] + 66 + i * 24} fontSize={18} fill={INK}>
+            {l}
+          </text>
+        ))}
+      </g>
     </g>
   )
 }

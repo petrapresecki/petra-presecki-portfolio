@@ -164,6 +164,39 @@ html[data-version='grid'] .label {
     visibility: visible;
   }
 }
+/* the cases as dots in a case's bar: ink, and the open one in its own colour */
+.grid-v .case-dots {
+  display: flex;
+}
+.grid-v .case-dots button {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 20px;
+}
+.grid-v .case-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  transition: transform 0.2s;
+}
+.grid-v .case-dots [aria-current] span {
+  width: 9px;
+  height: 9px;
+  background: var(--dot);
+}
+@media (hover: hover) {
+  .grid-v .case-dots button:not([aria-current]):hover span {
+    transform: scale(1.35);
+  }
+}
+.grid-v .case-dots button:focus-visible {
+  outline: 1px solid var(--color-ink);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
 /* a case's film on the page: no frame, its light sits on the paper */
 .grid-v .case-peek {
   background: var(--color-paper);

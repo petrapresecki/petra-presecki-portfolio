@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, GREY, INK, MUTED, Node, Orb, PEACH, PINK, RULE, along, curve, drift, lerp, mix, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, GREY, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PINK, RULE, along, curve, drift, lerp, mix, ramp } from '@/components/films/Film'
 
 /**
  * Partners rebrand by config. On the left, a partner's theme: it sends only the tokens it changes (a colour, a corner
@@ -102,6 +102,16 @@ export default function HostsFilm({ play }: { play: boolean | 'view' }) {
                 </g>
               )
             })}
+
+            <Note
+              from={[300, 408]}
+              at={[80, 436]}
+              width={330}
+              color={LEAD.theme}
+              label="The host’s theme wins"
+              lines={['It sends 2 of 4 tokens; the', 'rest stay the library’s own']}
+              p={(i === 1 ? ramp(u, 0.6, 1.6) : i > 1 ? 1 : 0) * (1 - home)}
+            />
 
             {/* the tokens cross as the partner's light, once per partner */}
             {i > 0 && home === 0 && (
