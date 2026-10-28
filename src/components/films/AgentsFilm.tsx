@@ -1,89 +1,119 @@
-import { Film, INK, MUTED, PAPER, Slats, easeInOut, lerp, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, GREY, Handle, INK, MUTED, Node, Orb, PEACH, PINK, Tag, drift, lerp, ramp } from '@/components/films/Film'
 
 /**
- * A session with the team's agents. Above, the spine keeps the few repos a change touches out of all 27 (the
- * rest thin out) and the context it costs shrinks; below, one change runs from a command to a person merging it.
+ * How the team works with agents. Above: without the spine a session would load all 27 repos; the spine looks up the
+ * few a change touches, one after another, the rest go out together, and the context it costs condenses from a wide
+ * pale light into a small bright one. Below: one change travels from a command to a merge, waiting at each step about
+ * as long as that step takes, and it only lands when a person closes the ring.
  */
 
 const COLS = 9
 const NEAR = [3, 11, 14, 22]
-const SQ = 24
-const GAP = 12
+const LOOKUPS = [0.6, 0.9, 1.05, 1.4]
+const DROP = 1.8
 
-const STEPS: [string, string][] = [
-  ['/ship PROJ-2241', 'One command, from the ticket'],
-  ['Agent', 'Pinned model, only the tools it needs'],
-  ['Checks', 'Typecheck, lint, tests'],
-  ['Merge request', 'Ticket moved, team pinged'],
-  ['AI review', 'Reads only what changed'],
-  ['A person', 'Reviews and merges. Nothing ships on its own'],
+const STEPS: [string, string, number][] = [
+  ['/ship', 'One command, from the ticket', 0.6],
+  ['Agent', 'Pinned model, only the tools it needs', 1.8],
+  ['Checks', 'Typecheck, lint, tests', 1.3],
+  ['Merge request', 'Ticket moved, team pinged', 0.6],
+  ['AI review', 'Reads only what changed', 1.1],
+  ['A person', 'Reviews and merges. Nothing ships on its own', 0],
 ]
-const START = 3.6
-const STEP = 1.2
-const ROW = { y: 340, step: 44 }
-const LENGTH = 14
+const START = 2.8
+const BEGINS = STEPS.map((_, i) => START + STEPS.slice(0, i).reduce((sum, s) => sum + s[2], 0))
+const PERSON = BEGINS[BEGINS.length - 1]
+const LENGTH = PERSON + 3.8
+const RESET = LENGTH - 1
 
-const fmt = (n: number) => Math.round(n).toLocaleString('en-US')
+const repo = (i: number) => [86 + (i % COLS) * 30, 92 + Math.floor(i / COLS) * 34] as const
+const SPINE = [400, 126] as const
+const PATH_Y = 452
+const stop = (i: number) => [96 + i * 158, PATH_Y] as const
 
 export default function AgentsFilm({ play }: { play: boolean | 'view' }) {
   return (
-    <Film length={LENGTH} still={12} play={play} label="The spine loads only the repos a change touches, then one change runs from a command to a person merging it">
+    <Film length={LENGTH} still={PERSON + 2} play={play} label="The spine loads only the repos a change touches, then one change runs from a command to a person merging it">
       {t => {
-        const out = 1 - ramp(t, LENGTH - 0.5, LENGTH - 0.05)
-        const cut = ramp(t, 1.8, 3.0, easeInOut)
-        // the marker eases from one step to the next
-        const head = Math.min(STEPS.length - 1, Math.max(0, (t - START) / STEP))
-        const at = Math.floor(head)
-        const markerY = ROW.y + lerp(at, Math.min(STEPS.length - 1, at + 1), easeInOut(Math.min(1, (head - at) / 0.4))) * ROW.step
+        const back = ramp(t, RESET, LENGTH - 0.05)
+        const drop = ramp(t, DROP, DROP + 0.6) * (1 - back)
+        const at = BEGINS.filter(b => t >= b).length - 1
+        // the change moves on when a step is done, and settles into each stop
+        const x =
+          at < 0 ? stop(0)[0] : at === 0 || t >= BEGINS[at] + 0.45 ? stop(at)[0] : lerp(stop(at - 1)[0], stop(at)[0], ramp(t, BEGINS[at] - 0.45, BEGINS[at]))
+        const moving = at > 0 && t < BEGINS[at] && t > BEGINS[at] - 0.45
+        const ring = ramp(t, PERSON + 0.2, PERSON + 1.2) * (1 - back)
+        const [cx, cy] = drift(t, LENGTH, 6, 10)
+        const [sx, sy] = drift(t, LENGTH, 7, 8)
+        const step = at < 0 ? null : STEPS[at]
         return (
-          <g opacity={out}>
-            {/* the repos: the ones the spine skips thin out, column after column */}
+          <g>
+            {/* the context a session costs, as light: wide and pale with everything loaded, small and bright with the spine */}
+            <Orb at={[730 + cx, 128 + cy]} r={lerp(170, 92, drop)} color={PEACH} strength={lerp(0.45, 1, drop)} />
+            <Orb at={[760 + sx, 108 + sy]} r={lerp(90, 46, drop)} color={PINK} strength={lerp(0.4, 0.9, drop)} />
+            <text x={730} y={140} fontSize={40} fontWeight={500} letterSpacing={-1} textAnchor="middle" fill={INK} className="tabular-nums">
+              {drop < 1 ? '40,600' : '2,500–6,500'}
+            </text>
+            <text x={730} y={172} fontSize={15} textAnchor="middle" fill={INK} opacity={0.65}>
+              {drop < 1 ? 'tokens of context per session' : 'tokens per session, 6–16× less'}
+            </text>
+
+            {/* the repos and the spine */}
+            {NEAR.map((i, k) => (
+              <Dotted key={i} d={`M${SPINE[0]},${SPINE[1]} L${repo(i)[0]},${repo(i)[1]}`} p={ramp(t, LOOKUPS[k], LOOKUPS[k] + 0.35) * (1 - back)} color={CORAL} />
+            ))}
             {Array.from({ length: 27 }, (_, i) => {
-              const x = 60 + (i % COLS) * (SQ + GAP)
-              const y = 64 + Math.floor(i / COLS) * (SQ + GAP)
-              const appear = ramp(t, 0.2 + i * 0.02, 0.5 + i * 0.02)
-              const thin = NEAR.includes(i) ? 0 : ramp(t, 1.6 + (i % COLS) * 0.05, 2.2 + (i % COLS) * 0.05, easeInOut)
-              return <Slats key={i} x={x} y={y} w={SQ} h={SQ} pitch={6} fill={INK} weight={appear * lerp(6, 1.2, thin)} />
+              const near = NEAR.indexOf(i)
+              const found = near >= 0 ? ramp(t, LOOKUPS[near] + 0.25, LOOKUPS[near] + 0.5) * (1 - back) : 0
+              return <Node key={i} at={repo(i)} color={found ? CORAL : GREY} on={near >= 0 ? 1 : 1 - drop} />
             })}
-            {NEAR.map((i, k) => {
-              const p = ramp(t, 1.4 + k * 0.1, 2.0 + k * 0.1, easeInOut)
-              const x = 60 + (i % COLS) * (SQ + GAP) + SQ
-              const y = 64 + Math.floor(i / COLS) * (SQ + GAP) + SQ / 2
-              return p > 0 ? <line key={i} x1={400} y1={112} x2={lerp(400, x, p)} y2={lerp(112, y, p)} stroke={INK} /> : null
-            })}
-            <text x={410} y={118} fontSize={22} fontWeight={500} fill={INK} opacity={ramp(t, 1.1, 1.4)}>
-              Spine
+            <Handle at={SPINE} r={8} />
+            <text x={SPINE[0] + 18} y={SPINE[1] + 5} fontSize={16} fontWeight={600} letterSpacing={0.6} fill={INK}>
+              SPINE
             </text>
-            <text x={60} y={208} fontSize={15} fill={MUTED}>
-              27 repos, 4 loaded
+            <text x={80} y={212} fontSize={15} fill={MUTED}>
+              {drop < 1 ? '27 repos' : '27 repos, 4 loaded'}
             </text>
 
-            {/* the context it costs */}
-            <Slats x={600} y={44} w={300 * lerp(1, 0.12, cut) * ramp(t, 0.2, 0.9, easeInOut)} h={56} pitch={8} weight={5} fill={INK} />
-            <text x={600} y={150} fontSize={40} fontWeight={500} letterSpacing={-1} fill={INK} className="tabular-nums">
-              {cut < 1 ? fmt(lerp(40600, 6500, cut)) : '2,500–6,500'}
+            {/* one change, from a command to a merge */}
+            <Dotted d={`M${stop(0)[0]},${PATH_Y} H${stop(5)[0]}`} color={INK} opacity={0.45} />
+            <text x={80} y={362} fontSize={24} fontWeight={500} letterSpacing={-0.3} fill={INK} opacity={step ? 1 - back : 0}>
+              {step?.[1]}
             </text>
-            <text x={600} y={180} fontSize={15} fill={MUTED}>
-              {cut < 1 ? 'Tokens of context per session' : 'Tokens per session, 6–16× less'}
-            </text>
+            {STEPS.map(([title], i) =>
+              i === STEPS.length - 1 ? null : <Node key={title} at={stop(i)} label={title} color={INK} on={t >= BEGINS[i] && back < 1 ? 1 : 0} side="below" />,
+            )}
+            {at >= 0 && <Orb at={[x, PATH_Y]} r={moving ? 34 : 44} color={CORAL} strength={(at === STEPS.length - 1 ? 1 - ring * 0.5 : 1) * (1 - back)} />}
 
-            {/* one change, start to merge; the band arrives through slats that thicken into it */}
-            <Slats x={0} y={240} w={960} h={40} pitch={8} fill={INK} weight={i => 1 + i * 1.5} />
-            <rect y={280} width={960} height={320} fill={INK} />
-            {t >= START && <rect x={40} y={markerY - 13} width={10} height={10} fill={PAPER} />}
-            {STEPS.map(([title, sub], i) => {
-              const y = ROW.y + i * ROW.step
-              return (
-                <g key={title} opacity={ramp(t, START + i * STEP - 0.1, START + i * STEP + 0.3, easeInOut) * 0.7 + 0.3}>
-                  <text x={80} y={y} fontSize={24} fontWeight={500} letterSpacing={-0.3} fill={PAPER}>
-                    {title}
-                  </text>
-                  <text x={340} y={y} fontSize={16} fill={PAPER} opacity={0.6}>
-                    {sub}
-                  </text>
-                </g>
-              )
-            })}
+            {/* the last step is a person's: the change waits until they close the ring */}
+            <circle
+              cx={stop(5)[0]}
+              cy={PATH_Y}
+              r={26}
+              fill="none"
+              stroke={INK}
+              strokeWidth={2}
+              strokeDasharray="4 4"
+              opacity={0.35 + 0.65 * ring}
+            />
+            {ring > 0 && (
+              <circle
+                cx={stop(5)[0]}
+                cy={PATH_Y}
+                r={26}
+                fill="none"
+                stroke={INK}
+                strokeWidth={2}
+                pathLength={1}
+                strokeDasharray={`${ring} 1`}
+                transform={`rotate(-90 ${stop(5)[0]} ${PATH_Y})`}
+              />
+            )}
+            <Handle at={stop(5)} r={8} />
+            <text x={stop(5)[0]} y={PATH_Y + 50} fontSize={16} fontWeight={600} letterSpacing={0.6} textAnchor="middle" fill={INK}>
+              A PERSON
+            </text>
+            <Tag at={[stop(5)[0] + 4, PATH_Y - 54]} text="Merged" anchor="middle" opacity={ramp(t, PERSON + 1.2, PERSON + 1.5) * (1 - back)} />
           </g>
         )
       }}

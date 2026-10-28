@@ -13,6 +13,8 @@ html[data-version='grid'] {
   --font-display: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
+  /* rules are dotted, as on asimorb.com and as the connections in the case films */
+  --dotted: repeating-linear-gradient(90deg, rgb(26 26 26 / 0.42) 0 2px, transparent 2px 5px);
 }
 html[data-version='grid'] .statement,
 html[data-version='grid'] .label {
@@ -35,7 +37,7 @@ html[data-version='grid'] .label {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 0.5px solid rgb(26 26 26 / 0.5);
+  background: var(--dotted) bottom / 100% 1px no-repeat;
 }
 .grid-v .dot {
   width: 7px;
@@ -162,10 +164,9 @@ html[data-version='grid'] .label {
     visibility: visible;
   }
 }
-/* a case's film, framed on the page */
+/* a case's film on the page: no frame, its light sits on the paper */
 .grid-v .case-peek {
   background: var(--color-paper);
-  border: 1px solid var(--color-rule);
 }
 /* a smaller title, for the side work index */
 .grid-v .title-m {
@@ -188,10 +189,126 @@ html[data-version='grid'] .label {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--gap);
   padding: 14px var(--margin) 24px;
-  border-top: 1px solid var(--color-rule);
+  background: var(--dotted) top / 100% 1px no-repeat;
 }
 .grid-v .list-row:last-child {
-  border-bottom: 1px solid var(--color-rule);
+  background:
+    var(--dotted) top / 100% 1px no-repeat,
+    var(--dotted) bottom / 100% 1px no-repeat;
+}
+.grid-v .rule-top {
+  border-top: 0;
+  background: var(--dotted) top / 100% 1px no-repeat;
+}
+.grid-v .rule-bottom {
+  border-bottom: 0;
+  background: var(--dotted) bottom / 100% 1px no-repeat;
+}
+
+/*
+ * The hero's light, after asimorb.com: a coral disc, a peach one and a small pink one, radial gradients that fade to
+ * nothing, behind the hello and the intro. They drift on long loops of different lengths, so the light keeps
+ * changing shape without ever visibly moving. The case films are made of the same light.
+ */
+.grid-v .hero {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+.grid-v .hero-light {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.grid-v .hero-light i {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  will-change: transform;
+}
+.grid-v .hero-light i:nth-child(1) {
+  left: -4%;
+  top: 20%;
+  width: min(42vw, 680px);
+  background: radial-gradient(closest-side, rgb(247 160 114 / 0.75), rgb(247 160 114 / 0.5) 32%, rgb(247 160 114 / 0.18) 62%, rgb(247 160 114 / 0.04) 84%, transparent);
+  animation: hero-drift-a 71s ease-in-out infinite;
+}
+.grid-v .hero-light i:nth-child(2) {
+  left: 6%;
+  top: 30%;
+  width: min(28vw, 450px);
+  background: radial-gradient(closest-side, rgb(253 113 116 / 0.8), rgb(253 113 116 / 0.45) 38%, rgb(253 113 116 / 0.1) 72%, transparent);
+  animation: hero-drift-b 53s ease-in-out infinite;
+}
+.grid-v .hero-light i:nth-child(3) {
+  left: 5%;
+  top: 22%;
+  width: min(12vw, 190px);
+  background: radial-gradient(closest-side, rgb(253 171 211 / 0.85), rgb(253 171 211 / 0.4) 50%, transparent);
+  animation: hero-drift-c 37s ease-in-out infinite;
+}
+@keyframes hero-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(4%, -3%) scale(1.05);
+  }
+  70% {
+    transform: translate(-3%, 2%) scale(0.96);
+  }
+}
+@keyframes hero-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  30% {
+    transform: translate(-8%, 6%) scale(0.95);
+  }
+  65% {
+    transform: translate(7%, -4%) scale(1.06);
+  }
+}
+@keyframes hero-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(40%, 30%);
+  }
+  50% {
+    transform: translate(90%, -10%);
+  }
+  75% {
+    transform: translate(30%, -40%);
+  }
+}
+@media (max-width: 767px) {
+  /* on a phone the light sits in the gap between the hello and the intro */
+  .grid-v .hero-light i:nth-child(1) {
+    left: -18%;
+    top: 3%;
+    width: 84vw;
+  }
+  .grid-v .hero-light i:nth-child(2) {
+    left: -2%;
+    top: 9%;
+    width: 56vw;
+  }
+  .grid-v .hero-light i:nth-child(3) {
+    left: 2%;
+    top: 6%;
+    width: 24vw;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grid-v .hero-light i {
+    animation: none;
+  }
 }
 /* the black tag bar runs off the right edge */
 .grid-v .tag {

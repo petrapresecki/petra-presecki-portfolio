@@ -39,6 +39,12 @@ export default function Grid() {
 
       {/* the first screen: everything down to the foot line, so the experience starts below the fold */}
       <div className="hero">
+        {/* the one light on the page, the same the case films are made of: three soft discs drifting on long loops */}
+        <div className="hero-light" aria-hidden>
+          <i />
+          <i />
+          <i />
+        </div>
         <section id="top" className="grid-12 pt-14">
           <CutType as="h1" text="Hi, I’m Petra" reveal className="wordmark hello hello-cut col-span-12 md:col-span-10" />
           <nav className="hidden md:col-span-2 md:mt-3 md:block" aria-label="Index">

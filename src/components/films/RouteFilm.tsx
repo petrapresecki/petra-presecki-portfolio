@@ -1,179 +1,121 @@
-import { useId } from 'react'
-import { Film, INK, MUTED, PAPER, RULE, easeInOut, lerp, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, Handle, INK, MUTED, Node, Orb, PEACH, PINK, Tag, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
- * The flows film, set like the Vault film: a customer in a partner's app asks for something, and its line runs
- * on into the orchestrator. On the page, the orchestrator's checks fill in one by one; in the ink block, the
- * partner's config has already greyed out the flows it doesn't offer. Then the orchestrator mounts the flow, holds
- * the customer in due diligence first, or, when the region isn't confirmed, mounts nothing.
+ * One widget, a different app for every partner. The flows sit around the orchestrator as nodes; a partner's config
+ * decides which are lit and which are left as empty rings. A customer's request is a small light that leaves the
+ * partner's app and passes the orchestrator's checks one by one. It is mounted into the flow it asked for, held in
+ * due diligence first, or, when a check can't be confirmed, it fades at that gate: not confirmed counts as no.
  */
 
 const FLOWS = ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Card buy', 'Sell at an ATM', 'Wallet']
+const CHECKS = ['Offered', 'Identity', 'Due diligence', 'Region']
 
 type Visit = {
   partner: string
+  color: string
   asks: string
   offers: string[]
-  checks: [string, string, boolean][]
-  /** the flow it mounts, or none when it fails closed */
+  /** the flow it ends up in, or the check it stops at */
   mounts: string | null
+  stops?: number
   says: string
 }
 const VISITS: Visit[] = [
-  {
-    partner: 'Ember',
-    asks: 'Cash buy',
-    offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'],
-    checks: [
-      ['Partner offers it', 'Yes', false],
-      ['Identity', 'Verified', false],
-      ['Due diligence', 'Not needed', false],
-      ['Region', 'Texas, allowed', false],
-    ],
-    mounts: 'Cash buy',
-    says: 'Mounts the flow',
-  },
-  {
-    partner: 'Harbor',
-    asks: 'Sell at an ATM',
-    offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'],
-    checks: [
-      ['Partner offers it', 'Yes', false],
-      ['Identity', 'Verified', false],
-      ['Due diligence', 'Required', true],
-      ['Region', 'Ohio, allowed', false],
-    ],
-    mounts: 'Due diligence',
-    says: 'Holds them: due diligence first',
-  },
-  {
-    partner: 'Orchid',
-    asks: 'Cash buy',
-    offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'],
-    checks: [
-      ['Partner offers it', 'Yes', false],
-      ['Identity', 'Verified', false],
-      ['Due diligence', 'Not needed', false],
-      ['Region', 'Not confirmed', true],
-    ],
-    mounts: null,
-    says: 'Not confirmed counts as no',
-  },
+  { partner: 'Ember', color: PEACH, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'], mounts: 'Cash buy', says: 'Mounted' },
+  { partner: 'Harbor', color: CORAL, asks: 'Sell at an ATM', offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'], mounts: 'Due diligence', says: 'Held: due diligence first' },
+  { partner: 'Orchid', color: PINK, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'], mounts: null, stops: 3, says: 'Region not confirmed: no' },
 ]
-const EACH = 4.8
+const EACH = 5
 const LENGTH = VISITS.length * EACH
-const EDGE = 560
-const FIELD_Y = 250
-const CHECK = 0.55
-const STEP = 0.32
-const SEND = CHECK + 4 * STEP + 0.15
-const ARRIVE = SEND + 0.65
-const ROW = { y: 324, h: 38 }
+
+const START = [96, 300] as const
+const GATES = CHECKS.map((_, i) => [196 + i * 74, 300] as const)
+const HUB = [540, 300] as const
+// the flows on an arc around the orchestrator
+const FLOW_AT = FLOWS.map((_, i) => {
+  const a = ((-62 + (i * 124) / (FLOWS.length - 1)) * Math.PI) / 180
+  return [HUB[0] + 250 * Math.cos(a), HUB[1] + 250 * Math.sin(a)] as const
+})
+
+// when the request reaches each gate, then the orchestrator, then the flow
+const AT_GATE = [0.9, 1.3, 1.75, 2.15]
+const AT_HUB = 2.75
+const MOUNTED = 3.5
 
 export default function RouteFilm({ play }: { play: boolean | 'view' }) {
-  const id = useId()
   return (
-    <Film length={LENGTH} still={EACH + 3.6} play={play} label="The orchestrator checks each request and mounts a flow, holds the customer, or says no">
+    <Film length={LENGTH} still={EACH + 4} play={play} label="The orchestrator checks each request and mounts a flow, holds the customer, or says no">
       {t => {
-        const at = Math.min(VISITS.length - 1, Math.floor(t / EACH))
-        const u = t - at * EACH
-        const v = VISITS[at]
-        const out = 1 - ramp(u, EACH - 0.35, EACH - 0.05)
-        const travel = ramp(u, SEND, ARRIVE, x => x * x)
-        // the chosen flow's row fills with paper from the left, the way the slats close
-        const mount = ramp(u, ARRIVE, ARRIVE + 0.4, easeInOut)
-        // drawn twice, in ink on the page and in paper over the block, so the request changes colour as it crosses
-        const both = (node: (fill: string) => React.ReactNode) => (
-          <>
-            <g clipPath={`url(#${id}-page)`}>{node(INK)}</g>
-            <g clipPath={`url(#${id}-block)`}>{node(PAPER)}</g>
-          </>
-        )
+        const k = Math.min(VISITS.length - 1, Math.floor(t / EACH))
+        const u = t - k * EACH
+        const v = VISITS[k]
+        const last = VISITS[(k + VISITS.length - 1) % VISITS.length]
+        // the partner's config changes which flows are lit, a moment into its turn
+        const config = ramp(u, 0, 0.6)
+        const stop = v.stops ?? CHECKS.length
+        // where the request is: along the checks, then out from the orchestrator to its flow
+        const x = (() => {
+          if (u < AT_GATE[0]) return [START[0] + (GATES[0][0] - START[0]) * ramp(u, 0.4, AT_GATE[0]), 300] as const
+          for (let g = 0; g < CHECKS.length - 1; g++)
+            if (u < AT_GATE[g + 1]) return g >= stop ? GATES[stop] : ([GATES[g][0] + 74 * ramp(u, AT_GATE[g] + 0.12, AT_GATE[g + 1]), 300] as const)
+          if (stop < CHECKS.length) return GATES[stop]
+          return [GATES[3][0] + (HUB[0] - GATES[3][0]) * ramp(u, AT_GATE[3] + 0.12, AT_HUB), 300] as const
+        })()
+        const target = v.mounts ? FLOW_AT[FLOWS.indexOf(v.mounts)] : null
+        const out = target ? ([HUB, [HUB[0] + 120, target[1] + (HUB[1] - target[1]) * 0.15], target] as const) : null
+        const leave = ramp(u, AT_HUB + 0.1, MOUNTED)
+        const at = out && u > AT_HUB ? along(out, leave) : x
+        // a request that can't pass a gate fades there
+        const refused = v.mounts ? 0 : ramp(u, AT_GATE[stop] + 0.2, AT_GATE[stop] + 1.1)
+        const merged = ramp(u, MOUNTED - 0.2, MOUNTED + 0.4)
+        const said = ramp(u, v.mounts ? MOUNTED : AT_GATE[stop] + 0.6, (v.mounts ? MOUNTED : AT_GATE[stop] + 0.6) + 0.4)
+        const fadeOut = 1 - ramp(u, EACH - 0.5, EACH)
+        const [hx, hy] = drift(t, LENGTH, 5, 10)
         return (
-          <g opacity={out}>
-            <clipPath id={`${id}-page`}>
-              <rect width={EDGE} height={600} />
-            </clipPath>
-            <clipPath id={`${id}-block`}>
-              <rect x={EDGE} width={960 - EDGE} height={600} />
-            </clipPath>
-
-            {/* the orchestrator: the flows it can mount, as the partner's config leaves them */}
-            <rect x={EDGE} width={960 - EDGE} height={600} fill={INK} />
-            <text x={EDGE + 40} y={116} fontSize={52} fontWeight={500} letterSpacing={-1.3} fill={PAPER}>
-              Orchestrator
+          <g>
+            {/* the orchestrator: a soft light of the partner it's serving, ringed, with its handle in the middle */}
+            <Orb at={[HUB[0] + hx, HUB[1] + hy]} r={150} color={last.color} strength={0.5 * (1 - config)} />
+            <Orb at={[HUB[0] + hx, HUB[1] + hy]} r={150} color={v.color} strength={0.5 * config} />
+            <circle cx={HUB[0]} cy={HUB[1]} r={64} fill="none" stroke={INK} strokeWidth={2} strokeDasharray="4 4" />
+            <Handle at={HUB} r={8} />
+            <text x={HUB[0]} y={HUB[1] + 92} fontSize={16} fontWeight={600} letterSpacing={0.6} textAnchor="middle" fill={INK}>
+              ORCHESTRATOR
             </text>
-            <text x={EDGE + 40} y={152} fontSize={17} fill={PAPER} opacity={0.6}>
-              Reads {v.partner}’s config
-            </text>
-            {u >= ARRIVE && (
-              <text x={EDGE + 40} y={216} fontSize={17} fontWeight={500} fill={PAPER}>
-                {v.says}
-              </text>
-            )}
-            {FLOWS.map((f, i) => {
-              const y = ROW.y + i * ROW.h
-              const offered = v.offers.includes(f)
-              const chosen = f === v.mounts
-              const asked = f === v.asks
-              return (
-                <g key={f}>
-                  <line x1={EDGE + 40} x2={920} y1={y} y2={y} stroke={PAPER} strokeOpacity={0.2} />
-                  {chosen && mount > 0 && <rect x={EDGE} y={y} width={(960 - EDGE) * mount} height={ROW.h} fill={PAPER} />}
-                  <text x={EDGE + 40} y={y + 25} fontSize={17} fill={chosen && mount >= 0.5 ? INK : PAPER} opacity={offered ? (chosen ? 1 : 0.6) : 0.2}>
-                    {f}
-                  </text>
-                  {/* what was asked for, when it isn't what's mounted */}
-                  {asked && !chosen && u >= ARRIVE && (
-                    <text x={920} y={y + 25} fontSize={15} textAnchor="end" fill={PAPER} opacity={0.6}>
-                      {v.mounts ? 'Held' : 'Not mounted'}
-                    </text>
-                  )}
-                </g>
-              )
-            })}
 
-            {/* the partner's app */}
-            <text x={80} y={116} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={INK}>
+            {/* the partner, and what its customer asks for */}
+            <text x={START[0] - 16} y={130} fontSize={56} fontWeight={500} letterSpacing={-1.4} fill={INK} opacity={ramp(u, 0, 0.4)}>
               {v.partner}
             </text>
-            <text x={80} y={FIELD_Y - 50} fontSize={16} fill={MUTED}>
-              A customer asks for
+            <text x={START[0] - 16} y={164} fontSize={16} fill={MUTED} opacity={ramp(u, 0, 0.4)}>
+              A customer asks for {v.asks[0].toLowerCase() + v.asks.slice(1)}
             </text>
-            <text x={80} y={FIELD_Y} fontSize={34} fontWeight={500} fill={u >= 0.2 ? INK : MUTED}>
-              {u >= 0.2 ? v.asks : '—'}
-            </text>
-            {/* the request's line doesn't stop at the app: it runs on into the orchestrator */}
-            {both(f => <line x1={80} x2={920} y1={FIELD_Y + 16} y2={FIELD_Y + 16} stroke={f} strokeWidth={1.5} strokeOpacity={f === INK ? 1 : 0.5} />)}
-            {u >= SEND && u < ARRIVE && (
-              <g opacity={1 - ramp(travel, 0.75, 1)}>
-                {both(f => (
-                  <text x={lerp(80, 860, travel)} y={FIELD_Y} fontSize={34} fontWeight={500} fill={f}>
-                    {v.asks}
-                  </text>
-                ))}
-              </g>
-            )}
 
-            <text x={80} y={380} fontSize={20} fontWeight={500} fill={INK}>
-              What it checks first
-            </text>
-            {v.checks.map(([k, value, flag], i) => {
-              const y = 430 + i * 40
-              const shown = u >= CHECK + i * STEP
+            {/* the checks, in order, on the way in */}
+            <Dotted d={`M${START[0]},300 H${HUB[0] - 64}`} color={INK} opacity={0.45} />
+            {CHECKS.map((c, g) => {
+              const passed = u >= AT_GATE[g] + 0.1 && g < stop
+              return <Node key={c} at={GATES[g]} label={c} color={INK} on={passed ? 1 : 0} side={g % 2 ? 'below' : 'above'} />
+            })}
+
+            {/* the flows; the partner's config lights the ones it offers */}
+            {FLOWS.map((f, i) => {
+              const offered = v.offers.includes(f)
+              const before = last.offers.includes(f)
+              const lit = (before ? 1 - config : 0) + (offered ? config : 0)
+              const chosen = f === v.mounts
               return (
-                <g key={k}>
-                  <line x1={80} x2={520} y1={y - 28} y2={y - 28} stroke={RULE} />
-                  <text x={80} y={y} fontSize={17} fill={MUTED}>
-                    {k}
-                  </text>
-                  <text x={520} y={y} fontSize={17} fontWeight={flag ? 500 : 400} textAnchor="end" fill={shown ? INK : MUTED}>
-                    {shown ? value : '—'}
-                  </text>
+                <g key={f}>
+                  {chosen && <Orb at={FLOW_AT[i]} r={30 + 46 * merged} color={v.color} strength={merged * fadeOut} />}
+                  <Node at={FLOW_AT[i]} label={f} color={INK} on={lit} />
                 </g>
               )
             })}
-            <line x1={80} x2={520} y1={562} y2={562} stroke={RULE} />
+            {out && <Dotted d={curve(out)} p={ramp(u, AT_HUB - 0.1, AT_HUB + 0.4)} color={v.color} opacity={fadeOut} />}
+
+            {/* the request itself */}
+            {u > 0.3 && merged < 1 && <Orb at={at} r={38} color={v.color} strength={(1 - refused) * (1 - merged) * ramp(u, 0.3, 0.7)} />}
+            <Tag at={[HUB[0] - 64, 548]} text={v.says} opacity={said * fadeOut} />
+            {!v.mounts && <text x={GATES[stop][0]} y={GATES[stop][1] - 36} fontSize={13} textAnchor="middle" fill={MUTED} opacity={said * fadeOut}>not confirmed</text>}
           </g>
         )
       }}
