@@ -44,37 +44,3 @@ export default function Switch({ version, onPick }: { version: Version; onPick: 
   )
 }
 
-export const LIGHTS = [
-  ['asim', 'Peach & coral'],
-  ['apricot', 'Apricot & lilac'],
-  ['cobalt', 'Tangerine & cobalt'],
-  ['sage', 'Butter & sage'],
-  ['society', 'Violet & lime'],
-] as const
-
-type Light = (typeof LIGHTS)[number][0]
-
-/** A second pill, for trying the hero light in other palettes; kept in ?light= so a link shows the same one. Dev only */
-export function LightSwitch() {
-  const [light, setLight] = useState<Light>(() => {
-    const l = new URLSearchParams(location.search).get('light')
-    return LIGHTS.some(([id]) => id === l) ? (l as Light) : 'asim'
-  })
-  useEffect(() => {
-    document.documentElement.dataset.light = light
-    const url = new URL(location.href)
-    if (light === 'asim') url.searchParams.delete('light')
-    else url.searchParams.set('light', light)
-    history.replaceState(null, '', url)
-  }, [light])
-  return (
-    <div className="version-switch light-switch" role="group" aria-label="Light">
-      <span>Light</span>
-      {LIGHTS.map(([id, label]) => (
-        <button key={id} aria-pressed={light === id} onClick={() => setLight(id)}>
-          {label}
-        </button>
-      ))}
-    </div>
-  )
-}

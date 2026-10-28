@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { about, cases, experience, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
@@ -7,6 +7,7 @@ import GridCase from '@/versions/GridCase'
 import GridProject from '@/versions/GridProject'
 import CutType from '@/components/kit/cut-type/CutType'
 import CaseFilm from '@/components/films/CaseFilm'
+import { prefersReducedMotion } from '@/lib/kit/gsap'
 
 /**
  * After abgd.it, without its cards: a fixed bar of tiny capitals, a huge grotesk wordmark, a page index,
@@ -23,6 +24,7 @@ const INDEX = [
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
+  const light = useHeroScroll()
   return (
     <main className="grid-v">
       <header className="grid-bar">
@@ -40,7 +42,7 @@ export default function Grid() {
       {/* the first screen: everything down to the foot line, so the experience starts below the fold */}
       <div className="hero">
         {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop */}
-        <div className="hero-light" aria-hidden>
+        <div ref={light} className="hero-light" aria-hidden>
           <i />
           <i />
           <i />
@@ -375,4 +377,29 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
       )}
     </article>
   )
+}
+
+/** How far the page has scrolled past the hero (0–1), written to the light as --scrolled once a frame while it moves */
+function useHeroScroll() {
+  const light = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (prefersReducedMotion()) return
+    const el = light.current!
+    let raf = 0
+    const set = () => {
+      raf = 0
+      const h = el.offsetHeight || 1
+      el.style.setProperty('--scrolled', String(Math.min(1, Math.max(0, window.scrollY / h)).toFixed(4)))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(set)
+    }
+    set()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+  return light
 }
