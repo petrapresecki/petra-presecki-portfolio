@@ -241,8 +241,8 @@ html[data-version='grid'] .label {
 /*
  * The page's light, after asimorb.com: four soft discs (peach, coral, pink and lilac), radial
  * gradients that fade to nothing, starting behind the hello. Each wanders on its own loop of a different length and
- * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen and moves as one
- * body to sit behind what matters where you're reading (Grid sets --lx/--ly), ending behind the email.
+ * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen; Grid moves each
+ * disc on its own to what matters where you're reading, so they stream, wander apart and gather again.
  */
 .grid-v {
   isolation: isolate;
@@ -262,8 +262,6 @@ html[data-version='grid'] .label {
 .grid-v .page-light > div {
   position: absolute;
   inset: 0;
-  transform: translate(var(--lx, 0), var(--ly, 0));
-  will-change: transform;
 }
 .grid-v .page-light i {
   position: absolute;

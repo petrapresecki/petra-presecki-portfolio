@@ -396,29 +396,37 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
 
 /**
  * The light marks what matters where you're reading. The parts that matter carry [data-light]: the intro, each job,
- * the cases, About, Capabilities, Side work and the email. The light settles behind whichever of them is nearest the
- * reading line, about two fifths down the screen (lower near the end, so the email can have it), and glides from one
- * to the next with some weight and a top speed. Pointing at a case or a side project ([data-light="hover"]) draws it
- * behind that row for as long as you're there. Reduced motion leaves it where it starts.
+ * the cases, About, Capabilities, Side work and the email. The light heads for whichever of them is nearest the
+ * reading line, about two fifths down the screen (lower near the end, so the email can have it), and behind a case or
+ * side project row while you point at it ([data-light="hover"]).
+ * Its four discs don't move as a block: each follows with its own weight and top speed, so on the way they stream out
+ * one after another and gather again at the stop, and each wanders its own wide, slow loop across the screen, so they
+ * keep drifting apart and over each other. Reduced motion leaves them where they start.
  */
+const DISCS = [
+  // how long it takes to catch up (s), its top speed (px/s), how far it wanders (share of the screen) and its loop (s)
+  { lag: 0.35, speed: 1100, wander: [0.05, 0.05], loop: 31 },
+  { lag: 0.75, speed: 850, wander: [0.12, 0.1], loop: 23 },
+  { lag: 1.2, speed: 650, wander: [0.26, 0.2], loop: 17 },
+  { lag: 1.7, speed: 500, wander: [0.22, 0.24], loop: 37 },
+]
+
 function useLightGuide() {
   const light = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (prefersReducedMotion()) return
-    const el = light.current!
-    const discs = [...el.children] as HTMLElement[]
+    const discs = [...light.current!.children] as HTMLElement[]
     let pointed: Element | null = null
     let target = [0, 0]
-    let shown = [0, 0]
-    let home = [0, 0]
+    // each disc's resting middle, the group's middle, and where each one is now
+    let homes: number[][] = []
+    let middle = [0, 0]
+    let shown: number[][] = []
     let last = 0
     let raf = 0
-    // pixels a second, however fast the page goes
-    const TOP_SPEED = 900
-    // where the light's middle is when it isn't moved: between its two big discs
     const measure = () => {
-      const [a, b] = discs
-      home = [(a.offsetLeft + a.offsetWidth / 2 + b.offsetLeft + b.offsetWidth / 2) / 2, (a.offsetTop + a.offsetHeight / 2 + b.offsetTop + b.offsetHeight / 2) / 2]
+      homes = discs.map(d => [d.offsetLeft + d.offsetWidth / 2, d.offsetTop + d.offsetHeight / 2])
+      middle = [(homes[0][0] + homes[1][0]) / 2, (homes[0][1] + homes[1][1]) / 2]
     }
     // the spot behind an element: a little in from its start, level with its middle
     const spot = (e: Element) => {
@@ -426,7 +434,7 @@ function useLightGuide() {
       return [r.left + Math.min(r.width * 0.3, 220), r.top + r.height / 2]
     }
     const aim = () => {
-      if (pointed) return (target = spot(pointed))
+      if (pointed) return void (target = spot(pointed))
       const vh = window.innerHeight
       const room = document.documentElement.scrollHeight - vh
       const end = room > 0 ? Math.max(0, (window.scrollY - (room - vh)) / vh) : 0
@@ -442,52 +450,45 @@ function useLightGuide() {
       }
       if (best) target = spot(best)
     }
-    const place = () => {
-      el.style.setProperty('--lx', `${(shown[0] - home[0]).toFixed(1)}px`)
-      el.style.setProperty('--ly', `${(shown[1] - home[1]).toFixed(1)}px`)
+    // where disc i wants to be: the stop, keeping its place in the group, plus its own wander
+    const goal = (i: number, now: number) => {
+      const { wander, loop } = DISCS[i]
+      const a = ((now / 1000) * Math.PI * 2) / loop
+      return [
+        target[0] + homes[i][0] - middle[0] + Math.sin(a + i * 1.9) * wander[0] * window.innerWidth,
+        target[1] + homes[i][1] - middle[1] + Math.sin(a * 1.6 + i * 2.7) * wander[1] * window.innerHeight,
+      ]
     }
     const tick = (now: number) => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
       last = now
       aim()
-      const k = 1 - Math.exp(-dt / 0.45)
-      const dx = (target[0] - shown[0]) * k
-      const dy = (target[1] - shown[1]) * k
-      const len = Math.hypot(dx, dy)
-      const cap = len > TOP_SPEED * dt ? (TOP_SPEED * dt) / len : 1
-      shown = [shown[0] + dx * cap, shown[1] + dy * cap]
-      place()
-      const settled = Math.hypot(target[0] - shown[0], target[1] - shown[1]) < 0.5
-      raf = settled ? 0 : requestAnimationFrame(tick)
-      if (!raf) last = 0
-    }
-    const wake = () => {
-      if (!raf) raf = requestAnimationFrame(tick)
+      discs.forEach((d, i) => {
+        const [gx, gy] = goal(i, now)
+        const k = 1 - Math.exp(-dt / DISCS[i].lag)
+        const dx = (gx - shown[i][0]) * k
+        const dy = (gy - shown[i][1]) * k
+        const len = Math.hypot(dx, dy)
+        const cap = len > DISCS[i].speed * dt ? (DISCS[i].speed * dt) / len : 1
+        shown[i] = [shown[i][0] + dx * cap, shown[i][1] + dy * cap]
+        d.style.translate = `${(shown[i][0] - homes[i][0]).toFixed(1)}px ${(shown[i][1] - homes[i][1]).toFixed(1)}px`
+      })
+      raf = requestAnimationFrame(tick)
     }
     const over = (e: PointerEvent) => {
       const row = (e.target as Element).closest?.('.side-row')
       pointed = row?.querySelector('[data-light="hover"]') ?? null
-      wake()
     }
-    const leave = () => {
-      pointed = null
-      wake()
-    }
+    const leave = () => (pointed = null)
     measure()
     aim()
-    shown = [...target]
-    place()
-    const resize = () => {
-      measure()
-      wake()
-    }
-    window.addEventListener('scroll', wake, { passive: true })
-    window.addEventListener('resize', resize)
+    shown = discs.map((_, i) => goal(i, performance.now()))
+    raf = requestAnimationFrame(tick)
+    window.addEventListener('resize', measure)
     document.addEventListener('pointerover', over)
     document.documentElement.addEventListener('pointerleave', leave)
     return () => {
-      window.removeEventListener('scroll', wake)
-      window.removeEventListener('resize', resize)
+      window.removeEventListener('resize', measure)
       document.removeEventListener('pointerover', over)
       document.documentElement.removeEventListener('pointerleave', leave)
       cancelAnimationFrame(raf)
