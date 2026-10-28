@@ -48,6 +48,16 @@ async function pull(page, at) {
   await glide(page, [at[0] + 30, at[1] + 340], 50)
   await page.mouse.up()
 }
+/** Grab a keyring charm and swing the ring side to side, letting go before it snaps off */
+async function swing(page, at, reach = 240) {
+  await glide(page, at)
+  await wait(300)
+  await page.mouse.down()
+  await glide(page, [at[0] - reach, at[1] + 20], 30)
+  await glide(page, [at[0] + reach * 0.7, at[1] + 20], 35)
+  await glide(page, [at[0], at[1] + 10], 25)
+  await page.mouse.up()
+}
 /** Pin a kit block's live demo over the whole window ([data-demo] marks its theme scope) */
 const fillWindow = page =>
   page.evaluate(() => {
@@ -81,15 +91,16 @@ const takes = {
   'iva-keyring': ['hero', async (page, mark) => {
     await page.goto(`${IVA}/`)
     await wait(5000)
-    pointer = [200, 450]
+    pointer = [400, 450]
     await page.mouse.move(...pointer)
     mark()
-    for (const c of ['rool', 'booklet', 'apuro', 'gabagool']) {
-      await glide(page, charms[c])
-      await wait(1000)
-    }
+    // hovering alone barely moves the redesigned ring, so swing it by a charm, let it settle back, then pull
+    await glide(page, charms.rool, 30)
+    await wait(500)
+    await swing(page, charms.booklet, 260)
+    await wait(2800)
     await pull(page, charms.booklet)
-    await wait(3000)
+    await wait(2000)
   }],
   ...Object.fromEntries(
     ['rool', 'apuro', 'gabagool'].map(id => [
