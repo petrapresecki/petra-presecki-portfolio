@@ -39,7 +39,7 @@ This file is for AI agents and LLMs. The human version is the portfolio at https
 ## Side projects
 
 - [Iva Presečki](https://ivapresecki.com/): portfolio for a graphic designer, built with React Three Fiber; projects hang from a chrome keyring as charms.
-- [bykreso](https://bykreso.pages.dev/): portfolio for a videographer; films run past in a film strip and the page takes on each film's colour.
+- [bykreso](https://bykreso.com/): portfolio for a videographer; films run past in a film strip and the page takes on each film's colour.
 - creative-kit: the library every site I build starts from, instead of a template. Motion blocks, themes and grids reworked from sites I love, an inspiration library, and a manifesto for sites that look made rather than generated. A CLI copies blocks into new sites as source.
 
 ## Skills
