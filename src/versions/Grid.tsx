@@ -24,9 +24,19 @@ const INDEX = [
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
-  const light = useHeroScroll()
+  const light = useLightPath()
   return (
     <main className="grid-v">
+      {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop, that
+          travel down the page with the reader and settle behind the email at the bottom */}
+      <div className="page-light" aria-hidden>
+        <div ref={light}>
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
+      </div>
       <header className="grid-bar">
         <div className="grid-12 items-center py-2.5">
           <a href="#top" className="cap col-span-6 md:col-span-3" onClick={e => go(e, 'top')}>
@@ -41,13 +51,6 @@ export default function Grid() {
 
       {/* the first screen: everything down to the foot line, so the experience starts below the fold */}
       <div className="hero">
-        {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop */}
-        <div ref={light} className="hero-light" aria-hidden>
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
         <section id="top" className="grid-12 pt-14">
           <CutType as="h1" text="Hi, I’m Petra" reveal className="wordmark hello hello-cut col-span-12 md:col-span-10" />
           <nav className="hidden md:col-span-2 md:mt-3 md:block" aria-label="Index">
@@ -379,25 +382,75 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
   )
 }
 
-/** How far the page has scrolled past the hero (0–1), written to the light as --scrolled once a frame while it moves */
-function useHeroScroll() {
+/**
+ * Where the light is on its way down the page, as offsets from where it starts (vw, vh): it crosses from side to side
+ * between the parts of the page and ends low in the middle, behind the email. Phones get a narrower path.
+ */
+const PATH = {
+  wide: [
+    [0, 0],
+    [48, 14],
+    [4, -2],
+    [52, 8],
+    [26, 28],
+  ],
+  narrow: [
+    [0, 0],
+    [36, 38],
+    [4, 26],
+    [40, 44],
+    [16, 46],
+  ],
+}
+
+/**
+ * The light follows the reader down the page: scroll sets where on its path it should be, and it catches up with a
+ * little weight rather than sticking to the scroll. On the way it comes apart and pales, and it gathers again at the
+ * end. Reduced motion leaves it where it starts.
+ */
+function useLightPath() {
   const light = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (prefersReducedMotion()) return
     const el = light.current!
+    const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2)
+    let target = 0
+    let shown = 0
+    let last = 0
     let raf = 0
-    const set = () => {
-      raf = 0
-      const h = el.offsetHeight || 1
-      el.style.setProperty('--scrolled', String(Math.min(1, Math.max(0, window.scrollY / h)).toFixed(4)))
+    const place = (p: number) => {
+      const path = window.innerWidth < 768 ? PATH.narrow : PATH.wide
+      const f = p * (path.length - 1)
+      const i = Math.min(path.length - 2, Math.floor(f))
+      const k = ease(f - i)
+      const along = Math.sin(p * Math.PI)
+      el.style.setProperty('--lx', `${(path[i][0] + (path[i + 1][0] - path[i][0]) * k).toFixed(2)}vw`)
+      el.style.setProperty('--ly', `${(path[i][1] + (path[i + 1][1] - path[i][1]) * k).toFixed(2)}vh`)
+      el.style.setProperty('--spread', along.toFixed(3))
+      el.style.setProperty('--glow', (1 - 0.4 * along).toFixed(3))
+    }
+    const tick = (now: number) => {
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      shown += (target - shown) * (1 - Math.exp(-dt / 0.35))
+      if (Math.abs(target - shown) < 0.0005) shown = target
+      place(shown)
+      raf = shown === target ? 0 : requestAnimationFrame(tick)
+      if (!raf) last = 0
     }
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(set)
+      const room = document.documentElement.scrollHeight - window.innerHeight
+      target = room > 0 ? Math.min(1, Math.max(0, window.scrollY / room)) : 0
+      if (!raf) raf = requestAnimationFrame(tick)
     }
-    set()
+    onScroll()
+    shown = target
+    place(shown)
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     return () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(raf)
     }
   }, [])

@@ -239,73 +239,76 @@ html[data-version='grid'] .label {
 }
 
 /*
- * The hero's light, after asimorb.com: four soft discs (butter, sage, a coral spark and a pale sage), radial
- * gradients that fade to nothing, behind the hello and the intro. Each wanders on its own loop of a different length
- * and two of them come and go, so the light keeps moving and changing colour. Scrolling moves it too: it sinks more
- * slowly than the page, so it trails you for a moment, and its discs drift apart and pale as the hero leaves.
+ * The page's light, after asimorb.com: four soft discs (butter, sage, a coral spark and a pale sage), radial
+ * gradients that fade to nothing, starting behind the hello. Each wanders on its own loop of a different length and
+ * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen and travels down
+ * the page with the reader (Grid sets --lx/--ly along its path), coming apart on the way (--spread) and gathering
+ * again behind the email at the bottom.
  */
-.grid-v .hero {
-  position: relative;
+.grid-v {
   isolation: isolate;
-  overflow-x: clip;
 }
-.grid-v .hero-light {
-  position: absolute;
+.grid-v .page-light {
+  position: fixed;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
   /* butter and sage, a coral spark, and a paler sage that comes and goes */
   --light-1: 247 218 128;
   --light-2: 150 196 160;
   --light-3: 250 140 118;
   --light-4: 190 222 190;
-  /* how far the page has scrolled past the hero, 0–1, set from Grid */
-  --scrolled: 0;
-  transform: translateY(calc(var(--scrolled) * 38%));
-  opacity: calc(1 - var(--scrolled) * 0.55);
 }
-/* scrolling pulls the light apart: each disc leans its own way as the hero goes up */
-.grid-v .hero-light i:nth-child(1) {
-  translate: calc(var(--scrolled) * -18%) calc(var(--scrolled) * 10%);
+.grid-v .page-light > div {
+  position: absolute;
+  inset: 0;
+  transform: translate(var(--lx, 0), var(--ly, 0));
+  opacity: var(--glow, 1);
+  will-change: transform;
 }
-.grid-v .hero-light i:nth-child(2) {
-  translate: calc(var(--scrolled) * 55%) calc(var(--scrolled) * -12%);
+/* on the way, each disc leans its own way, so the light comes apart and gathers again */
+.grid-v .page-light i:nth-child(1) {
+  translate: calc(var(--spread, 0) * -18%) calc(var(--spread, 0) * 10%);
 }
-.grid-v .hero-light i:nth-child(3) {
-  translate: calc(var(--scrolled) * 160%) calc(var(--scrolled) * -90%);
+.grid-v .page-light i:nth-child(2) {
+  translate: calc(var(--spread, 0) * 55%) calc(var(--spread, 0) * -12%);
 }
-.grid-v .hero-light i:nth-child(4) {
-  translate: calc(var(--scrolled) * 30%) calc(var(--scrolled) * 60%);
+.grid-v .page-light i:nth-child(3) {
+  translate: calc(var(--spread, 0) * 160%) calc(var(--spread, 0) * -90%);
+}
+.grid-v .page-light i:nth-child(4) {
+  translate: calc(var(--spread, 0) * 30%) calc(var(--spread, 0) * 60%);
 }
 
-.grid-v .hero-light i {
+.grid-v .page-light i {
   position: absolute;
   aspect-ratio: 1;
   border-radius: 50%;
   will-change: transform, opacity;
 }
-.grid-v .hero-light i:nth-child(1) {
+.grid-v .page-light i:nth-child(1) {
   left: -4%;
   top: 18%;
   width: min(44vw, 700px);
   background: radial-gradient(closest-side, rgb(var(--light-1) / 0.85), rgb(var(--light-1) / 0.55) 34%, rgb(var(--light-1) / 0.2) 64%, rgb(var(--light-1) / 0.05) 85%, transparent);
   animation: hero-drift-a 23s ease-in-out infinite;
 }
-.grid-v .hero-light i:nth-child(2) {
+.grid-v .page-light i:nth-child(2) {
   left: 8%;
   top: 30%;
   width: min(28vw, 450px);
   background: radial-gradient(closest-side, rgb(var(--light-2) / 0.75), rgb(var(--light-2) / 0.42) 38%, rgb(var(--light-2) / 0.1) 72%, transparent);
   animation: hero-drift-b 17s ease-in-out infinite;
 }
-.grid-v .hero-light i:nth-child(3) {
+.grid-v .page-light i:nth-child(3) {
   left: 4%;
   top: 20%;
   width: min(18vw, 290px);
   background: radial-gradient(closest-side, rgb(var(--light-3) / 0.9), rgb(var(--light-3) / 0.45) 50%, transparent);
   animation: hero-drift-c 13s ease-in-out infinite;
 }
-.grid-v .hero-light i:nth-child(4) {
+.grid-v .page-light i:nth-child(4) {
   left: 18%;
   top: 40%;
   width: min(24vw, 380px);
@@ -372,29 +375,29 @@ html[data-version='grid'] .label {
 }
 @media (max-width: 767px) {
   /* on a phone the light sits in the gap between the hello and the intro */
-  .grid-v .hero-light i:nth-child(1) {
+  .grid-v .page-light i:nth-child(1) {
     left: -18%;
     top: 3%;
     width: 84vw;
   }
-  .grid-v .hero-light i:nth-child(2) {
+  .grid-v .page-light i:nth-child(2) {
     left: -2%;
     top: 9%;
     width: 56vw;
   }
-  .grid-v .hero-light i:nth-child(3) {
+  .grid-v .page-light i:nth-child(3) {
     left: 2%;
     top: 6%;
     width: 30vw;
   }
-  .grid-v .hero-light i:nth-child(4) {
+  .grid-v .page-light i:nth-child(4) {
     left: 30%;
     top: 12%;
     width: 44vw;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .grid-v .hero-light i {
+  .grid-v .page-light i {
     animation: none;
   }
 }
