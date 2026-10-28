@@ -55,12 +55,11 @@ const fillWindow = page =>
     for (const el of scope.querySelectorAll(':scope > :not([data-demo]), :scope > :not([data-demo]) [class*="h-["]')) el.style.height = '100vh'
     window.dispatchEvent(new Event('resize'))
   })
-/** Open Frame Score with the still at the gate, or one of its plates (0-2) */
-async function frame(page, plate) {
+/** Open Frame Score with the still at the gate */
+async function frame(page) {
   await page.goto(`${FRAME}/`)
   await wait(2500)
-  if (plate === undefined) await page.locator('input[type=file]').setInputFiles(STILL)
-  else await page.locator(`button[title^="Plate 0${plate + 1}"]`).click()
+  await page.locator('input[type=file]').setInputFiles(STILL)
   await wait(1500)
 }
 const play = page => page.getByRole('button', { name: 'play', exact: true }).click()
@@ -322,70 +321,6 @@ const takes = {
     await grade(page, 'Saturation', 12)
     await wait(1800)
     await grade(page, 'Temperature', -30, 70)
-    await wait(2500)
-  }],
-  'fs-play': ['cell', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
-    await page.mouse.move(...pointer)
-    mark()
-    await play(page)
-    await wait(7000)
-  }],
-  'fs-temp': ['cell', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
-    mark()
-    await grade(page, 'Temperature', 22, 50)
-    await wait(600)
-    await grade(page, 'Temperature', -44, 90)
-    await wait(1000)
-  }],
-  'fs-contrast': ['cell', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
-    mark()
-    await grade(page, 'Contrast', 18)
-    await wait(600)
-    await grade(page, 'Exposure', -14)
-    await wait(1000)
-  }],
-  // The plates are drawn in code; switching them shows the readout and accent following the picture
-  'fs-plates': ['cell', async (page, mark) => {
-    await frame(page, 0)
-    pointer = [300, 700]
-    await page.mouse.move(...pointer)
-    mark()
-    for (const n of [2, 3, 1]) {
-      await wait(1200)
-      const box = await page.locator(`button[title^="Plate 0${n}"]`).boundingBox()
-      await glide(page, [box.x + box.width / 2, box.y + box.height / 2], 30)
-      await page.mouse.click(...pointer)
-    }
-    await wait(1400)
-  }],
-  'fs-saturation': ['wide', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
-    await page.mouse.move(...pointer)
-    mark()
-    await play(page)
-    await wait(2500)
-    await grade(page, 'Saturation', -25, 60)
-    await wait(1500)
-    await grade(page, 'Saturation', 45, 90)
-    await wait(2500)
-  }],
-  'fs-exposure': ['wide', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
-    await page.mouse.move(...pointer)
-    mark()
-    await play(page)
-    await wait(2500)
-    await grade(page, 'Exposure', -18, 60)
-    await wait(2000)
-    await grade(page, 'Exposure', 30, 80)
     await wait(2500)
   }],
 }

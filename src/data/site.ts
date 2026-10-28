@@ -31,7 +31,7 @@ export interface Project {
   url?: string
   /** shown instead of a live link when there isn't one */
   note?: string
-  /** the big recording, four cells beside it, then two wide clips under them */
+  /** the big recording, four cells beside it, then two wide clips under them (either can be empty) */
   hero: Media
   cells: Media[]
   wide: Media[]
@@ -97,8 +97,8 @@ export const projects: Project[] = [
     year: '2026',
     url: 'https://frame-score.pages.dev/',
     hero: clip('fs-grade'),
-    cells: [clip('fs-play'), clip('fs-temp'), clip('fs-contrast'), clip('fs-plates')],
-    wide: [clip('fs-saturation'), clip('fs-exposure')],
+    cells: [],
+    wide: [],
     summary:
       'Grade a film frame and hear it. The shot is read left to right in four bands, the colour of each becomes a chord and the brightest points become a melody, played as an ambient loop. Change the grade and the music changes with it, because the sound comes straight from the pixels.',
     facts: [
