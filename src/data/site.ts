@@ -40,8 +40,10 @@ export interface Project {
   details: string[]
 }
 
+// /work/* is cached for a week, so bump this whenever clips are re-recorded or browsers keep the old ones
+const CLIPS = '2026-10-28'
 /** A recording from scripts/record.mjs: public/work/clips/<name>.webm with its first frame as the poster */
-const clip = (name: string): Media => ({ src: `/work/clips/${name}.webm`, poster: `/work/clips/${name}.jpg`, name: `${name.replace('-', '_')}.webm` })
+const clip = (name: string): Media => ({ src: `/work/clips/${name}.webm?v=${CLIPS}`, poster: `/work/clips/${name}.jpg?v=${CLIPS}`, name: `${name.replace('-', '_')}.webm` })
 
 export const projects: Project[] = [
   {
