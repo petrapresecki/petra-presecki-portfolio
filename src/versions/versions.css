@@ -239,11 +239,10 @@ html[data-version='grid'] .label {
 }
 
 /*
- * The page's light, after asimorb.com: four soft discs (butter, sage, a coral spark and a pale sage), radial
+ * The page's light, after asimorb.com: four soft discs (peach, coral, pink and lilac), radial
  * gradients that fade to nothing, starting behind the hello. Each wanders on its own loop of a different length and
- * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen and travels down
- * the page with the reader as one body (Grid sets --lx/--ly along its path) and settles behind the email at the
- * bottom.
+ * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen and moves as one
+ * body to sit behind what matters where you're reading (Grid sets --lx/--ly), ending behind the email.
  */
 .grid-v {
   isolation: isolate;
@@ -254,17 +253,16 @@ html[data-version='grid'] .label {
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  /* butter and sage, a coral spark, and a paler sage that comes and goes */
-  --light-1: 247 218 128;
-  --light-2: 150 196 160;
-  --light-3: 250 140 118;
-  --light-4: 190 222 190;
+  /* Asim's own: peach, coral, pink and a lilac that comes and goes */
+  --light-1: 247 160 114;
+  --light-2: 253 113 116;
+  --light-3: 253 171 211;
+  --light-4: 195 166 240;
 }
 .grid-v .page-light > div {
   position: absolute;
   inset: 0;
   transform: translate(var(--lx, 0), var(--ly, 0));
-  opacity: var(--glow, 1);
   will-change: transform;
 }
 .grid-v .page-light i {

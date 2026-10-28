@@ -20,15 +20,15 @@ export const PAPER = 'var(--color-paper)'
 export const MUTED = 'var(--color-muted)'
 export const RULE = 'var(--color-rule)'
 
-/** the palette, the same as the home page's light: butter and sage, a coral spark, a moss; a warm grey for what's left out */
-export const SPARK = '#fa8c76'
-export const BUTTER = '#f5cf6b'
-export const SAGE = '#96c4a0'
-export const MOSS = '#c3d06e'
+/** the palette, the same as the home page's light: Asim's coral, a peach, a pink and a lilac; a warm grey for what's left out */
+export const CORAL = '#fd7174'
+export const PEACH = '#f7a072'
+export const PINK = '#fdabd3'
+export const LILAC = '#c3a6f0'
 export const GREY = '#c9c3b8'
 
 /** each case's own colour, as each part of asimorb.com has one: it leads in its film and marks it in the case bar */
-export const LEAD = { theme: SPARK, flows: BUTTER, sdk: SAGE, agent: MOSS } as const
+export const LEAD = { theme: CORAL, flows: PEACH, sdk: PINK, agent: LILAC } as const
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 export const easeOut = (x: number) => 1 - (1 - x) ** 3

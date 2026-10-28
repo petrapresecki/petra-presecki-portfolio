@@ -24,11 +24,11 @@ const INDEX = [
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
-  const light = useLightPath()
+  const light = useLightGuide()
   return (
     <main className="grid-v">
-      {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop, that
-          travel down the page with the reader and settle behind the email at the bottom */}
+      {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop. It sits
+          behind whatever matters where you're reading (the [data-light] elements) and behind a row you point at */}
       <div className="page-light" aria-hidden>
         <div ref={light}>
           <i />
@@ -65,7 +65,7 @@ export default function Grid() {
 
         {/* as on abgd.it: the copy set line on line from the second third to the edge, the follow-on stepped in twice; even space above and below */}
         <section className="hero-intro grid-12 flex-1 pb-8">
-          <div className="intro-ab col-span-12 row-start-2 md:col-[1/span_10] lg:col-[5/span_8]">
+          <div data-light className="intro-ab col-span-12 row-start-2 md:col-[1/span_10] lg:col-[5/span_8]">
             <p className="lead-l">
               <Intro greeting={false} />
             </p>
@@ -101,7 +101,9 @@ export default function Grid() {
       {/* the Coinme cases, set like the side work but barer: a number, the name, the film */}
       <section id="cases">
         <p className="grid-12 cap pb-2">
-          <span className="col-span-12 md:col-[4/span_6]">/ A closer look /</span>
+          <span data-light className="col-span-12 md:col-[4/span_6]">
+            / A closer look /
+          </span>
         </p>
         {cases.map((c, i) => (
           <CaseRow key={c.id} n={i + 1} study={c} onOpen={() => openCase(c.id)} />
@@ -114,7 +116,9 @@ export default function Grid() {
       <section id="about" className="list-row">
         <p className="cap col-span-12 md:col-span-3">/ About /</p>
         <div className="col-span-12 mt-3 md:col-span-6 md:mt-0">
-          <p className="lead-l max-w-[30em]">{about.lines[0]}</p>
+          <p data-light className="lead-l max-w-[30em]">
+            {about.lines[0]}
+          </p>
           <div className="dense about-body mt-6 max-w-[34em]">
             <p>{about.lines[2]}</p>
             <p className="indent">{about.lines[3]}</p>
@@ -133,7 +137,9 @@ export default function Grid() {
       <Star />
 
       <section id="capabilities" className="grid-12">
-        <h2 className="title-l col-span-12 md:col-[4/span_9]">What I work with</h2>
+        <h2 data-light className="title-l col-span-12 md:col-[4/span_9]">
+          What I work with
+        </h2>
         <div className="col-span-12 mt-8 md:col-[4/span_9]">
           {skills.map(([k, v], i) => (
             <div key={k} className="grid grid-cols-9 gap-x-[var(--gap)] rule-top py-3">
@@ -152,7 +158,9 @@ export default function Grid() {
 
       <section id="work">
         <p className="grid-12 cap pb-2">
-          <span className="col-span-12 md:col-[4/span_6]">/ Side work /</span>
+          <span data-light className="col-span-12 md:col-[4/span_6]">
+            / Side work /
+          </span>
         </p>
         {projects.map(p => (
           <SideRow key={p.id} project={p} onOpen={() => openProject(p.id)} />
@@ -205,7 +213,7 @@ export default function Grid() {
       <footer className="pb-4">
         <div className="rule-top mx-[var(--margin)] pt-3">
           {/* the hello's cut again, so the page opens and closes the same way; pointing re-cuts it. No sweep in: the page ends before it would start */}
-          <a href={`mailto:${person.email}`} className="wordmark foot block" aria-label={`Email ${person.email}`}>
+          <a data-light href={`mailto:${person.email}`} className="wordmark foot block" aria-label={`Email ${person.email}`}>
             <FitLine>
               <CutType as="span" text={person.email} seed={3} className="hello-cut" />
             </FitLine>
@@ -236,7 +244,9 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         {/* first names only: the row is a quick index, the project page has the rest */}
         <span className="title-m block">
-          <span className="side-title">{p.title.split(' ')[0]}</span>
+          <span data-light="hover" className="side-title">
+            {p.title.split(' ')[0]}
+          </span>
           <span className="side-arrow"> ↗︎</span>
         </span>
         <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
@@ -263,7 +273,9 @@ function CaseRow({ n, study, onOpen }: { n: number; study: (typeof cases)[number
       <span className="cap col-span-6 md:col-span-3">/{pad(n)}</span>
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         <span className="title-m block">
-          <span className="side-title">{study.short}</span>
+          <span data-light="hover" className="side-title">
+            {study.short}
+          </span>
           <span className="side-arrow"> ↗︎</span>
         </span>
       </span>
@@ -324,7 +336,7 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
       <div className="list-row">
         <span className="cap col-span-6 md:col-span-3">{job.dates}</span>
         <div className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
-          <h3 className="title-l">
+          <h3 data-light className="title-l">
             {job.company}
             {to && <span className="text-muted"> /{to}</span>}
           </h3>
@@ -383,76 +395,101 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
 }
 
 /**
- * Where the light is on its way down the page, as offsets from where it starts (vw, vh): it crosses from side to side
- * between the parts of the page and ends low in the middle, behind the email. Phones get a narrower path.
+ * The light marks what matters where you're reading. The parts that matter carry [data-light]: the intro, each job,
+ * the cases, About, Capabilities, Side work and the email. The light settles behind whichever of them is nearest the
+ * reading line, about two fifths down the screen (lower near the end, so the email can have it), and glides from one
+ * to the next with some weight and a top speed. Pointing at a case or a side project ([data-light="hover"]) draws it
+ * behind that row for as long as you're there. Reduced motion leaves it where it starts.
  */
-const PATH = {
-  wide: [
-    [0, 0],
-    [30, 10],
-    [8, 6],
-    [32, 14],
-    [22, 28],
-  ],
-  narrow: [
-    [0, 0],
-    [22, 30],
-    [6, 30],
-    [24, 42],
-    [12, 46],
-  ],
-}
-
-/**
- * The light follows the reader down the page as one body: scroll sets where on its path it should be, and it glides
- * there with some weight and a top speed, so a fast flick of the scroll doesn't throw it across the screen. It pales a
- * little on the way. Reduced motion leaves it where it starts.
- */
-function useLightPath() {
+function useLightGuide() {
   const light = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (prefersReducedMotion()) return
     const el = light.current!
-    const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2)
-    let target = 0
-    let shown = 0
+    const discs = [...el.children] as HTMLElement[]
+    let pointed: Element | null = null
+    let target = [0, 0]
+    let shown = [0, 0]
+    let home = [0, 0]
     let last = 0
     let raf = 0
-    // the furthest it moves along its path in a second, however fast the page goes
-    const TOP_SPEED = 0.16
-    const place = (p: number) => {
-      const path = window.innerWidth < 768 ? PATH.narrow : PATH.wide
-      const f = p * (path.length - 1)
-      const i = Math.min(path.length - 2, Math.floor(f))
-      const k = ease(f - i)
-      const along = Math.sin(p * Math.PI)
-      el.style.setProperty('--lx', `${(path[i][0] + (path[i + 1][0] - path[i][0]) * k).toFixed(2)}vw`)
-      el.style.setProperty('--ly', `${(path[i][1] + (path[i + 1][1] - path[i][1]) * k).toFixed(2)}vh`)
-      el.style.setProperty('--glow', (1 - 0.25 * along).toFixed(3))
+    // pixels a second, however fast the page goes
+    const TOP_SPEED = 900
+    // where the light's middle is when it isn't moved: between its two big discs
+    const measure = () => {
+      const [a, b] = discs
+      home = [(a.offsetLeft + a.offsetWidth / 2 + b.offsetLeft + b.offsetWidth / 2) / 2, (a.offsetTop + a.offsetHeight / 2 + b.offsetTop + b.offsetHeight / 2) / 2]
+    }
+    // the spot behind an element: a little in from its start, level with its middle
+    const spot = (e: Element) => {
+      const r = e.getBoundingClientRect()
+      return [r.left + Math.min(r.width * 0.3, 220), r.top + r.height / 2]
+    }
+    const aim = () => {
+      if (pointed) return (target = spot(pointed))
+      const vh = window.innerHeight
+      const room = document.documentElement.scrollHeight - vh
+      const end = room > 0 ? Math.max(0, (window.scrollY - (room - vh)) / vh) : 0
+      const line = vh * (0.42 + 0.4 * Math.min(1, end))
+      let best: Element | null = null
+      let dist = Infinity
+      // React writes a bare data-light as data-light="true"
+      for (const e of document.querySelectorAll('.grid-v [data-light]:not([data-light="hover"])')) {
+        const r = e.getBoundingClientRect()
+        if (r.bottom < 0 || r.top > vh) continue
+        const d = Math.abs(r.top + r.height / 2 - line)
+        if (d < dist) [best, dist] = [e, d]
+      }
+      if (best) target = spot(best)
+    }
+    const place = () => {
+      el.style.setProperty('--lx', `${(shown[0] - home[0]).toFixed(1)}px`)
+      el.style.setProperty('--ly', `${(shown[1] - home[1]).toFixed(1)}px`)
     }
     const tick = (now: number) => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
       last = now
-      const step = (target - shown) * (1 - Math.exp(-dt / 0.5))
-      shown += Math.max(-TOP_SPEED * dt, Math.min(TOP_SPEED * dt, step))
-      if (Math.abs(target - shown) < 0.0005) shown = target
-      place(shown)
-      raf = shown === target ? 0 : requestAnimationFrame(tick)
+      aim()
+      const k = 1 - Math.exp(-dt / 0.45)
+      const dx = (target[0] - shown[0]) * k
+      const dy = (target[1] - shown[1]) * k
+      const len = Math.hypot(dx, dy)
+      const cap = len > TOP_SPEED * dt ? (TOP_SPEED * dt) / len : 1
+      shown = [shown[0] + dx * cap, shown[1] + dy * cap]
+      place()
+      const settled = Math.hypot(target[0] - shown[0], target[1] - shown[1]) < 0.5
+      raf = settled ? 0 : requestAnimationFrame(tick)
       if (!raf) last = 0
     }
-    const onScroll = () => {
-      const room = document.documentElement.scrollHeight - window.innerHeight
-      target = room > 0 ? Math.min(1, Math.max(0, window.scrollY / room)) : 0
+    const wake = () => {
       if (!raf) raf = requestAnimationFrame(tick)
     }
-    onScroll()
-    shown = target
-    place(shown)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
+    const over = (e: PointerEvent) => {
+      const row = (e.target as Element).closest?.('.side-row')
+      pointed = row?.querySelector('[data-light="hover"]') ?? null
+      wake()
+    }
+    const leave = () => {
+      pointed = null
+      wake()
+    }
+    measure()
+    aim()
+    shown = [...target]
+    place()
+    const resize = () => {
+      measure()
+      wake()
+    }
+    window.addEventListener('scroll', wake, { passive: true })
+    window.addEventListener('resize', resize)
+    document.addEventListener('pointerover', over)
+    document.documentElement.addEventListener('pointerleave', leave)
     return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
+      window.removeEventListener('scroll', wake)
+      window.removeEventListener('resize', resize)
+      document.removeEventListener('pointerover', over)
+      document.documentElement.removeEventListener('pointerleave', leave)
       cancelAnimationFrame(raf)
     }
   }, [])
