@@ -39,8 +39,9 @@ export default function Grid() {
 
       {/* the first screen: everything down to the foot line, so the experience starts below the fold */}
       <div className="hero">
-        {/* the one light on the page, the same the case films are made of: three soft discs drifting on long loops */}
+        {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop */}
         <div className="hero-light" aria-hidden>
+          <i />
           <i />
           <i />
           <i />

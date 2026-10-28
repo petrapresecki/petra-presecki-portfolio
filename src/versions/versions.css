@@ -239,9 +239,10 @@ html[data-version='grid'] .label {
 }
 
 /*
- * The hero's light, after asimorb.com: a coral disc, a peach one and a small pink one, radial gradients that fade to
- * nothing, behind the hello and the intro. They drift on long loops of different lengths, so the light keeps
- * changing shape without ever visibly moving. The case films are made of the same light.
+ * The hero's light, after asimorb.com: four pale discs (peach, coral, pink, lilac), radial gradients that fade to
+ * nothing, behind the hello and the intro. Each wanders on its own loop of a different length and the pink and lilac
+ * ones come and go, so the light keeps moving and changing colour without ever repeating the same shape. The case
+ * films are made of the same light.
  */
 .grid-v .hero {
   position: relative;
@@ -253,44 +254,85 @@ html[data-version='grid'] .label {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* Asim's own: peach, coral, pink and a lilac that comes and goes */
+  --light-1: 247 160 114;
+  --light-2: 253 113 116;
+  --light-3: 253 171 211;
+  --light-4: 195 166 240;
+}
+/*
+ * Other pairings the dev switcher tries, each one hue family with one partner across the wheel, kept soft so it
+ * stays light on the paper: apricot and lilac, tangerine and cobalt, butter and sage with a coral spark, and The
+ * Design Society's blue-violet with lime.
+ */
+html[data-light='apricot'] .grid-v .hero-light {
+  --light-1: 252 196 150;
+  --light-2: 185 160 230;
+  --light-3: 255 168 140;
+  --light-4: 210 195 245;
+}
+html[data-light='cobalt'] .grid-v .hero-light {
+  --light-1: 255 165 95;
+  --light-2: 105 135 245;
+  --light-3: 255 205 125;
+  --light-4: 150 172 250;
+}
+html[data-light='sage'] .grid-v .hero-light {
+  --light-1: 247 218 128;
+  --light-2: 150 196 160;
+  --light-3: 250 140 118;
+  --light-4: 190 222 190;
+}
+html[data-light='society'] .grid-v .hero-light {
+  --light-1: 125 112 245;
+  --light-2: 205 240 100;
+  --light-3: 185 168 250;
+  --light-4: 225 246 160;
 }
 .grid-v .hero-light i {
   position: absolute;
   aspect-ratio: 1;
   border-radius: 50%;
-  will-change: transform;
+  will-change: transform, opacity;
 }
 .grid-v .hero-light i:nth-child(1) {
   left: -4%;
-  top: 20%;
-  width: min(42vw, 680px);
-  background: radial-gradient(closest-side, rgb(247 160 114 / 0.75), rgb(247 160 114 / 0.5) 32%, rgb(247 160 114 / 0.18) 62%, rgb(247 160 114 / 0.04) 84%, transparent);
-  animation: hero-drift-a 71s ease-in-out infinite;
+  top: 18%;
+  width: min(44vw, 700px);
+  background: radial-gradient(closest-side, rgb(var(--light-1) / 0.85), rgb(var(--light-1) / 0.55) 34%, rgb(var(--light-1) / 0.2) 64%, rgb(var(--light-1) / 0.05) 85%, transparent);
+  animation: hero-drift-a 23s ease-in-out infinite;
 }
 .grid-v .hero-light i:nth-child(2) {
-  left: 6%;
+  left: 8%;
   top: 30%;
   width: min(28vw, 450px);
-  background: radial-gradient(closest-side, rgb(253 113 116 / 0.8), rgb(253 113 116 / 0.45) 38%, rgb(253 113 116 / 0.1) 72%, transparent);
-  animation: hero-drift-b 53s ease-in-out infinite;
+  background: radial-gradient(closest-side, rgb(var(--light-2) / 0.75), rgb(var(--light-2) / 0.42) 38%, rgb(var(--light-2) / 0.1) 72%, transparent);
+  animation: hero-drift-b 17s ease-in-out infinite;
 }
 .grid-v .hero-light i:nth-child(3) {
-  left: 5%;
-  top: 22%;
-  width: min(12vw, 190px);
-  background: radial-gradient(closest-side, rgb(253 171 211 / 0.85), rgb(253 171 211 / 0.4) 50%, transparent);
-  animation: hero-drift-c 37s ease-in-out infinite;
+  left: 4%;
+  top: 20%;
+  width: min(18vw, 290px);
+  background: radial-gradient(closest-side, rgb(var(--light-3) / 0.9), rgb(var(--light-3) / 0.45) 50%, transparent);
+  animation: hero-drift-c 13s ease-in-out infinite;
+}
+.grid-v .hero-light i:nth-child(4) {
+  left: 18%;
+  top: 40%;
+  width: min(24vw, 380px);
+  background: radial-gradient(closest-side, rgb(var(--light-4) / 0.85), rgb(var(--light-4) / 0.4) 48%, transparent);
+  animation: hero-drift-d 29s ease-in-out infinite;
 }
 @keyframes hero-drift-a {
   0%,
   100% {
     transform: translate(0, 0) scale(1);
   }
-  40% {
-    transform: translate(4%, -3%) scale(1.05);
+  35% {
+    transform: translate(14%, -8%) scale(1.08);
   }
   70% {
-    transform: translate(-3%, 2%) scale(0.96);
+    transform: translate(-6%, 9%) scale(0.94);
   }
 }
 @keyframes hero-drift-b {
@@ -299,25 +341,44 @@ html[data-version='grid'] .label {
     transform: translate(0, 0) scale(1);
   }
   30% {
-    transform: translate(-8%, 6%) scale(0.95);
+    transform: translate(-22%, 18%) scale(0.9);
   }
   65% {
-    transform: translate(7%, -4%) scale(1.06);
+    transform: translate(26%, -12%) scale(1.12);
   }
 }
 @keyframes hero-drift-c {
   0%,
   100% {
     transform: translate(0, 0);
+    opacity: 1;
   }
   25% {
-    transform: translate(40%, 30%);
+    transform: translate(60%, 45%);
+    opacity: 0.5;
   }
   50% {
-    transform: translate(90%, -10%);
+    transform: translate(120%, -10%);
+    opacity: 1;
   }
   75% {
-    transform: translate(30%, -40%);
+    transform: translate(40%, -45%);
+    opacity: 0.7;
+  }
+}
+@keyframes hero-drift-d {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-40%, -30%) scale(1.15);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-70%, 10%) scale(0.9);
+    opacity: 0.8;
   }
 }
 @media (max-width: 767px) {
@@ -335,7 +396,12 @@ html[data-version='grid'] .label {
   .grid-v .hero-light i:nth-child(3) {
     left: 2%;
     top: 6%;
-    width: 24vw;
+    width: 30vw;
+  }
+  .grid-v .hero-light i:nth-child(4) {
+    left: 30%;
+    top: 12%;
+    width: 44vw;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -461,6 +527,17 @@ html[data-version='grid'] .label {
   width: max-content;
   max-width: calc(100vw - 24px);
   overflow-x: auto;
+}
+/* the light switcher sits in the bottom left corner, clear of the version one */
+.version-switch.light-switch {
+  left: 14px;
+  translate: none;
+}
+@media (max-width: 900px) {
+  .version-switch.light-switch {
+    bottom: 58px;
+    max-width: calc(100vw - 28px);
+  }
 }
 @media (max-width: 480px) {
   .version-switch span {
