@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, Handle, INK, LEAD, MUTED, Note, Orb, PEACH, PINK, RULE, along, curve, drift, ramp } from '@/components/films/Film'
+import { SPARK, Dotted, Film, Handle, INK, LEAD, MUTED, Note, Orb, BUTTER, SAGE, RULE, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
  * The SSN that never reaches the partner. A dotted rule splits the stage: the partner's app on the left, the vault
@@ -46,9 +46,9 @@ export default function VaultFilm({ play }: { play: boolean | 'view' }) {
         return (
           <g>
             {/* the vault, as light */}
-            <Orb at={[VAULT[0] - 20 + vx, VAULT[1] + 30 + vy]} r={200 + held * 24} color={PINK} strength={0.85 + held * 0.15} />
-            <Orb at={[VAULT[0] + 30 - vx, VAULT[1] - 20 - vy]} r={120 + held * 18} color={CORAL} strength={0.45 + held * 0.3} />
-            <Orb at={[VAULT[0] - 80 + px, VAULT[1] + 110 + py]} r={70} color={PEACH} />
+            <Orb at={[VAULT[0] - 20 + vx, VAULT[1] + 30 + vy]} r={200 + held * 24} color={SAGE} strength={0.85 + held * 0.15} />
+            <Orb at={[VAULT[0] + 30 - vx, VAULT[1] - 20 - vy]} r={120 + held * 18} color={SPARK} strength={0.45 + held * 0.3} />
+            <Orb at={[VAULT[0] - 80 + px, VAULT[1] + 110 + py]} r={70} color={BUTTER} />
 
             {/* the boundary */}
             <Dotted d={`M${RULE_X},36 V564`} color={INK} opacity={0.5} dash={3} />
@@ -82,8 +82,8 @@ export default function VaultFilm({ play }: { play: boolean | 'view' }) {
               const fade = 1 - ramp(p, 0.7, 1)
               return (
                 <g key={i}>
-                  <Dotted d={curve(path)} p={Math.min(1, p * 1.4)} color={CORAL} opacity={0.45 * fade} />
-                  <Orb at={at} r={34} color={PINK} strength={fade} />
+                  <Dotted d={curve(path)} p={Math.min(1, p * 1.4)} color={SPARK} opacity={0.45 * fade} />
+                  <Orb at={at} r={34} color={SAGE} strength={fade} />
                   <text x={at[0]} y={at[1] + 7} fontSize={20} fontWeight={600} textAnchor="middle" fill={INK} opacity={fade}>
                     {d}
                   </text>

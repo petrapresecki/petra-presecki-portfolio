@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, GREY, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PINK, RULE, along, curve, drift, lerp, mix, ramp } from '@/components/films/Film'
+import { SPARK, Dotted, Film, GREY, INK, LEAD, MUTED, Node, Note, Orb, BUTTER, SAGE, RULE, along, curve, drift, lerp, mix, ramp } from '@/components/films/Film'
 
 /**
  * Partners rebrand by config. On the left, a partner's theme: it sends only the tokens it changes (a colour, a corner
@@ -10,9 +10,9 @@ import { CORAL, Dotted, Film, GREY, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PI
 const NEUTRAL = '#9a958c'
 const PARTNERS = [
   { name: 'Default', color: NEUTRAL, radius: 6, glow: GREY },
-  { name: 'Harbor', color: CORAL, radius: 13, glow: CORAL },
-  { name: 'Ember', color: '#e8753f', radius: 2, glow: PEACH },
-  { name: 'Orchid', color: '#e2659f', radius: 8, glow: PINK },
+  { name: 'Harbor', color: '#e8705a', radius: 13, glow: SPARK },
+  { name: 'Ember', color: '#cf9a1c', radius: 2, glow: BUTTER },
+  { name: 'Orchid', color: '#4f9466', radius: 8, glow: SAGE },
 ]
 const FIRST = 1.0
 const EACH = 4.2

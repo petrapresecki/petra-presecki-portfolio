@@ -242,8 +242,8 @@ html[data-version='grid'] .label {
  * The page's light, after asimorb.com: four soft discs (butter, sage, a coral spark and a pale sage), radial
  * gradients that fade to nothing, starting behind the hello. Each wanders on its own loop of a different length and
  * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen and travels down
- * the page with the reader (Grid sets --lx/--ly along its path), coming apart on the way (--spread) and gathering
- * again behind the email at the bottom.
+ * the page with the reader as one body (Grid sets --lx/--ly along its path) and settles behind the email at the
+ * bottom.
  */
 .grid-v {
   isolation: isolate;
@@ -267,20 +267,6 @@ html[data-version='grid'] .label {
   opacity: var(--glow, 1);
   will-change: transform;
 }
-/* on the way, each disc leans its own way, so the light comes apart and gathers again */
-.grid-v .page-light i:nth-child(1) {
-  translate: calc(var(--spread, 0) * -18%) calc(var(--spread, 0) * 10%);
-}
-.grid-v .page-light i:nth-child(2) {
-  translate: calc(var(--spread, 0) * 55%) calc(var(--spread, 0) * -12%);
-}
-.grid-v .page-light i:nth-child(3) {
-  translate: calc(var(--spread, 0) * 160%) calc(var(--spread, 0) * -90%);
-}
-.grid-v .page-light i:nth-child(4) {
-  translate: calc(var(--spread, 0) * 30%) calc(var(--spread, 0) * 60%);
-}
-
 .grid-v .page-light i {
   position: absolute;
   aspect-ratio: 1;
@@ -306,7 +292,7 @@ html[data-version='grid'] .label {
   top: 20%;
   width: min(18vw, 290px);
   background: radial-gradient(closest-side, rgb(var(--light-3) / 0.9), rgb(var(--light-3) / 0.45) 50%, transparent);
-  animation: hero-drift-c 13s ease-in-out infinite;
+  animation: hero-drift-c 19s ease-in-out infinite;
 }
 .grid-v .page-light i:nth-child(4) {
   left: 18%;

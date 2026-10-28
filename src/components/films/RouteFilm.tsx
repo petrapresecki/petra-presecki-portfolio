@@ -1,4 +1,4 @@
-import { CORAL, Dotted, Film, Handle, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PINK, along, curve, drift, ramp } from '@/components/films/Film'
+import { SPARK, Dotted, Film, Handle, INK, LEAD, MUTED, Node, Note, Orb, BUTTER, SAGE, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
  * One widget, a different app for every partner. The flows sit around the orchestrator as nodes; a partner's config
@@ -21,9 +21,9 @@ type Visit = {
   says: [string, string[]]
 }
 const VISITS: Visit[] = [
-  { partner: 'Ember', color: PEACH, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'], mounts: 'Cash buy', says: ['Mounted', ['Every check passed, so the', 'cash buy flow mounts']] },
-  { partner: 'Harbor', color: CORAL, asks: 'Sell at an ATM', offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'], mounts: 'Due diligence', says: ['Held', ['Flagged: due diligence comes', 'before any sale at an ATM']] },
-  { partner: 'Orchid', color: PINK, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'], mounts: null, stops: 3, says: ['Nothing mounted', ['The region isn’t confirmed,', 'and not confirmed counts as no']] },
+  { partner: 'Ember', color: BUTTER, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Sell at an ATM', 'Wallet'], mounts: 'Cash buy', says: ['Mounted', ['Every check passed, so the', 'cash buy flow mounts']] },
+  { partner: 'Harbor', color: SPARK, asks: 'Sell at an ATM', offers: ['Sign-up', 'Identity', 'Due diligence', 'Card buy', 'Sell at an ATM', 'Wallet'], mounts: 'Due diligence', says: ['Held', ['Flagged: due diligence comes', 'before any sale at an ATM']] },
+  { partner: 'Orchid', color: SAGE, asks: 'Cash buy', offers: ['Sign-up', 'Identity', 'Due diligence', 'Cash buy', 'Wallet'], mounts: null, stops: 3, says: ['Nothing mounted', ['The region isn’t confirmed,', 'and not confirmed counts as no']] },
 ]
 const EACH = 5
 const LENGTH = VISITS.length * EACH

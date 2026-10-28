@@ -389,24 +389,24 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
 const PATH = {
   wide: [
     [0, 0],
-    [48, 14],
-    [4, -2],
-    [52, 8],
-    [26, 28],
+    [30, 10],
+    [8, 6],
+    [32, 14],
+    [22, 28],
   ],
   narrow: [
     [0, 0],
-    [36, 38],
-    [4, 26],
-    [40, 44],
-    [16, 46],
+    [22, 30],
+    [6, 30],
+    [24, 42],
+    [12, 46],
   ],
 }
 
 /**
- * The light follows the reader down the page: scroll sets where on its path it should be, and it catches up with a
- * little weight rather than sticking to the scroll. On the way it comes apart and pales, and it gathers again at the
- * end. Reduced motion leaves it where it starts.
+ * The light follows the reader down the page as one body: scroll sets where on its path it should be, and it glides
+ * there with some weight and a top speed, so a fast flick of the scroll doesn't throw it across the screen. It pales a
+ * little on the way. Reduced motion leaves it where it starts.
  */
 function useLightPath() {
   const light = useRef<HTMLDivElement>(null)
@@ -418,6 +418,8 @@ function useLightPath() {
     let shown = 0
     let last = 0
     let raf = 0
+    // the furthest it moves along its path in a second, however fast the page goes
+    const TOP_SPEED = 0.16
     const place = (p: number) => {
       const path = window.innerWidth < 768 ? PATH.narrow : PATH.wide
       const f = p * (path.length - 1)
@@ -426,13 +428,13 @@ function useLightPath() {
       const along = Math.sin(p * Math.PI)
       el.style.setProperty('--lx', `${(path[i][0] + (path[i + 1][0] - path[i][0]) * k).toFixed(2)}vw`)
       el.style.setProperty('--ly', `${(path[i][1] + (path[i + 1][1] - path[i][1]) * k).toFixed(2)}vh`)
-      el.style.setProperty('--spread', along.toFixed(3))
-      el.style.setProperty('--glow', (1 - 0.4 * along).toFixed(3))
+      el.style.setProperty('--glow', (1 - 0.25 * along).toFixed(3))
     }
     const tick = (now: number) => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
       last = now
-      shown += (target - shown) * (1 - Math.exp(-dt / 0.35))
+      const step = (target - shown) * (1 - Math.exp(-dt / 0.5))
+      shown += Math.max(-TOP_SPEED * dt, Math.min(TOP_SPEED * dt, step))
       if (Math.abs(target - shown) < 0.0005) shown = target
       place(shown)
       raf = shown === target ? 0 : requestAnimationFrame(tick)
