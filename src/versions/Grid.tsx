@@ -399,16 +399,17 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
  * the cases, About, Capabilities, Side work and the email. The light heads for whichever of them is nearest the
  * reading line, about two fifths down the screen (lower near the end, so the email can have it), and behind a case or
  * side project row while you point at it ([data-light="hover"]).
- * Its four discs don't move as a block: each follows with its own weight and top speed, so on the way they stream out
- * one after another and gather again at the stop, and each wanders its own wide, slow loop across the screen, so they
- * keep drifting apart and over each other. Reduced motion leaves them where they start.
+ * Its four discs don't move as one: only the big one sits on the stop. The others are pulled toward it by less and
+ * less and otherwise roam their own slow paths across the whole screen, at their own speeds, so they cross, part and
+ * meet rather than travel in a line. Reduced motion leaves them where they start.
  */
 const DISCS = [
-  // how long it takes to catch up (s), its top speed (px/s), how far it wanders (share of the screen) and its loop (s)
-  { lag: 0.35, speed: 1100, wander: [0.05, 0.05], loop: 31 },
-  { lag: 0.75, speed: 850, wander: [0.12, 0.1], loop: 23 },
-  { lag: 1.2, speed: 650, wander: [0.26, 0.2], loop: 17 },
-  { lag: 1.7, speed: 500, wander: [0.22, 0.24], loop: 37 },
+  // how hard the stop pulls it (0–1), how long it takes to catch up (s), its top speed (px/s), and its own roaming
+  // path: how far across the screen it goes (share of width and height) and how long a round takes (s)
+  { pull: 0.9, lag: 0.5, speed: 900, roam: [0.06, 0.06], loop: 31 },
+  { pull: 0.55, lag: 0.9, speed: 700, roam: [0.3, 0.22], loop: 26 },
+  { pull: 0.2, lag: 0.6, speed: 600, roam: [0.42, 0.36], loop: 19 },
+  { pull: 0.1, lag: 1.1, speed: 450, roam: [0.4, 0.4], loop: 41 },
 ]
 
 function useLightGuide() {
@@ -450,14 +451,15 @@ function useLightGuide() {
       }
       if (best) target = spot(best)
     }
-    // where disc i wants to be: the stop, keeping its place in the group, plus its own wander
+    // where disc i wants to be: part of the way to the stop (keeping its place in the group), the rest on its own path
+    // around the middle of the screen
     const goal = (i: number, now: number) => {
-      const { wander, loop } = DISCS[i]
+      const { pull, roam, loop } = DISCS[i]
       const a = ((now / 1000) * Math.PI * 2) / loop
-      return [
-        target[0] + homes[i][0] - middle[0] + Math.sin(a + i * 1.9) * wander[0] * window.innerWidth,
-        target[1] + homes[i][1] - middle[1] + Math.sin(a * 1.6 + i * 2.7) * wander[1] * window.innerHeight,
-      ]
+      const [w, h] = [window.innerWidth, window.innerHeight]
+      const own = [w * (0.5 + roam[0] * Math.sin(a + i * 1.9)), h * (0.5 + roam[1] * Math.sin(a * (1.3 + i * 0.2) + i * 2.7))]
+      const stop = [target[0] + homes[i][0] - middle[0], target[1] + homes[i][1] - middle[1]]
+      return [own[0] + (stop[0] - own[0]) * pull, own[1] + (stop[1] - own[1]) * pull]
     }
     const tick = (now: number) => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
