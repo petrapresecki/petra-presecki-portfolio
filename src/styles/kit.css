@@ -42,8 +42,9 @@ html.lenis body {
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
+/* only up and down: containing sideways too would turn off the trackpad's two-finger swipe back */
 .lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
 }
 .lenis.lenis-stopped {
   overflow: hidden;

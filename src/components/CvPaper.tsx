@@ -12,7 +12,8 @@ const H = 1123
 
 /**
  * The CV as one sheet of paper: page one on the front, page two on the back.
- * Drag to turn it over (it keeps a little momentum), scroll or pinch to zoom, double-click or arrow keys to flip.
+ * Drag to turn it over (it keeps a little momentum), scroll or pinch to zoom, double-click or arrow keys to flip;
+ * pinching it smaller than it fits closes it.
  */
 export default function CvPaper({ onClose }: { onClose: () => void }) {
   const grid = document.documentElement.dataset.version === 'grid'
@@ -100,6 +101,8 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
     s.drag = { x: e.clientX, y: e.clientY }
   }
   const up = (e: React.PointerEvent) => {
+    // pinched right down past where it fits, the paper puts itself away, like a photo
+    if (pts.current.size === 2 && st.current.zoom < 0.7) return onClose()
     pts.current.delete(e.pointerId)
     if (!pts.current.size) st.current.drag = null
   }

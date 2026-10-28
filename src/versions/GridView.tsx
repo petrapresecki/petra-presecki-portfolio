@@ -1,10 +1,12 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { getLenis } from '@/lib/kit/lenis'
 import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
+import { useSwipeClose } from '@/lib/close-gestures'
 
 /**
  * Grid's full-screen view for a case or a side project: the see-through bar of tiny capitals, the page on its
- * own scroll, and the next one at the bottom set as a title. Fades in, and out before it closes; Esc closes.
+ * own scroll, and the next one at the bottom set as a title. Fades in, and out before it closes; Esc closes, and on a
+ * phone so does swiping it away to the right or pulling it down from the top.
  */
 export default function GridView({
   label,
@@ -30,6 +32,8 @@ export default function GridView({
     gsap.to(root.current, { autoAlpha: 0, duration: 0.2, ease: 'power2.in', onComplete: onClose })
   }
 
+  useSwipeClose(root, onClose)
+
   useEffect(() => {
     getLenis()?.stop()
     root.current?.focus()
@@ -51,7 +55,7 @@ export default function GridView({
       aria-modal="true"
       aria-label={label}
       data-lenis-prevent
-      className="fixed inset-0 z-[70] overflow-y-auto overscroll-contain bg-paper outline-none"
+      className="fixed inset-0 z-[70] overflow-y-auto overscroll-y-contain bg-paper outline-none"
     >
       <header className="grid-bar">
         <div className="grid-12 items-center py-2.5">

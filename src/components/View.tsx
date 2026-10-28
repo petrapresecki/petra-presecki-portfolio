@@ -1,10 +1,11 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { getLenis } from '@/lib/kit/lenis'
 import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
+import { useSwipeClose } from '@/lib/close-gestures'
 
 /**
  * A full-screen view over the page with its own scroll, laid on the same 12-column grid.
- * It fades in rising a few pixels, and fades out before it closes.
+ * It fades in rising a few pixels, and fades out before it closes; on a phone it swipes away right or pulls down.
  */
 export default function View({
   label,
@@ -31,6 +32,8 @@ export default function View({
     gsap.to(root.current, { autoAlpha: 0, y: 8, duration: 0.2, ease: 'power2.in', onComplete: onClose })
   }
 
+  useSwipeClose(root, onClose)
+
   useEffect(() => {
     getLenis()?.stop()
     root.current?.focus()
@@ -54,7 +57,7 @@ export default function View({
       aria-modal="true"
       aria-label={label}
       data-lenis-prevent
-      className="fixed inset-0 z-[70] overflow-y-auto overscroll-contain bg-paper outline-none"
+      className="fixed inset-0 z-[70] overflow-y-auto overscroll-y-contain bg-paper outline-none"
     >
       <div className="grid-12 sticky top-0 z-10 items-baseline gap-y-1 bg-paper/90 py-3 backdrop-blur-sm rule-bottom">
         {bar}
