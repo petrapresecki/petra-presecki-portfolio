@@ -4,6 +4,7 @@ import CaseFilm from '@/components/films/CaseFilm'
 import View from '@/components/View'
 import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
+import { useBackCloses } from '@/lib/close-gestures'
 
 const NAV = [
   ['experience', 'Experience'],
@@ -28,6 +29,10 @@ export default function Page() {
     setCv(true)
   }
   const show = setOpen
+  useBackCloses(cv || !!open, () => {
+    setOpen(null)
+    setCv(false)
+  })
   const openCase = (id: string) => show({ kind: 'case', id })
   const study = open?.kind === 'case' ? cases.find(c => c.id === open.id) : undefined
   const project = open?.kind === 'project' ? projects.find(p => p.id === open.id) : undefined

@@ -4,6 +4,7 @@ import { CaseView, ProjectView } from '@/components/Page'
 import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
+import { useBackCloses } from '@/lib/close-gestures'
 
 export const go = (e: React.MouseEvent, id: string) => {
   e.preventDefault()
@@ -21,6 +22,10 @@ export function useOverlays(Case: typeof CaseView = CaseView, Project: typeof Pr
     e.preventDefault()
     setCv(true)
   }
+  useBackCloses(cv || !!open, () => {
+    setOpen(null)
+    setCv(false)
+  })
   const openCase = (id: string) => setOpen({ kind: 'case', id })
   const openProject = (id: string) => setOpen({ kind: 'project', id })
   const study = open?.kind === 'case' ? cases.find(c => c.id === open.id) : undefined
