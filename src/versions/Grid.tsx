@@ -70,7 +70,7 @@ export default function Grid() {
               <Intro greeting={false} />
             </p>
             <p className="lead-l indent">{about.lines[1]}</p>
-            <p data-light className="cap mt-8 flex flex-wrap gap-x-4 gap-y-1">
+            <p className="cap mt-8 flex flex-wrap gap-x-4 gap-y-1">
               <a href={`mailto:${person.email}`} className="link">↗︎ Email</a>
               <a href={GRID_CV} target="_blank" rel="noreferrer" className="link" onClick={openCv}>↗︎ CV</a>
               <a href={person.linkedin} target="_blank" rel="noreferrer" className="link">↗︎ LinkedIn</a>
@@ -79,7 +79,6 @@ export default function Grid() {
           </div>
           <p className="hero-foot title-l col-span-6 row-start-4 md:col-span-4">2021–2026</p>
           <a
-            data-light
             href="#experience"
             className="hero-foot title-l col-span-6 row-start-4 text-right md:col-[5/span_4] md:text-left"
             onClick={e => go(e, 'experience')}
@@ -145,7 +144,7 @@ export default function Grid() {
           {skills.map(([k, v], i) => (
             <div key={k} className="grid grid-cols-9 gap-x-[var(--gap)] rule-top py-3">
               <p className="col-span-9 md:col-span-3">
-                <span data-light className="bar">
+                <span className="bar">
                   /{i + 1}.0 {k}
                 </span>
               </p>
@@ -188,9 +187,7 @@ export default function Grid() {
           },
         ].map((c, i) => (
           <div key={c.title} className={`col-span-12 md:col-span-4 ${i ? '' : 'md:col-start-3'}`}>
-            <p data-light className="title-l">
-              {c.title} ↘︎
-            </p>
+            <p className="title-l">{c.title} ↘︎</p>
             <p className="cap mt-3 text-muted">/Contact me</p>
             <ul className="mt-10">
               {c.links.map(([label, href]) => (
@@ -247,7 +244,7 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         {/* first names only: the row is a quick index, the project page has the rest */}
         <span className="title-m block">
-          <span data-light="row" className="side-title">
+          <span data-light="hover" className="side-title">
             {p.title.split(' ')[0]}
           </span>
           <span className="side-arrow"> ↗︎</span>
@@ -276,7 +273,7 @@ function CaseRow({ n, study, onOpen }: { n: number; study: (typeof cases)[number
       <span className="cap col-span-6 md:col-span-3">/{pad(n)}</span>
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         <span className="title-m block">
-          <span data-light="row" className="side-title">
+          <span data-light="hover" className="side-title">
             {study.short}
           </span>
           <span className="side-arrow"> ↗︎</span>
@@ -398,21 +395,21 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
 }
 
 /**
- * The light marks what matters on the screen, one thing per disc. The parts worth marking carry [data-light]: the
- * intro and its links, each job, each case and side project, About, each capability, the contact titles and the email.
- * The big disc takes whichever is nearest the reading line, about two fifths down the screen (lower near the end, so
- * the email can have it), or the case or side project row you're pointing at. Each of the others takes another of the
- * nearest and keeps it while it stays on screen, so they cross to new marks one at a time as you scroll. A disc with
- * nothing left to mark roams its own slow path, and every disc moves with its own weight and top speed. Reduced motion
- * leaves them where they start.
+ * The light marks what matters where you're reading. The parts that matter carry [data-light]: the intro, each job,
+ * the cases, About, Capabilities, Side work and the email. The light heads for whichever of them is nearest the
+ * reading line, about two fifths down the screen (lower near the end, so the email can have it), and behind a case or
+ * side project row while you point at it ([data-light="hover"]).
+ * Its four discs don't move as one: only the big one sits on the stop. The others are pulled toward it by less and
+ * less and otherwise roam their own slow paths across the whole screen, at their own speeds, so they cross, part and
+ * meet rather than travel in a line. Reduced motion leaves them where they start.
  */
 const DISCS = [
-  // how long it takes to catch up (s), its top speed (px/s), and its path when it roams: how far across the screen it
-  // goes (share of width and height) and how long a round takes (s)
-  { lag: 0.5, speed: 900, roam: [0.06, 0.06], loop: 31 },
-  { lag: 0.8, speed: 750, roam: [0.3, 0.22], loop: 26 },
-  { lag: 0.6, speed: 650, roam: [0.42, 0.36], loop: 19 },
-  { lag: 1, speed: 550, roam: [0.4, 0.4], loop: 41 },
+  // how hard the stop pulls it (0–1), how long it takes to catch up (s), its top speed (px/s), and its own roaming
+  // path: how far across the screen it goes (share of width and height) and how long a round takes (s)
+  { pull: 0.9, lag: 0.5, speed: 900, roam: [0.06, 0.06], loop: 31 },
+  { pull: 0.55, lag: 0.9, speed: 700, roam: [0.3, 0.22], loop: 26 },
+  { pull: 0.2, lag: 0.6, speed: 600, roam: [0.42, 0.36], loop: 19 },
+  { pull: 0.1, lag: 1.1, speed: 450, roam: [0.4, 0.4], loop: 41 },
 ]
 
 function useLightGuide() {
@@ -421,59 +418,53 @@ function useLightGuide() {
     if (prefersReducedMotion()) return
     const discs = [...light.current!.children] as HTMLElement[]
     let pointed: Element | null = null
-    // what each disc is marking, its resting middle, and where it is now
-    let marks: (Element | null)[] = discs.map(() => null)
+    let target = [0, 0]
+    // each disc's resting middle, the group's middle, and where each one is now
     let homes: number[][] = []
+    let middle = [0, 0]
     let shown: number[][] = []
     let last = 0
-    let picked = 0
     let raf = 0
     const measure = () => {
       homes = discs.map(d => [d.offsetLeft + d.offsetWidth / 2, d.offsetTop + d.offsetHeight / 2])
+      middle = [(homes[0][0] + homes[1][0]) / 2, (homes[0][1] + homes[1][1]) / 2]
     }
     // the spot behind an element: a little in from its start, level with its middle
     const spot = (e: Element) => {
       const r = e.getBoundingClientRect()
       return [r.left + Math.min(r.width * 0.3, 220), r.top + r.height / 2]
     }
-    const pick = () => {
+    const aim = () => {
+      if (pointed) return void (target = spot(pointed))
       const vh = window.innerHeight
       const room = document.documentElement.scrollHeight - vh
       const end = room > 0 ? Math.max(0, (window.scrollY - (room - vh)) / vh) : 0
       const line = vh * (0.42 + 0.4 * Math.min(1, end))
-      // what's on screen, nearest the reading line first
-      const seen = [...document.querySelectorAll('.grid-v [data-light]')]
-        .map(e => [e, e.getBoundingClientRect()] as const)
-        .filter(([, r]) => r.top + r.height / 2 > vh * 0.08 && r.top + r.height / 2 < vh * 0.92)
-        .sort(([, a], [, b]) => Math.abs(a.top + a.height / 2 - line) - Math.abs(b.top + b.height / 2 - line))
-        .map(([e]) => e)
-      const first = pointed ?? seen[0] ?? null
-      const rest = seen.filter(e => e !== first).slice(0, 6)
-      const next: (Element | null)[] = [first]
-      for (let i = 1; i < discs.length; i++) next.push(marks[i] && rest.includes(marks[i]!) && !next.includes(marks[i]) ? marks[i] : null)
-      for (let i = 1; i < discs.length; i++) if (!next[i]) next[i] = rest.find(e => !next.includes(e)) ?? null
-      marks = next
+      let best: Element | null = null
+      let dist = Infinity
+      // React writes a bare data-light as data-light="true"
+      for (const e of document.querySelectorAll('.grid-v [data-light]:not([data-light="hover"])')) {
+        const r = e.getBoundingClientRect()
+        if (r.bottom < 0 || r.top > vh) continue
+        const d = Math.abs(r.top + r.height / 2 - line)
+        if (d < dist) [best, dist] = [e, d]
+      }
+      if (best) target = spot(best)
     }
-    // where disc i wants to be: on its mark, breathing a little around it, or on its own path when it has none
+    // where disc i wants to be: part of the way to the stop (keeping its place in the group), the rest on its own path
+    // around the middle of the screen
     const goal = (i: number, now: number) => {
-      const { roam, loop } = DISCS[i]
+      const { pull, roam, loop } = DISCS[i]
       const a = ((now / 1000) * Math.PI * 2) / loop
       const [w, h] = [window.innerWidth, window.innerHeight]
-      const mark = marks[i]
-      if (mark) {
-        const [x, y] = spot(mark)
-        return [x + Math.sin(a + i) * w * 0.02, y + Math.sin(a * 1.4 + i * 2) * h * 0.02]
-      }
-      return [w * (0.5 + roam[0] * Math.sin(a + i * 1.9)), h * (0.5 + roam[1] * Math.sin(a * (1.3 + i * 0.2) + i * 2.7))]
+      const own = [w * (0.5 + roam[0] * Math.sin(a + i * 1.9)), h * (0.5 + roam[1] * Math.sin(a * (1.3 + i * 0.2) + i * 2.7))]
+      const stop = [target[0] + homes[i][0] - middle[0], target[1] + homes[i][1] - middle[1]]
+      return [own[0] + (stop[0] - own[0]) * pull, own[1] + (stop[1] - own[1]) * pull]
     }
     const tick = (now: number) => {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
       last = now
-      // choosing marks reads the whole page, so ten times a second is plenty; the discs still move every frame
-      if (now - picked > 100) {
-        pick()
-        picked = now
-      }
+      aim()
       discs.forEach((d, i) => {
         const [gx, gy] = goal(i, now)
         const k = 1 - Math.exp(-dt / DISCS[i].lag)
@@ -488,11 +479,11 @@ function useLightGuide() {
     }
     const over = (e: PointerEvent) => {
       const row = (e.target as Element).closest?.('.side-row')
-      pointed = row?.querySelector('[data-light]') ?? null
+      pointed = row?.querySelector('[data-light="hover"]') ?? null
     }
     const leave = () => (pointed = null)
     measure()
-    pick()
+    aim()
     shown = discs.map((_, i) => goal(i, performance.now()))
     raf = requestAnimationFrame(tick)
     window.addEventListener('resize', measure)
