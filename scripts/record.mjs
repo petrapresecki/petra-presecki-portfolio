@@ -18,8 +18,10 @@ const FRAME = 'https://frame-score.pages.dev'
 const STILL = process.env.FRAME_STILL ?? path.join(process.env.HOME, 'Desktop/the-grand-budapest-hotel.jpg')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
-// output sizes: the hero and the wide clips span two columns, cells one
-const SIZES = { hero: [2400, 1500, 34], wide: [2400, 1500, 35], cell: [1600, 1000, 36] }
+// output sizes: every clip shows at half the page's width; the hero, opening first, gets a little more
+const SIZES = { hero: [1920, 1200, 37], wide: [1600, 1000, 38], cell: [1600, 1000, 38] }
+// Chrome screencasts the sites at ~60 fps; keeping all of it is what makes scrolls and swings read smooth
+const FPS = 60
 
 let pointer = [720, 450]
 async function glide(page, to, steps = 45) {
@@ -344,7 +346,7 @@ for (const [name, [size, take]] of Object.entries(takes)) {
   await page.close()
   const [w, h, crf] = SIZES[size]
   const file = path.join(OUT, `${name}.webm`)
-  encode(frames, file, { width: w, height: h, crf })
+  encode(frames, file, { width: w, height: h, crf, fps: FPS })
   fs.writeFileSync(path.join(OUT, `${name}.jpg`), frames[0].data)
   const secs = frames.at(-1).t - frames[0].t
   console.log(`${name}: ${secs.toFixed(1)}s, ${(frames.length / secs).toFixed(0)} fps → ${(fs.statSync(file).size / 1e6).toFixed(1)} MB`)

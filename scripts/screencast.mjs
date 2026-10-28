@@ -54,7 +54,9 @@ export function encode(frames, file, { fps = 30, width, height, crf = 31 } = {})
   fs.closeSync(fd)
   const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', stream]
   if (width) args.push('-vf', `scale=${width}:${height}:flags=lanczos`)
-  args.push('-an', '-c:v', 'libvpx-vp9', '-crf', String(crf), '-b:v', '0', '-deadline', 'good', '-cpu-used', '3', '-row-mt', '1', '-pix_fmt', 'yuv420p', file)
+  // a keyframe every second so loops and hover restarts seek straight in; tiles let the browser decode on several threads
+  args.push('-an', '-c:v', 'libvpx-vp9', '-crf', String(crf), '-b:v', '0', '-g', String(fps), '-tile-columns', '2', '-frame-parallel', '0')
+  args.push('-deadline', 'good', '-cpu-used', '3', '-row-mt', '1', '-pix_fmt', 'yuv420p', file)
   try {
     execFileSync(FFMPEG, args)
   } finally {
