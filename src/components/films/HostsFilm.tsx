@@ -1,175 +1,160 @@
-import { useId } from 'react'
-import { Film, INK, MUTED, PAPER, RULE, easeInOut, lerp, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, GREY, INK, LEAD, MUTED, Node, Note, Orb, PEACH, PINK, RULE, along, curve, drift, lerp, mix, ramp } from '@/components/films/Film'
 
 /**
- * The design system's film, set like the Vault film: one of its components, the price chart, on the page, and
- * the hosts it runs in inside the ink block.
- * The chart is scrubbed, then a copy of its line runs along the chart's rule into the block, turning paper as it
- * crosses, and draws itself into each host in turn, in that host's brand. No partner writes any of it.
+ * Partners rebrand by config. On the left, a partner's theme: it sends only the tokens it changes (a colour, a corner
+ * radius) and leaves the rest to the default, because the host's theme wins a deep merge. The theme crosses as the
+ * partner's light, and the same price chart and button in an iOS app, an Android app and on the web all take it on
+ * the same frame. Three partners in turn, then back to the default; no partner writes a line of code.
  */
 
-// the partners' brands, and how each looks in light or dark
-const BRANDS = [
-  { name: 'Default', primary: '#151514', surface: '#ffffff' },
-  { name: 'Harbor', primary: '#2f4bd8', surface: '#ffffff' },
-  { name: 'Ember', primary: '#e0531f', surface: '#fbf1e6' },
-  { name: 'Orchid', primary: '#5cbfa5', surface: '#ffffff' },
+const NEUTRAL = '#9a958c'
+const PARTNERS = [
+  { name: 'Default', color: NEUTRAL, radius: 6, glow: GREY },
+  { name: 'Harbor', color: CORAL, radius: 13, glow: CORAL },
+  { name: 'Ember', color: '#e8753f', radius: 2, glow: PEACH },
+  { name: 'Orchid', color: '#e2659f', radius: 8, glow: PINK },
 ]
-const colours = (brand: (typeof BRANDS)[number], dark: boolean) =>
-  dark
-    ? { surface: '#151514', text: '#f2f0ea', primary: brand.name === 'Default' ? '#f2f0ea' : brand.primary }
-    : { surface: brand.surface, text: '#151514', primary: brand.primary }
-
-const EDGE = 560
-const CHART = { x: 80, y: 196, w: 420, h: 92 }
-const RULE_Y = 304
-const LENGTH = 9
-const SEND = 1.9
-const ARRIVE = 2.6
-const EACH_HOST = 0.2
+const FIRST = 1.0
+const EACH = 4.2
+const LENGTH = FIRST + (PARTNERS.length - 1) * EACH + 1.6
+const ARRIVE = 1.7
 
 // a day of prices: a rise with noise
-const N = 28
-const PRICES = Array.from({ length: N }, (_, i) => 0.18 + (i / (N - 1)) * 0.62 + (Math.sin(i * 2.7) * 0.5 + Math.sin(i * 1.3 + 1) * 0.5) * 0.12)
-const line = (x: number, y: number, w: number, h: number) => PRICES.map((v, i) => `${x + (i * w) / (N - 1)},${y + h - v * h}`).join(' ')
-/** the price a share x of the way along the day */
-const at = (x: number) => {
-  const f = Math.min(N - 1.001, Math.max(0, x * (N - 1)))
-  const i = Math.floor(f)
-  return lerp(PRICES[i], PRICES[i + 1], f - i)
-}
+const N = 22
+const PRICES = Array.from({ length: N }, (_, i) => 0.2 + (i / (N - 1)) * 0.6 + (Math.sin(i * 2.7) * 0.5 + Math.sin(i * 1.3 + 1) * 0.5) * 0.12)
+const chart = (x: number, y: number, w: number, h: number) => PRICES.map((v, i) => `${x + (i * w) / (N - 1)},${y + h - v * h}`).join(' ')
 
-type Chrome = 'phone' | 'browser' | 'webview'
-const HOSTS: { name: string; chrome: Chrome; brand: number; dark: boolean }[] = [
-  { name: 'iOS app', chrome: 'phone', brand: 1, dark: false },
-  { name: 'Android app', chrome: 'phone', brand: 2, dark: false },
-  { name: 'Web iframe', chrome: 'browser', brand: 0, dark: false },
-  { name: 'iOS WebView', chrome: 'webview', brand: 3, dark: true },
-  { name: 'Android WebView', chrome: 'webview', brand: 1, dark: true },
-  { name: 'React Native SDK', chrome: 'phone', brand: 2, dark: false },
+const HOSTS = [
+  { name: 'iOS', x: 470, y: 150, w: 128, h: 250, phone: true },
+  { name: 'Android', x: 620, y: 150, w: 128, h: 250, phone: true },
+  { name: 'Web', x: 770, y: 175, w: 160, h: 200, phone: false },
 ]
-const FRAME = { w: 104, h: 96 }
-const fx = (i: number) => EDGE + 30 + (i % 3) * (FRAME.w + 14)
-const fy = (i: number) => 340 + Math.floor(i / 3) * (FRAME.h + 34)
-const lands = (i: number) => ARRIVE + i * EACH_HOST
+const SEND = [[330, 330], [420, 470], [700, 290]] as const
 
-function Host({ i, drawn, flash }: { i: number; drawn: number; flash: boolean }) {
-  const h = HOSTS[i]
-  const x = fx(i)
-  const y = fy(i)
-  const c = colours(BRANDS[h.brand], h.dark)
-  const top = h.chrome === 'phone' ? 12 : 16
-  const inner = { x: x + 6, y: y + top, w: FRAME.w - 12, h: FRAME.h - top - 6 }
-  return (
-    <g>
-      <rect x={x} y={y} width={FRAME.w} height={FRAME.h} rx={h.chrome === 'browser' ? 3 : 10} fill={INK} stroke={PAPER} strokeOpacity={flash ? 1 : 0.45} strokeWidth={flash ? 2 : 1} />
-      {h.chrome === 'phone' && <rect x={x + FRAME.w / 2 - 10} y={y + 4} width={20} height={4} rx={2} fill={PAPER} opacity={0.35} />}
-      {h.chrome === 'browser' && [0, 1, 2].map(k => <circle key={k} cx={x + 8 + k * 7} cy={y + 8} r={2} fill={PAPER} opacity={0.45} />)}
-      {/* a WebView sits under the partner's own bar */}
-      {h.chrome === 'webview' && <rect x={x + 6} y={y + 5} width={FRAME.w - 12} height={8} fill={BRANDS[h.brand].primary} />}
-      <rect x={inner.x} y={inner.y} width={inner.w} height={inner.h} fill={c.surface} />
-      <rect x={inner.x + 6} y={inner.y + 7} width={30} height={6} fill={c.text} />
-      {/* the chart draws itself in once it arrives */}
-      {drawn > 0 && (
-        <polyline points={line(inner.x + 6, inner.y + 20, inner.w - 12, inner.h - 28)} fill="none" stroke={c.primary} strokeWidth={1.5} strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - drawn} />
-      )}
-      <text x={x} y={y + FRAME.h + 16} fontSize={12} fill={PAPER} opacity={0.6}>
-        {h.name}
-      </text>
-    </g>
-  )
+/** which partner's turn it is, where in it we are, and the one before */
+function phase(t: number) {
+  if (t < FIRST) return { i: 0, u: t + EACH, prev: 0 }
+  const k = Math.min(PARTNERS.length - 1, 1 + Math.floor((t - FIRST) / EACH))
+  return { i: k, u: t - FIRST - (k - 1) * EACH, prev: k - 1 }
 }
 
 export default function HostsFilm({ play }: { play: boolean | 'view' }) {
-  const id = useId()
   return (
-    <Film length={LENGTH} still={6} play={play} label="One price chart, written once, rendered in six hosts">
+    <Film length={LENGTH} still={FIRST + EACH + 3} play={play} label="Each partner sends a few tokens; the same component takes them on iOS, Android and the web at once">
       {t => {
-        const out = 1 - ramp(t, LENGTH - 0.4, LENGTH - 0.05)
-        const done = HOSTS.filter((_, i) => t >= lands(i)).length
-        // the finger on the chart: across it before it's sent, and again once every host has it
-        const scrub = t < SEND ? ramp(t, 0.3, 1.7, easeInOut) : ramp(t, 5, 8.2, easeInOut)
-        const scrubbing = (t > 0.3 && t < 1.75) || (t > 5 && t < 8.25)
-        const sy = CHART.y + CHART.h - at(scrub) * CHART.h
-        const sx = CHART.x + scrub * CHART.w
-        // the price rides above the finger, kept inside the chart
-        const lx = Math.min(CHART.x + CHART.w - 44, Math.max(CHART.x + 44, sx))
-        const travel = ramp(t, SEND, ARRIVE - 0.05, x => x * x)
-        // drawn twice, in ink on the page and in paper over the block, so the line changes colour as it crosses
-        const both = (node: (fill: string) => React.ReactNode) => (
-          <>
-            <g clipPath={`url(#${id}-page)`}>{node(INK)}</g>
-            <g clipPath={`url(#${id}-block)`}>{node(PAPER)}</g>
-          </>
-        )
+        let { i, u, prev } = phase(t)
+        // the loop's last stretch hands back to the default, so the next round starts where this one did
+        const home = ramp(t, LENGTH - 1.2, LENGTH - 0.2)
+        if (home > 0) [i, prev, u] = [0, PARTNERS.length - 1, ARRIVE + home * 0.6]
+        const [p, q] = [PARTNERS[i], PARTNERS[prev]]
+        const named = home > 0 ? home : ramp(u, 0, 0.5)
+        const sent = home > 0 ? 1 : ramp(u, 0.2, 1.0)
+        const travel = ramp(u, 0.5, ARRIVE)
+        const took = home > 0 ? home : ramp(u, ARRIVE - 0.1, ARRIVE + 0.5)
+        const color = mix(q.color, p.color, took)
+        const radius = lerp(q.radius, p.radius, took)
+        const [dx, dy] = drift(t, LENGTH, 3, 12)
+        const [gx, gy] = drift(t, LENGTH, 4, 16)
         return (
-          <g opacity={out}>
-            <clipPath id={`${id}-page`}>
-              <rect width={EDGE} height={600} />
-            </clipPath>
-            <clipPath id={`${id}-block`}>
-              <rect x={EDGE} width={960 - EDGE} height={600} />
-            </clipPath>
+          <g>
+            {/* the theme the hosts are wearing, as light behind them */}
+            <Orb at={[700 + gx, 300 + gy]} r={260} color={q.glow} strength={0.55 * (1 - took)} />
+            <Orb at={[700 + gx, 300 + gy]} r={260} color={p.glow} strength={0.55 * took} />
 
-            {/* the hosts */}
-            <rect x={EDGE} width={960 - EDGE} height={600} fill={INK} />
-            <text x={EDGE + 40} y={116} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={PAPER}>
-              6 hosts
+            {/* the partner's theme: the tokens it sends, and the ones it leaves to the default */}
+            <text x={80} y={130} fontSize={56} fontWeight={500} letterSpacing={-1.4} fill={INK} opacity={1 - named}>
+              {q.name}
             </text>
-            <text x={EDGE + 40} y={152} fontSize={17} fill={PAPER} opacity={0.6}>
-              iOS, Android, web, WebViews, an SDK
+            <text x={80} y={130} fontSize={56} fontWeight={500} letterSpacing={-1.4} fill={INK} opacity={named}>
+              {p.name}
             </text>
-            {HOSTS.map((_, i) => (
-              <Host key={i} i={i} drawn={ramp(t, lands(i), lands(i) + 0.5, easeInOut)} flash={t >= lands(i) && t < lands(i) + 0.45} />
-            ))}
-
-            {/* the component */}
-            <text x={80} y={116} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={INK}>
-              Price chart
-            </text>
-            <text x={80} y={CHART.y - 44} fontSize={16} fill={MUTED}>
-              One component, written once
-            </text>
-            <polyline points={line(CHART.x, CHART.y, CHART.w, CHART.h)} fill="none" stroke={INK} strokeWidth={2.5} strokeLinejoin="round" />
-            {scrubbing && (
-              <g>
-                <line x1={sx} x2={sx} y1={CHART.y - 8} y2={RULE_Y} stroke={INK} />
-                <circle cx={sx} cy={sy} r={5} fill={PAPER} stroke={INK} strokeWidth={2} />
-                <rect x={lx - 44} y={CHART.y - 22} width={88} height={20} fill={PAPER} />
-                <text x={lx} y={CHART.y - 7} fontSize={15} fontWeight={500} textAnchor="middle" fill={INK} className="tabular-nums">
-                  ${(60200 + at(scrub) * 5200).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                </text>
-              </g>
-            )}
-
-            {/* the chart's rule doesn't stop at the page: it runs on into the hosts */}
-            {both(f => <line x1={80} x2={920} y1={RULE_Y} y2={RULE_Y} stroke={f} strokeWidth={1.5} strokeOpacity={f === INK ? 1 : 0.5} />)}
-            {/* a copy of the line, running along it and in */}
-            {t >= SEND && t < ARRIVE &&
-              both(f => (
-                <polyline points={line(lerp(CHART.x, 780, travel), RULE_Y - 34, 120, 28)} fill="none" stroke={f} strokeWidth={2} strokeLinejoin="round" opacity={1 - ramp(travel, 0.8, 1)} />
-              ))}
-
-            <text x={80} y={380} fontSize={20} fontWeight={500} fill={INK}>
-              What it takes
+            <text x={80} y={164} fontSize={16} fill={MUTED}>
+              {i ? 'Sends only what it changes' : 'The library’s own theme'}
             </text>
             {(
               [
-                ['Hosts rendering it', `${done} of ${HOSTS.length}`],
-                ['Code partners write', 'None'],
+                ['Primary', true],
+                ['Corner radius', true],
+                ['Spacing', false],
+                ['Typeface', false],
               ] as const
-            ).map(([k, v], i) => (
-              <g key={k}>
-                <line x1={80} x2={500} y1={398 + i * 52} y2={398 + i * 52} stroke={RULE} />
-                <text x={80} y={430 + i * 52} fontSize={17} fill={MUTED}>
-                  {k}
-                </text>
-                <text x={500} y={430 + i * 52} fontSize={17} textAnchor="end" fill={INK} className="tabular-nums">
-                  {v}
-                </text>
-              </g>
-            ))}
-            <line x1={80} x2={500} y1={502} y2={502} stroke={RULE} />
+            ).map(([k, own], r) => {
+              const y = 262 + r * 44
+              return (
+                <g key={k}>
+                  <Dotted d={`M80,${y + 14} H330`} color={RULE} dash={2} />
+                  <text x={80} y={y} fontSize={17} fill={own && i ? INK : MUTED}>
+                    {k}
+                  </text>
+                  {own ? (
+                    k === 'Primary' ? (
+                      <Node at={[322, y - 6]} color={mix(q.color, p.color, named)} on={1} />
+                    ) : (
+                      <text x={330} y={y} fontSize={17} textAnchor="end" fill={INK} className="tabular-nums">
+                        {Math.round(radius)}
+                      </text>
+                    )
+                  ) : (
+                    <text x={330} y={y} fontSize={17} textAnchor="end" fill={MUTED}>
+                      default
+                    </text>
+                  )}
+                </g>
+              )
+            })}
+
+            <Note
+              from={[300, 408]}
+              at={[80, 436]}
+              width={330}
+              color={LEAD.theme}
+              label="The host’s theme wins"
+              lines={['It sends 2 of 4 tokens; the', 'rest stay the library’s own']}
+              p={(i === 1 ? ramp(u, 0.6, 1.6) : i > 1 ? 1 : 0) * (1 - home)}
+            />
+
+            {/* the tokens cross as the partner's light, once per partner */}
+            {i > 0 && home === 0 && (
+              <>
+                <Dotted d={curve(SEND)} p={sent} color={p.glow} opacity={1 - ramp(u, ARRIVE + 0.4, ARRIVE + 1.2)} />
+                {travel > 0 && travel < 1 && <Orb at={along(SEND, travel)} r={60} color={p.glow} strength={1 - ramp(travel, 0.75, 1)} />}
+              </>
+            )}
+
+            {/* one price chart and one button, in three hosts, all taking the theme on the same frame */}
+            {HOSTS.map((h, k) => {
+              const ix = h.x + 12
+              const iw = h.w - 24
+              const top = h.y + (h.phone ? 34 : 30)
+              return (
+                <g key={h.name} transform={`translate(${dx * (k - 1) * 0.3},${dy * 0.3})`}>
+                  <rect x={h.x} y={h.y} width={h.w} height={h.h} rx={h.phone ? 22 : 6} fill="none" stroke={INK} strokeWidth={1.5} />
+                  {h.phone ? (
+                    <line x1={h.x + h.w / 2 - 14} x2={h.x + h.w / 2 + 14} y1={h.y + 14} y2={h.y + 14} stroke={INK} strokeWidth={3} strokeLinecap="round" />
+                  ) : (
+                    [0, 1, 2].map(d => <circle key={d} cx={h.x + 14 + d * 10} cy={h.y + 14} r={2.5} fill={INK} />)
+                  )}
+                  <text x={ix} y={top + 12} fontSize={11} fontWeight={600} fill={INK}>
+                    BTC
+                  </text>
+                  <polyline points={chart(ix, top + 24, iw, h.h * 0.32)} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+                  <rect x={ix} y={h.y + h.h - 44} width={iw} height={26} rx={radius} fill={color} />
+                  <text x={h.x + h.w / 2} y={h.y + h.h - 27} fontSize={11} fontWeight={600} textAnchor="middle" fill="#fff">
+                    Buy
+                  </text>
+                  <text x={h.x + h.w / 2} y={h.y + h.h + 30} fontSize={16} fontWeight={600} letterSpacing={0.6} textAnchor="middle" fill={INK}>
+                    {h.name.toUpperCase()}
+                  </text>
+                </g>
+              )
+            })}
+            <text x={470} y={512} fontSize={16} fill={MUTED}>
+              Code the partner writes
+            </text>
+            <text x={930} y={512} fontSize={16} textAnchor="end" fill={INK}>
+              None
+            </text>
+            <Dotted d="M470,528 H930" color={RULE} dash={2} />
           </g>
         )
       }}

@@ -13,6 +13,8 @@ html[data-version='grid'] {
   --font-display: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
+  /* rules are dotted, as on asimorb.com and as the connections in the case films */
+  --dotted: repeating-linear-gradient(90deg, rgb(26 26 26 / 0.42) 0 2px, transparent 2px 5px);
 }
 html[data-version='grid'] .statement,
 html[data-version='grid'] .label {
@@ -35,7 +37,7 @@ html[data-version='grid'] .label {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 0.5px solid rgb(26 26 26 / 0.5);
+  background: var(--dotted) bottom / 100% 1px no-repeat;
 }
 .grid-v .dot {
   width: 7px;
@@ -162,10 +164,42 @@ html[data-version='grid'] .label {
     visibility: visible;
   }
 }
-/* a case's film, framed on the page */
+/* the cases as dots in a case's bar: ink, and the open one in its own colour */
+.grid-v .case-dots {
+  display: flex;
+}
+.grid-v .case-dots button {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 20px;
+}
+.grid-v .case-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  transition: transform 0.2s;
+}
+.grid-v .case-dots [aria-current] span {
+  width: 9px;
+  height: 9px;
+  background: var(--dot);
+}
+@media (hover: hover) {
+  .grid-v .case-dots button:not([aria-current]):hover span {
+    transform: scale(1.35);
+  }
+}
+.grid-v .case-dots button:focus-visible {
+  outline: 1px solid var(--color-ink);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+/* a case's film on the page: no frame, its light sits on the paper */
 .grid-v .case-peek {
   background: var(--color-paper);
-  border: 1px solid var(--color-rule);
 }
 /* a smaller title, for the side work index */
 .grid-v .title-m {
@@ -188,10 +222,166 @@ html[data-version='grid'] .label {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--gap);
   padding: 14px var(--margin) 24px;
-  border-top: 1px solid var(--color-rule);
+  background: var(--dotted) top / 100% 1px no-repeat;
 }
 .grid-v .list-row:last-child {
-  border-bottom: 1px solid var(--color-rule);
+  background:
+    var(--dotted) top / 100% 1px no-repeat,
+    var(--dotted) bottom / 100% 1px no-repeat;
+}
+.grid-v .rule-top {
+  border-top: 0;
+  background: var(--dotted) top / 100% 1px no-repeat;
+}
+.grid-v .rule-bottom {
+  border-bottom: 0;
+  background: var(--dotted) bottom / 100% 1px no-repeat;
+}
+
+/*
+ * The page's light, after asimorb.com: four soft discs (peach, coral, pink and lilac), radial
+ * gradients that fade to nothing, starting behind the hello. Each wanders on its own loop of a different length and
+ * two of them come and go, so the light keeps moving and changing colour. It is fixed to the screen; Grid moves each
+ * disc on its own to what matters where you're reading, so they stream, wander apart and gather again.
+ */
+.grid-v {
+  isolation: isolate;
+}
+.grid-v .page-light {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  /* Asim's own: peach, coral, pink and a lilac that comes and goes */
+  --light-1: 247 160 114;
+  --light-2: 253 113 116;
+  --light-3: 253 171 211;
+  --light-4: 195 166 240;
+}
+.grid-v .page-light > div {
+  position: absolute;
+  inset: 0;
+}
+.grid-v .page-light i {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  will-change: transform, opacity;
+}
+.grid-v .page-light i:nth-child(1) {
+  left: -4%;
+  top: 18%;
+  width: min(44vw, 700px);
+  background: radial-gradient(closest-side, rgb(var(--light-1) / 0.85), rgb(var(--light-1) / 0.55) 34%, rgb(var(--light-1) / 0.2) 64%, rgb(var(--light-1) / 0.05) 85%, transparent);
+  animation: hero-drift-a 23s ease-in-out infinite;
+}
+.grid-v .page-light i:nth-child(2) {
+  left: 8%;
+  top: 30%;
+  width: min(28vw, 450px);
+  background: radial-gradient(closest-side, rgb(var(--light-2) / 0.75), rgb(var(--light-2) / 0.42) 38%, rgb(var(--light-2) / 0.1) 72%, transparent);
+  animation: hero-drift-b 17s ease-in-out infinite;
+}
+.grid-v .page-light i:nth-child(3) {
+  left: 4%;
+  top: 20%;
+  width: min(18vw, 290px);
+  background: radial-gradient(closest-side, rgb(var(--light-3) / 0.9), rgb(var(--light-3) / 0.45) 50%, transparent);
+  animation: hero-drift-c 19s ease-in-out infinite;
+}
+.grid-v .page-light i:nth-child(4) {
+  left: 18%;
+  top: 40%;
+  width: min(24vw, 380px);
+  background: radial-gradient(closest-side, rgb(var(--light-4) / 0.85), rgb(var(--light-4) / 0.4) 48%, transparent);
+  animation: hero-drift-d 29s ease-in-out infinite;
+}
+@keyframes hero-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  35% {
+    transform: translate(14%, -8%) scale(1.08);
+  }
+  70% {
+    transform: translate(-6%, 9%) scale(0.94);
+  }
+}
+@keyframes hero-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  30% {
+    transform: translate(-22%, 18%) scale(0.9);
+  }
+  65% {
+    transform: translate(26%, -12%) scale(1.12);
+  }
+}
+@keyframes hero-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(60%, 45%);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(120%, -10%);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(40%, -45%);
+    opacity: 0.7;
+  }
+}
+@keyframes hero-drift-d {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-40%, -30%) scale(1.15);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-70%, 10%) scale(0.9);
+    opacity: 0.8;
+  }
+}
+@media (max-width: 767px) {
+  /* on a phone the light sits in the gap between the hello and the intro */
+  .grid-v .page-light i:nth-child(1) {
+    left: -18%;
+    top: 3%;
+    width: 84vw;
+  }
+  .grid-v .page-light i:nth-child(2) {
+    left: -2%;
+    top: 9%;
+    width: 56vw;
+  }
+  .grid-v .page-light i:nth-child(3) {
+    left: 2%;
+    top: 6%;
+    width: 30vw;
+  }
+  .grid-v .page-light i:nth-child(4) {
+    left: 30%;
+    top: 12%;
+    width: 44vw;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grid-v .page-light i {
+    animation: none;
+  }
 }
 /* the black tag bar runs off the right edge */
 .grid-v .tag {

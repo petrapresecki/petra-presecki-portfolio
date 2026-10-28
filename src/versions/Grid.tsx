@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { about, cases, experience, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
@@ -7,6 +7,7 @@ import GridCase from '@/versions/GridCase'
 import GridProject from '@/versions/GridProject'
 import CutType from '@/components/kit/cut-type/CutType'
 import CaseFilm from '@/components/films/CaseFilm'
+import { prefersReducedMotion } from '@/lib/kit/gsap'
 
 /**
  * After abgd.it, without its cards: a fixed bar of tiny capitals, a huge grotesk wordmark, a page index,
@@ -23,8 +24,19 @@ const INDEX = [
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
+  const light = useLightGuide()
   return (
     <main className="grid-v">
+      {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop. It sits
+          behind whatever matters where you're reading (the [data-light] elements) and behind a row you point at */}
+      <div className="page-light" aria-hidden>
+        <div ref={light}>
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
+      </div>
       <header className="grid-bar">
         <div className="grid-12 items-center py-2.5">
           <a href="#top" className="cap col-span-6 md:col-span-3" onClick={e => go(e, 'top')}>
@@ -53,7 +65,7 @@ export default function Grid() {
 
         {/* as on abgd.it: the copy set line on line from the second third to the edge, the follow-on stepped in twice; even space above and below */}
         <section className="hero-intro grid-12 flex-1 pb-8">
-          <div className="intro-ab col-span-12 row-start-2 md:col-[1/span_10] lg:col-[5/span_8]">
+          <div data-light className="intro-ab col-span-12 row-start-2 md:col-[1/span_10] lg:col-[5/span_8]">
             <p className="lead-l">
               <Intro greeting={false} />
             </p>
@@ -89,7 +101,9 @@ export default function Grid() {
       {/* the Coinme cases, set like the side work but barer: a number, the name, the film */}
       <section id="cases">
         <p className="grid-12 cap pb-2">
-          <span className="col-span-12 md:col-[4/span_6]">/ A closer look /</span>
+          <span data-light className="col-span-12 md:col-[4/span_6]">
+            / A closer look /
+          </span>
         </p>
         {cases.map((c, i) => (
           <CaseRow key={c.id} n={i + 1} study={c} onOpen={() => openCase(c.id)} />
@@ -102,7 +116,9 @@ export default function Grid() {
       <section id="about" className="list-row">
         <p className="cap col-span-12 md:col-span-3">/ About /</p>
         <div className="col-span-12 mt-3 md:col-span-6 md:mt-0">
-          <p className="lead-l max-w-[30em]">{about.lines[0]}</p>
+          <p data-light className="lead-l max-w-[30em]">
+            {about.lines[0]}
+          </p>
           <div className="dense about-body mt-6 max-w-[34em]">
             <p>{about.lines[2]}</p>
             <p className="indent">{about.lines[3]}</p>
@@ -121,7 +137,9 @@ export default function Grid() {
       <Star />
 
       <section id="capabilities" className="grid-12">
-        <h2 className="title-l col-span-12 md:col-[4/span_9]">What I work with</h2>
+        <h2 data-light className="title-l col-span-12 md:col-[4/span_9]">
+          What I work with
+        </h2>
         <div className="col-span-12 mt-8 md:col-[4/span_9]">
           {skills.map(([k, v], i) => (
             <div key={k} className="grid grid-cols-9 gap-x-[var(--gap)] rule-top py-3">
@@ -140,7 +158,9 @@ export default function Grid() {
 
       <section id="work">
         <p className="grid-12 cap pb-2">
-          <span className="col-span-12 md:col-[4/span_6]">/ Side work /</span>
+          <span data-light className="col-span-12 md:col-[4/span_6]">
+            / Side work /
+          </span>
         </p>
         {projects.map(p => (
           <SideRow key={p.id} project={p} onOpen={() => openProject(p.id)} />
@@ -193,7 +213,7 @@ export default function Grid() {
       <footer className="pb-4">
         <div className="rule-top mx-[var(--margin)] pt-3">
           {/* the hello's cut again, so the page opens and closes the same way; pointing re-cuts it. No sweep in: the page ends before it would start */}
-          <a href={`mailto:${person.email}`} className="wordmark foot block" aria-label={`Email ${person.email}`}>
+          <a data-light href={`mailto:${person.email}`} className="wordmark foot block" aria-label={`Email ${person.email}`}>
             <FitLine>
               <CutType as="span" text={person.email} seed={3} className="hello-cut" />
             </FitLine>
@@ -224,7 +244,9 @@ function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; o
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         {/* first names only: the row is a quick index, the project page has the rest */}
         <span className="title-m block">
-          <span className="side-title">{p.title.split(' ')[0]}</span>
+          <span data-light="hover" className="side-title">
+            {p.title.split(' ')[0]}
+          </span>
           <span className="side-arrow"> ↗︎</span>
         </span>
         <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
@@ -251,7 +273,9 @@ function CaseRow({ n, study, onOpen }: { n: number; study: (typeof cases)[number
       <span className="cap col-span-6 md:col-span-3">/{pad(n)}</span>
       <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
         <span className="title-m block">
-          <span className="side-title">{study.short}</span>
+          <span data-light="hover" className="side-title">
+            {study.short}
+          </span>
           <span className="side-arrow"> ↗︎</span>
         </span>
       </span>
@@ -312,7 +336,7 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
       <div className="list-row">
         <span className="cap col-span-6 md:col-span-3">{job.dates}</span>
         <div className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
-          <h3 className="title-l">
+          <h3 data-light className="title-l">
             {job.company}
             {to && <span className="text-muted"> /{to}</span>}
           </h3>
@@ -368,4 +392,109 @@ function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
       )}
     </article>
   )
+}
+
+/**
+ * The light marks what matters where you're reading. The parts that matter carry [data-light]: the intro, each job,
+ * the cases, About, Capabilities, Side work and the email. The light heads for whichever of them is nearest the
+ * reading line, about two fifths down the screen (lower near the end, so the email can have it), and behind a case or
+ * side project row while you point at it ([data-light="hover"]).
+ * Its four discs don't move as one: only the big one sits on the stop. The others are pulled toward it by less and
+ * less and otherwise roam their own slow paths across the whole screen, at their own speeds, so they cross, part and
+ * meet rather than travel in a line. Reduced motion leaves them where they start.
+ */
+const DISCS = [
+  // how hard the stop pulls it (0–1), how long it takes to catch up (s), its top speed (px/s), and its own roaming
+  // path: how far across the screen it goes (share of width and height) and how long a round takes (s)
+  { pull: 0.9, lag: 0.5, speed: 900, roam: [0.06, 0.06], loop: 31 },
+  { pull: 0.55, lag: 0.9, speed: 700, roam: [0.3, 0.22], loop: 26 },
+  { pull: 0.2, lag: 0.6, speed: 600, roam: [0.42, 0.36], loop: 19 },
+  { pull: 0.1, lag: 1.1, speed: 450, roam: [0.4, 0.4], loop: 41 },
+]
+
+function useLightGuide() {
+  const light = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (prefersReducedMotion()) return
+    const discs = [...light.current!.children] as HTMLElement[]
+    let pointed: Element | null = null
+    let target = [0, 0]
+    // each disc's resting middle, the group's middle, and where each one is now
+    let homes: number[][] = []
+    let middle = [0, 0]
+    let shown: number[][] = []
+    let last = 0
+    let raf = 0
+    const measure = () => {
+      homes = discs.map(d => [d.offsetLeft + d.offsetWidth / 2, d.offsetTop + d.offsetHeight / 2])
+      middle = [(homes[0][0] + homes[1][0]) / 2, (homes[0][1] + homes[1][1]) / 2]
+    }
+    // the spot behind an element: a little in from its start, level with its middle
+    const spot = (e: Element) => {
+      const r = e.getBoundingClientRect()
+      return [r.left + Math.min(r.width * 0.3, 220), r.top + r.height / 2]
+    }
+    const aim = () => {
+      if (pointed) return void (target = spot(pointed))
+      const vh = window.innerHeight
+      const room = document.documentElement.scrollHeight - vh
+      const end = room > 0 ? Math.max(0, (window.scrollY - (room - vh)) / vh) : 0
+      const line = vh * (0.42 + 0.4 * Math.min(1, end))
+      let best: Element | null = null
+      let dist = Infinity
+      // React writes a bare data-light as data-light="true"
+      for (const e of document.querySelectorAll('.grid-v [data-light]:not([data-light="hover"])')) {
+        const r = e.getBoundingClientRect()
+        if (r.bottom < 0 || r.top > vh) continue
+        const d = Math.abs(r.top + r.height / 2 - line)
+        if (d < dist) [best, dist] = [e, d]
+      }
+      if (best) target = spot(best)
+    }
+    // where disc i wants to be: part of the way to the stop (keeping its place in the group), the rest on its own path
+    // around the middle of the screen
+    const goal = (i: number, now: number) => {
+      const { pull, roam, loop } = DISCS[i]
+      const a = ((now / 1000) * Math.PI * 2) / loop
+      const [w, h] = [window.innerWidth, window.innerHeight]
+      const own = [w * (0.5 + roam[0] * Math.sin(a + i * 1.9)), h * (0.5 + roam[1] * Math.sin(a * (1.3 + i * 0.2) + i * 2.7))]
+      const stop = [target[0] + homes[i][0] - middle[0], target[1] + homes[i][1] - middle[1]]
+      return [own[0] + (stop[0] - own[0]) * pull, own[1] + (stop[1] - own[1]) * pull]
+    }
+    const tick = (now: number) => {
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      aim()
+      discs.forEach((d, i) => {
+        const [gx, gy] = goal(i, now)
+        const k = 1 - Math.exp(-dt / DISCS[i].lag)
+        const dx = (gx - shown[i][0]) * k
+        const dy = (gy - shown[i][1]) * k
+        const len = Math.hypot(dx, dy)
+        const cap = len > DISCS[i].speed * dt ? (DISCS[i].speed * dt) / len : 1
+        shown[i] = [shown[i][0] + dx * cap, shown[i][1] + dy * cap]
+        d.style.translate = `${(shown[i][0] - homes[i][0]).toFixed(1)}px ${(shown[i][1] - homes[i][1]).toFixed(1)}px`
+      })
+      raf = requestAnimationFrame(tick)
+    }
+    const over = (e: PointerEvent) => {
+      const row = (e.target as Element).closest?.('.side-row')
+      pointed = row?.querySelector('[data-light="hover"]') ?? null
+    }
+    const leave = () => (pointed = null)
+    measure()
+    aim()
+    shown = discs.map((_, i) => goal(i, performance.now()))
+    raf = requestAnimationFrame(tick)
+    window.addEventListener('resize', measure)
+    document.addEventListener('pointerover', over)
+    document.documentElement.addEventListener('pointerleave', leave)
+    return () => {
+      window.removeEventListener('resize', measure)
+      document.removeEventListener('pointerover', over)
+      document.documentElement.removeEventListener('pointerleave', leave)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+  return light
 }

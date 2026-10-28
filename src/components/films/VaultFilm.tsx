@@ -1,123 +1,126 @@
-import { useId } from 'react'
-import { Film, INK, MUTED, PAPER, RULE, Slats, easeInOut, lerp, ramp } from '@/components/films/Film'
+import { CORAL, Dotted, Film, Handle, INK, LEAD, MUTED, Note, Orb, PEACH, PINK, RULE, along, curve, drift, ramp } from '@/components/films/Film'
 
 /**
- * The SSN that never reaches the partner: the field sits in the partner's app, but its line runs on into the
- * vault, and every digit typed slides along it and in. The vault is the stripe mark, its disc's slats pulsing
- * while the number is stored. All that comes back is a customer ID.
+ * The SSN that never reaches the partner. A dotted rule splits the stage: the partner's app on the left, the vault
+ * on the right as a pool of light. The field sits in the app but belongs to the vault, so each digit typed leaves it
+ * as a small orb of light, crosses the rule and is taken into the vault. The app keeps only dots, and what comes
+ * back across is a customer ID.
  */
 
 const SSN = '123456789'
 const TYPE = 0.8
-const KEY = 0.27
-const TYPED = TYPE + SSN.length * KEY
-const BACK = TYPED + 1.4
+// typed the way people type an SSN: in its three groups, quick inside a group, a beat between them
+const KEYS = [0, 0.17, 0.36, 0.88, 1.03, 1.58, 1.74, 1.93, 2.08].map(k => TYPE + k)
+const CROSS = 1.0
+const LANDS = KEYS.map(k => k + CROSS)
+const SEND = LANDS[LANDS.length - 1] + 0.35
+const BACK = SEND + 0.6
 const HOME = BACK + 0.9
-const LENGTH = HOME + 3
+const CLEAR = 8.7
+const LENGTH = 10
 const ID = 'cus_7Hq2nX'
-const EDGE = 620
-const FIELD_Y = 250
-const ID_Y = 482
 
-/** 123-45-6789, all but the last four masked */
+const RULE_X = 520
+const VAULT = [748, 300] as const
+const FIELD = { x: 80, y: 292 }
+const ID_AT = [420, 496] as const
+
+/** 123-45-6789 with all but the last four as dots */
 function masked(n: number) {
   const s = [...SSN.slice(0, n)].map((d, i) => (i < SSN.length - 4 ? '•' : d)).join('')
   return [s.slice(0, 3), s.slice(3, 5), s.slice(5)].filter(Boolean).join('-')
 }
 
 export default function VaultFilm({ play }: { play: boolean | 'view' }) {
-  const id = useId()
   return (
-    <Film length={LENGTH} still={HOME + 1} play={play} label="Each SSN digit goes straight into the vault; the app only gets a customer ID back">
+    <Film length={LENGTH} still={7} play={play} label="Each SSN digit crosses straight into the vault; the app only gets a customer ID back">
       {t => {
-        const out = 1 - ramp(t, LENGTH - 0.5, LENGTH - 0.05)
-        const digits = Math.min(SSN.length, Math.max(0, Math.floor((t - TYPE) / KEY) + 1))
-        // the disc breathes while it stores the number, then settles
-        const storing = ramp(t, TYPED, TYPED + 0.3) * (1 - ramp(t, BACK - 0.3, BACK))
-        const idX = lerp(900, 520, ramp(t, BACK, HOME, easeInOut))
-        // drawn twice, in ink over the app and in paper over the vault, so a value changes colour as it crosses
-        const both = (node: (fill: string) => React.ReactNode) => (
-          <>
-            <g clipPath={`url(#${id}-app)`}>{node(INK)}</g>
-            <g clipPath={`url(#${id}-vault)`}>{node(PAPER)}</g>
-          </>
-        )
+        const typed = KEYS.filter(k => t >= k).length * (t < CLEAR ? 1 : 0)
+        const clear = 1 - ramp(t, CLEAR, CLEAR + 0.6)
+        // the vault takes each digit in and grows a little with it, then lets the size go between rounds
+        const held = (LANDS.filter(l => t >= l).length / SSN.length) * (1 - ramp(t, CLEAR, LENGTH))
+        const [vx, vy] = drift(t, LENGTH, 1, 10)
+        const [px, py] = drift(t, LENGTH, 2, 22)
+        const back = ramp(t, BACK, HOME)
+        const backPath = [[VAULT[0] - 40, VAULT[1] + 60], [RULE_X, 520], ID_AT] as const
         return (
-          <g opacity={out}>
-            <clipPath id={`${id}-app`}>
-              <rect width={EDGE} height={600} />
-            </clipPath>
-            <clipPath id={`${id}-vault`}>
-              <rect x={EDGE} width={960 - EDGE} height={600} />
-            </clipPath>
+          <g>
+            {/* the vault, as light */}
+            <Orb at={[VAULT[0] - 20 + vx, VAULT[1] + 30 + vy]} r={200 + held * 24} color={PINK} strength={0.85 + held * 0.15} />
+            <Orb at={[VAULT[0] + 30 - vx, VAULT[1] - 20 - vy]} r={120 + held * 18} color={CORAL} strength={0.45 + held * 0.3} />
+            <Orb at={[VAULT[0] - 80 + px, VAULT[1] + 110 + py]} r={70} color={PEACH} />
 
-            {/* the vault: solid where it holds words, the stripe mark below */}
-            <rect x={EDGE} width={960 - EDGE} height={300} fill={INK} />
-            <Slats x={EDGE} y={300} w={960 - EDGE} h={300} fill={INK} thin={3 + 5 * storing * (0.5 + 0.5 * Math.sin(t * 6))} shape={<circle cx={790} cy={450} r={115} />} />
-            <text x={EDGE + 40} y={116} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={PAPER}>
+            {/* the boundary */}
+            <Dotted d={`M${RULE_X},36 V564`} color={INK} opacity={0.5} dash={3} />
+            <text x={80} y={72} fontSize={16} fontWeight={600} letterSpacing={0.6} fill={INK}>
+              PARTNER APP
+            </text>
+            <text x={VAULT[0]} y={VAULT[1] + 20} fontSize={64} fontWeight={500} letterSpacing={-1.6} textAnchor="middle" fill={INK}>
               Vault
             </text>
-            <text x={EDGE + 40} y={152} fontSize={17} fill={PAPER} opacity={0.6}>
+            <text x={VAULT[0]} y={VAULT[1] + 52} fontSize={15} textAnchor="middle" fill={INK} opacity={0.6}>
               Encrypted, in PCI DSS scope
             </text>
 
-            {/* the partner's app */}
-            <text x={80} y={116} fontSize={64} fontWeight={500} letterSpacing={-1.6} fill={INK}>
-              Partner app
-            </text>
-            <text x={80} y={FIELD_Y - 50} fontSize={16} fill={MUTED}>
+            {/* the field: in the app, owned by the vault */}
+            <Note from={[470, FIELD.y + 18]} at={[190, 92]} width={310} color={LEAD.sdk} label="A vault-hosted field" lines={['It belongs to the vault, so the', 'app’s code never sees a digit']} />
+            <text x={FIELD.x} y={FIELD.y - 48} fontSize={16} fill={MUTED}>
               Social Security number
             </text>
-            <text x={80} y={FIELD_Y} fontSize={34} fontWeight={500} fill={digits && t >= TYPE ? INK : MUTED} letterSpacing={1} className="tabular-nums">
-              {t >= TYPE ? masked(digits) : '•••-••-••••'}
+            <text x={FIELD.x} y={FIELD.y} fontSize={44} fontWeight={500} letterSpacing={1} fill={typed ? INK : MUTED} opacity={typed ? clear : 1} className="tabular-nums">
+              {typed ? masked(typed) : '•••-••-••••'}
             </text>
-            {/* the field's line doesn't stop at the app: it runs into the vault */}
-            {both(f => <line x1={80} x2={920} y1={FIELD_Y + 16} y2={FIELD_Y + 16} stroke={f} strokeWidth={1.5} strokeOpacity={f === INK ? 1 : 0.5} />)}
+            <line x1={FIELD.x} x2={470} y1={FIELD.y + 18} y2={FIELD.y + 18} stroke={INK} strokeWidth={1.5} />
+
+            {/* every digit leaves the field as light, crosses the rule and goes into the vault */}
             {[...SSN].map((d, i) => {
-              const s = TYPE + i * KEY
-              // each digit speeds up as it goes, like something pulled in
-              const p = ramp(t, s + 0.05, s + 0.7, x => x * x)
-              if (t < s || p >= 1) return null
+              const p = ramp(t, KEYS[i] + 0.05, LANDS[i])
+              if (t < KEYS[i] || p >= 1) return null
+              const from = [FIELD.x + 12 + masked(i + 1).length * 25, FIELD.y - 14] as const
+              const path = [from, [RULE_X, i % 2 ? 150 : 430], [VAULT[0] + vx, VAULT[1] + vy]] as const
+              const at = along(path, p)
+              const fade = 1 - ramp(p, 0.7, 1)
               return (
-                <g key={i} opacity={1 - ramp(p, 0.75, 1)}>
-                  {both(f => (
-                    <text x={lerp(84 + masked(i + 1).length * 21, 880, p)} y={FIELD_Y} fontSize={34} fontWeight={500} fill={f}>
-                      {d}
-                    </text>
-                  ))}
+                <g key={i}>
+                  <Dotted d={curve(path)} p={Math.min(1, p * 1.4)} color={CORAL} opacity={0.45 * fade} />
+                  <Orb at={at} r={34} color={PINK} strength={fade} />
+                  <text x={at[0]} y={at[1] + 7} fontSize={20} fontWeight={600} textAnchor="middle" fill={INK} opacity={fade}>
+                    {d}
+                  </text>
                 </g>
               )
             })}
 
-            <text x={80} y={380} fontSize={20} fontWeight={500} fill={INK}>
+            {/* what the app holds */}
+            <text x={80} y={398} fontSize={16} fill={MUTED}>
               What the app gets
             </text>
-            <line x1={80} x2={520} y1={398} y2={398} stroke={RULE} />
-            <text x={80} y={430} fontSize={17} fill={MUTED}>
+            <Dotted d="M80,418 H470" color={RULE} dash={2} />
+            <text x={80} y={450} fontSize={18} fill={INK}>
               SSN
             </text>
-            <text x={520} y={430} fontSize={17} textAnchor="end" fill={INK}>
+            <text x={470} y={450} fontSize={18} textAnchor="end" fill={INK}>
               Never
             </text>
-            <line x1={80} x2={520} y1={450} y2={450} stroke={RULE} />
-            <text x={80} y={ID_Y} fontSize={17} fill={MUTED}>
+            <Dotted d="M80,470 H470" color={RULE} dash={2} />
+            <text x={80} y={502} fontSize={18} fill={INK}>
               Customer ID
             </text>
-            {t < BACK ? (
-              <text x={520} y={ID_Y} fontSize={17} textAnchor="end" fill={MUTED}>
-                —
-              </text>
-            ) : (
-              both(f => (
-                <text x={idX} y={ID_Y} fontSize={17} fontWeight={500} textAnchor="end" fill={f}>
-                  {ID}
-                </text>
-              ))
-            )}
-            <line x1={80} x2={520} y1={502} y2={502} stroke={RULE} />
+            <text x={470} y={502} fontSize={18} fontWeight={600} textAnchor="end" fill={INK} opacity={t >= HOME && t < CLEAR + 0.6 ? clear : 0}>
+              {ID}
+            </text>
+            <text x={470} y={502} fontSize={18} textAnchor="end" fill={MUTED} opacity={t >= HOME ? 1 - clear : 1}>
+              —
+            </text>
+            <Dotted d="M80,522 H470" color={RULE} dash={2} />
+
+            {/* and all that crosses back: an ID */}
+            <Dotted d={curve(backPath)} p={ramp(t, SEND, BACK)} color={INK} opacity={0.5 * (1 - ramp(t, HOME + 0.6, HOME + 1.4))} />
+            {back > 0 && back < 1 && <Handle at={along(backPath, back)} />}
           </g>
         )
       }}
     </Film>
   )
 }
+

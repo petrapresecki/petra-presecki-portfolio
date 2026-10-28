@@ -43,3 +43,4 @@ export default function Switch({ version, onPick }: { version: Version; onPick: 
     </div>
   )
 }
+
