@@ -7,7 +7,7 @@ export const person = {
   stack: 'React · React Native · TS',
   place: 'Zagreb, CET · remote',
   email: 'petra.presecki123@gmail.com',
-  linkedin: 'https://www.linkedin.com/in/petra-prese%C4%8Dki-a4039932b',
+  linkedin: 'https://www.linkedin.com/in/petrapresecki',
   github: 'https://github.com/petrapresecki',
   cv: '/Petra-Presecki-CV.pdf',
 }
