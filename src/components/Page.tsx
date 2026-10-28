@@ -110,8 +110,8 @@ export default function Page() {
         <div className="grid-12">
           <h2 className="label col-span-12 md:col-span-3">Side work</h2>
           <p className="col-span-12 mt-2 md:col-span-6 md:mt-0">
-            Look what I made. Sites for creative people and my own library of motion blocks, built outside client
-            work.
+            Look what I made. Sites for creative people, a film frame you can hear and my own library of motion
+            blocks, built outside client work.
           </p>
         </div>
         <div className="grid-12 mt-10 gap-y-12">

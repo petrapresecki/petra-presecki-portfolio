@@ -13,6 +13,9 @@ const OUT = path.resolve('public/work/clips')
 const IVA = 'http://localhost:4301'
 const KRESO = 'http://localhost:4302'
 const KIT = 'http://localhost:4303'
+// Frame Score is recorded from the live build; the still is loaded through "your frame" and never kept in the repo
+const FRAME = 'https://frame-score.pages.dev'
+const STILL = process.env.FRAME_STILL ?? path.join(process.env.HOME, 'Desktop/the-grand-budapest-hotel.jpg')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 // output sizes: the hero and the wide clips span two columns, cells one
@@ -52,6 +55,23 @@ const fillWindow = page =>
     for (const el of scope.querySelectorAll(':scope > :not([data-demo]), :scope > :not([data-demo]) [class*="h-["]')) el.style.height = '100vh'
     window.dispatchEvent(new Event('resize'))
   })
+/** Open Frame Score with the still at the gate */
+async function frame(page) {
+  await page.goto(`${FRAME}/`)
+  await wait(2500)
+  await page.locator('input[type=file]').setInputFiles(STILL)
+  await wait(1500)
+}
+const play = page => page.getByRole('button', { name: 'play', exact: true }).click()
+/** Drag a printer-points numeral sideways by some points (9 px each) */
+async function grade(page, label, points, steps = 50) {
+  const box = await page.getByRole('slider', { name: `${label}, printer points` }).boundingBox()
+  const at = [box.x + box.width / 2, box.y + box.height / 3]
+  await glide(page, at, 30)
+  await page.mouse.down()
+  await glide(page, [at[0] + points * 9, at[1]], steps)
+  await page.mouse.up()
+}
 const charms = { rool: [620, 380], booklet: [860, 470], apuro: [640, 640], gabagool: [880, 720] }
 
 const takes = {
@@ -286,6 +306,22 @@ const takes = {
     await wait(700)
     await scroll(page, 1400, 160)
     await wait(800)
+  }],
+
+  // Frame Score: grading a still from The Grand Budapest Hotel while it plays
+  'fs-grade': ['hero', async (page, mark) => {
+    await frame(page)
+    pointer = [900, 450]
+    await page.mouse.move(...pointer)
+    mark()
+    await play(page)
+    await wait(3500)
+    await grade(page, 'Temperature', 14)
+    await wait(1800)
+    await grade(page, 'Saturation', 12)
+    await wait(1800)
+    await grade(page, 'Temperature', -30, 70)
+    await wait(2500)
   }],
 }
 

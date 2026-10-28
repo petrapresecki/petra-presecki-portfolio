@@ -31,7 +31,7 @@ export interface Project {
   url?: string
   /** shown instead of a live link when there isn't one */
   note?: string
-  /** the big recording, four cells beside it, then two wide clips under them */
+  /** the big recording, four cells beside it, then two wide clips under them (either can be empty) */
   hero: Media
   cells: Media[]
   wide: Media[]
@@ -88,6 +88,29 @@ export const projects: Project[] = [
       'Every film has its own colour: the page fades to it, flips its ink on dark films and prints the hex in the corner',
       'The work list shows each film as a barcode, one column per frame, generated from the videos by a small Swift script',
       'The player grows out of the clicked clip; arrow keys switch films, Esc closes',
+    ],
+  },
+  {
+    id: 'frame-score',
+    title: 'Frame Score',
+    kind: 'Instrument · Web Audio',
+    year: '2026',
+    url: 'https://frame-score.pages.dev/',
+    hero: clip('fs-grade'),
+    cells: [],
+    wide: [],
+    summary:
+      'Grade a film frame and hear it. The shot is read left to right in four bands, the colour of each becomes a chord and the brightest points become a melody, played as an ambient loop. Change the grade and the music changes with it, because the sound comes straight from the pixels.',
+    facts: [
+      ['Type', 'Personal project'],
+      ['Role', 'Concept, design, development'],
+      ['Stack', 'React 19, Tone.js, Canvas, Tailwind, Vite'],
+    ],
+    details: [
+      'Four grade controls written as pixel maths, and the same code draws the picture and feeds the analysis, so what you see is what you hear',
+      'The core is plain JavaScript that knows nothing about the interface; React only sits on top',
+      'Marks on the frame come from the notes the engine actually played, at the height the pitch was read from',
+      'Search a film and spin through its stills, or drop in your own frame',
     ],
   },
   {
