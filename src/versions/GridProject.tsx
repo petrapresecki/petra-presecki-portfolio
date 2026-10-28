@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { projects, type Media, type Project } from '@/data/site'
+import { prefersReducedMotion } from '@/lib/kit/gsap'
 import { ARROW } from '@/components/Page'
 import GridView, { Points, Row } from '@/versions/GridView'
 import { pad } from '@/versions/parts'
@@ -80,16 +82,29 @@ export default function GridProject({ project, onClose, onProject }: { project: 
   )
 }
 
-/** A recording, playing on its own, with abgd.it's soft corners */
+/** A recording, playing on its own while it's on screen (so only the ones in view decode), with abgd.it's soft corners */
 function Film({ media, eager = false }: { media: Media; eager?: boolean }) {
+  const video = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = video.current!
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !prefersReducedMotion()) v.play().catch(() => {})
+        else v.pause()
+      },
+      { threshold: 0.2 },
+    )
+    io.observe(v)
+    return () => io.disconnect()
+  }, [])
   return (
     <video
+      ref={video}
       src={media.src}
       poster={media.poster}
       muted
       loop
       playsInline
-      autoPlay
       preload={eager ? 'auto' : 'metadata'}
       className="aspect-[16/10] w-full rounded-[10px] bg-mist object-cover"
     />
