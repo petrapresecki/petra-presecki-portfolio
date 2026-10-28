@@ -1,5 +1,5 @@
-// Records every clip on the site into public/work/clips/, at 2x, from the sites running locally:
-// iva :4301 (vite preview of iva-v2), bykreso :4302, creative-kit :4303 (its showcase dev server).
+// Records every clip on the site into public/work/clips/, at 2x. Iva's site and bykreso are recorded
+// live; creative-kit runs locally on :4303 (its showcase dev server).
 //   node scripts/record.mjs            all takes
 //   node scripts/record.mjs iva-       takes whose name starts with "iva-"
 // Each take navigates, waits for the site to settle, calls mark() where the clip should start,
@@ -10,8 +10,8 @@ import path from 'node:path'
 import { startScreencast, encode } from './screencast.mjs'
 
 const OUT = path.resolve('public/work/clips')
-const IVA = 'http://localhost:4301'
-const KRESO = 'http://localhost:4302'
+const IVA = 'https://ivapresecki.com'
+const KRESO = 'https://bykreso.com'
 const KIT = 'http://localhost:4303'
 // Frame Score is recorded from the live build; the still is loaded through "your frame" and never kept in the repo
 const FRAME = 'https://frame-score.pages.dev'
@@ -74,12 +74,12 @@ async function grade(page, label, points, steps = 50) {
   await glide(page, [at[0] + points * 9, at[1]], steps)
   await page.mouse.up()
 }
-const charms = { rool: [620, 380], booklet: [860, 470], apuro: [640, 640], gabagool: [880, 720] }
+const charms = { rool: [580, 430], booklet: [870, 480], apuro: [630, 630], gabagool: [860, 710] }
 
 const takes = {
   // Iva Presečki: the paper-home keyring
   'iva-keyring': ['hero', async (page, mark) => {
-    await page.goto(`${IVA}/v3`)
+    await page.goto(`${IVA}/`)
     await wait(5000)
     pointer = [200, 450]
     await page.mouse.move(...pointer)
@@ -95,40 +95,51 @@ const takes = {
     ['rool', 'apuro', 'gabagool'].map(id => [
       `iva-${id}`,
       ['cell', async (page, mark) => {
-        await page.goto(`${IVA}/v3/work/${id}`)
+        await page.goto(`${IVA}/work/${id}`)
         await wait(3500)
         await page.mouse.move(720, 450)
         mark()
-        await wait(800)
+        // the hero film turns inside the charm's shape under the title
+        await wait(1400)
         await scroll(page, 1500)
         await wait(600)
       }],
     ]),
   ),
+  // About fits one screen: open it from the ring, where it floods in round
   'iva-about': ['cell', async (page, mark) => {
-    await page.goto(`${IVA}/v3/about`)
-    await wait(3000)
-    await page.mouse.move(720, 450)
+    await page.goto(`${IVA}/`)
+    await wait(5000)
+    pointer = [1000, 500]
+    await page.mouse.move(...pointer)
     mark()
-    await wait(800)
-    await scroll(page, 900)
-    await wait(800)
+    await wait(600)
+    await glide(page, [1390, 29], 40)
+    await wait(300)
+    await page.mouse.click(1390, 29)
+    await wait(2200)
+    await glide(page, [600, 520], 50)
+    await wait(1200)
   }],
+  // Swing the ring, read a charm's tags, pull it into its project, scroll and Escape back to the ring
   'iva-pull': ['wide', async (page, mark) => {
-    await page.goto(`${IVA}/v3`)
+    await page.goto(`${IVA}/`)
     await wait(5000)
     pointer = [1200, 300]
     await page.mouse.move(...pointer)
     mark()
+    await glide(page, [480, 420], 35)
     await glide(page, charms.gabagool)
-    await wait(900)
+    await wait(1200)
     await pull(page, charms.gabagool)
     await wait(2500)
-    await scroll(page, 900, 120)
-    await wait(600)
+    await scroll(page, 1400, 160)
+    await wait(700)
+    await page.keyboard.press('Escape')
+    await wait(2600)
   }],
   'iva-booklet': ['wide', async (page, mark) => {
-    await page.goto(`${IVA}/v3/work/booklet`)
+    await page.goto(`${IVA}/work/booklet`)
     await wait(3500)
     await page.mouse.move(720, 450)
     mark()
@@ -208,9 +219,15 @@ const takes = {
     pointer = [300, 450]
     await page.mouse.move(...pointer)
     mark()
-    for (const y of [420, 495, 405, 480]) {
-      await glide(page, [575, y], 30)
-      await page.mouse.click(575, y)
+    // the list sits beside the framed tile, so it moves with the tile's shape: find each title where it is now
+    for (const name of ['Analogija liberalnog uma', 'Jam the Tram', 'Southern Comfort', 'The Loop']) {
+      const at = await page.evaluate(name => {
+        const row = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === name && b.getBoundingClientRect().height < 24 && b.getBoundingClientRect().right < 720)
+        const r = row.getBoundingClientRect()
+        return [r.right - 30, r.y + r.height / 2]
+      }, name)
+      await glide(page, at, 30)
+      await page.mouse.click(...at)
       await wait(1700)
     }
   }],
@@ -220,7 +237,8 @@ const takes = {
     await page.mouse.move(80, 450)
     mark()
     await wait(800)
-    await scroll(page, 2600, 240)
+    // the strip, about, the work barcodes and contact: about 1700 px since the polish
+    await scroll(page, 1750, 160)
     await wait(800)
   }],
 
