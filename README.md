@@ -1,5 +1,7 @@
 # petra-presecki-portfolio
 
+![Scrolling through the portfolio](docs/preview.gif)
+
 Portfolio of Petra Presečki, frontend and product engineer. Live at [petra-presecki.pages.dev](https://petra-presecki.pages.dev/).
 
 React 19, TypeScript, Vite, Tailwind 4, GSAP and Lenis, with blocks from my creative-kit (scramble text, roll text, column curtain).
