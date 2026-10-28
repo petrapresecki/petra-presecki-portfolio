@@ -13,7 +13,7 @@ export const person = {
 }
 
 // Live builds; VITE_IVA_URL / VITE_BYKRESO_URL override them (e.g. to point at local servers)
-const IVA_URL = import.meta.env.VITE_IVA_URL ?? 'https://iva-presecki.pages.dev/'
+const IVA_URL = import.meta.env.VITE_IVA_URL ?? 'https://ivapresecki.com/'
 const BYKRESO_URL = import.meta.env.VITE_BYKRESO_URL ?? 'https://bykreso.pages.dev/'
 
 export interface Media {
