@@ -13,9 +13,8 @@ const OUT = path.resolve('public/work/clips')
 const IVA = 'https://ivapresecki.com'
 const KRESO = 'https://bykreso.com'
 const KIT = 'http://localhost:4303'
-// Frame Score is recorded from the live build; the still is loaded through "your frame" and never kept in the repo
+// Frame Score is recorded from the live build, which opens on After Hours
 const FRAME = 'https://frame-score.pages.dev'
-const STILL = process.env.FRAME_STILL ?? path.join(process.env.HOME, 'Desktop/the-grand-budapest-hotel.jpg')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 // output sizes: every clip shows at half the page's width; the hero, opening first, gets a little more
@@ -67,14 +66,6 @@ const fillWindow = page =>
     for (const el of scope.querySelectorAll(':scope > :not([data-demo]), :scope > :not([data-demo]) [class*="h-["]')) el.style.height = '100vh'
     window.dispatchEvent(new Event('resize'))
   })
-/** Open Frame Score with the still at the gate */
-async function frame(page) {
-  await page.goto(`${FRAME}/`)
-  await wait(2500)
-  await page.locator('input[type=file]').setInputFiles(STILL)
-  await wait(1500)
-}
-const play = page => page.getByRole('button', { name: 'play', exact: true }).click()
 /** Drag a printer-points numeral sideways by some points (9 px each) */
 async function grade(page, label, points, steps = 50) {
   const box = await page.getByRole('slider', { name: `${label}, printer points` }).boundingBox()
@@ -340,32 +331,61 @@ const takes = {
   }],
 
   // Frame Score: grading a still from The Grand Budapest Hotel while it plays
+  // Play After Hours (the notes ring on the contours, the bar fills in the table), grade it and watch the
+  // contours redraw, load another pick, then open about
   'fs-grade': ['hero', async (page, mark) => {
-    await frame(page)
-    pointer = [900, 450]
+    await page.goto(`${FRAME}/`)
+    await wait(4000)
+    pointer = [300, 470]
     await page.mouse.move(...pointer)
     mark()
-    await play(page)
-    await wait(3500)
-    await grade(page, 'Temperature', 14)
+    await wait(300)
+    await glide(page, [60, 563], 35)
+    await page.mouse.click(60, 563)
+    await wait(2000)
+    // the bar table sits just under the fold
+    await glide(page, [720, 450], 30)
+    for (let i = 0; i < 28; i++) {
+      await page.mouse.wheel(0, 5)
+      await wait(16)
+    }
+    await wait(2000)
+    for (let i = 0; i < 28; i++) {
+      await page.mouse.wheel(0, -5)
+      await wait(16)
+    }
+    await wait(300)
+    await grade(page, 'Temperature', 16)
     await wait(1800)
-    await grade(page, 'Saturation', 12)
-    await wait(1800)
-    await grade(page, 'Temperature', -30, 70)
-    await wait(2500)
+    const pick = await page.getByRole('button', { name: /^paris, texas/ }).boundingBox()
+    await glide(page, [pick.x + pick.width / 2, pick.y + 40], 40)
+    await page.mouse.click(pick.x + pick.width / 2, pick.y + 40)
+    await wait(2200)
+    await glide(page, [1376, 38], 45)
+    await page.mouse.click(1376, 38)
+    await wait(2400)
+    await page.keyboard.press('Escape')
+    await wait(1200)
   }],
 }
 
 const only = process.argv[2]
 fs.mkdirSync(OUT, { recursive: true })
-const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--force-device-scale-factor=2'] })
+// Metal for WebGL and canvas, so heavy pages keep up in real time while recording
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--force-device-scale-factor=2', '--use-angle=metal'] })
 for (const [name, [size, take]] of Object.entries(takes)) {
   if (only && !name.startsWith(only)) continue
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 })
+  // a take that stalls (the Mac sleeping, a step waiting on the page) keeps collecting 2x frames,
+  // so steps give up after 20 s and a whole take after 90 s
+  page.setDefaultTimeout(20_000)
   const rec = await startScreencast(page, { width: 2880, height: 1800 })
+  let limit
   try {
-    await take(page, rec.mark)
+    await Promise.race([take(page, rec.mark), new Promise((_, no) => (limit = setTimeout(() => no(new Error('ran over 90 s')), 90_000)))])
+    clearTimeout(limit)
   } catch (e) {
+    clearTimeout(limit)
     console.log(`${name}: failed — ${String(e).split('\n')[0]}`)
     await rec.stop()
     await page.close()
