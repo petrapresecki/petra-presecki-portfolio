@@ -1,13 +1,22 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { about, cases, experience, person, projects, skills } from '@/data/site'
+import { about, ask, cases, experience, offer, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
-import { Clip, go, jobCases, pad, useOverlays } from '@/versions/parts'
+import { go, jobCases, pad, useOverlays } from '@/versions/parts'
 import GridCase from '@/versions/GridCase'
 import GridProject from '@/versions/GridProject'
 import CutType from '@/components/kit/cut-type/CutType'
 import CaseFilm from '@/components/films/CaseFilm'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
+
+/** the sections the bar links to, on every screen; phones get the short list */
+const NAV = [
+  ['offer', 'What I do', false],
+  ['experience', 'Experience', true],
+  ['cases', 'Cases', false],
+  ['about', 'About', true],
+  ['contact', 'Contact', true],
+] as const
 
 /**
  * After abgd.it, without its cards: a fixed bar of tiny capitals, a huge grotesk wordmark, a page index,
@@ -15,16 +24,18 @@ import { prefersReducedMotion } from '@/lib/kit/gsap'
  * numbered index rows with black labels, and the wordmark again at the bottom.
  */
 const INDEX = [
+  ['offer', 'What I do'],
   ['experience', 'Experience'],
   ['about', 'About'],
   ['capabilities', 'Capabilities'],
-  ['work', 'Side work'],
+  ['work', 'On the side'],
   ['contact', 'Contact'],
 ] as const
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
   const light = useLightGuide()
+  const current = useCurrentSection(NAV.map(([id]) => id))
   return (
     <main className="grid-v">
       {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop. It sits
@@ -39,11 +50,23 @@ export default function Grid() {
       </div>
       <header className="grid-bar">
         <div className="grid-12 items-center py-2.5">
-          <a href="#top" className="cap col-span-6 md:col-span-3" onClick={e => go(e, 'top')}>
+          <a href="#top" className="cap col-span-4 md:col-span-3" onClick={e => go(e, 'top')}>
             {person.name}
           </a>
-          <p className="cap hidden md:col-span-3 md:block">/01 Frontend engineer</p>
-          <div className="cap col-span-6 flex items-center justify-end gap-2">
+          <nav className="bar-nav cap col-span-8 flex justify-end gap-x-3 md:col-span-6 md:justify-start md:gap-x-5" aria-label="Sections">
+            {NAV.map(([id, label, phone]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={current === id}
+                className={`link ${phone ? '' : 'hidden md:inline'}`}
+                onClick={e => go(e, id)}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="cap hidden items-center justify-end gap-2 md:col-span-3 md:flex">
             Zagreb <Clock /> <span className="dot" />
           </div>
         </div>
@@ -90,6 +113,30 @@ export default function Grid() {
 
       <Star />
 
+      {/* what I bring, before the history: four plain lines, each with the one thing that shows it */}
+      <section id="offer" className="grid-12">
+        <h2 data-light className="title-l col-span-12 md:col-[4/span_9]">
+          What I do
+        </h2>
+        <div className="col-span-12 mt-8 md:col-[4/span_9]">
+          {offer.map((o, i) => (
+            <div key={o.title} className="grid grid-cols-9 gap-x-[var(--gap)] rule-top py-3">
+              <p className="col-span-9 md:col-span-3">
+                <span className="bar">
+                  /{i + 1}.0 {o.title}
+                </span>
+              </p>
+              <div className="col-span-9 mt-2 md:col-span-6 md:mt-0">
+                <p className="dense-b">{o.text}</p>
+                <p className="cap mt-2 text-muted">↳ {o.proof}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Star />
+
       <section id="experience">
         {experience.map(job => (
           <Job key={job.company} job={job} onCase={openCase} />
@@ -102,9 +149,10 @@ export default function Grid() {
       <section id="cases">
         <p className="grid-12 cap pb-2">
           <span data-light className="col-span-12 md:col-[4/span_6]">
-            / A closer look /
+            / A closer look at Coinme /
           </span>
         </p>
+        {/* the cases in plain words: who did it, what was hard, what came of it. The rest is a click away */}
         {cases.map((c, i) => (
           <CaseRow key={c.id} n={i + 1} study={c} onOpen={() => openCase(c.id)} />
         ))}
@@ -159,7 +207,7 @@ export default function Grid() {
       <section id="work">
         <p className="grid-12 cap pb-2">
           <span data-light className="col-span-12 md:col-[4/span_6]">
-            / Side work /
+            / On the side /
           </span>
         </p>
         {projects.map(p => (
@@ -170,6 +218,9 @@ export default function Grid() {
       <Star />
 
       <section id="contact" className="grid-12 gap-y-12">
+        <p data-light className="lead-l col-span-12 max-w-[28em] md:col-[3/span_8]">
+          {ask}
+        </p>
         {[
           {
             title: 'Collaborate',
@@ -188,7 +239,7 @@ export default function Grid() {
         ].map((c, i) => (
           <div key={c.title} className={`col-span-12 md:col-span-4 ${i ? '' : 'md:col-start-3'}`}>
             <p className="title-l">{c.title} ↘︎</p>
-            <p className="cap mt-3 text-muted">/Contact me</p>
+            <p className="cap mt-3 text-muted">{i ? '/More' : '/Contact me'}</p>
             <ul className="mt-10">
               {c.links.map(([label, href]) => (
                 <li key={label} className="rule-bottom">
@@ -230,29 +281,17 @@ export default function Grid() {
   )
 }
 
-/** A side project: its film plays inline on phones while on screen, and in the right-hand column on desktop while you point at the row */
+/** A side project: one quiet line, the year, the name and what it is. The films live on its page */
 function SideRow({ project: p, onOpen }: { project: (typeof projects)[number]; onOpen: () => void }) {
-  const [pointed, setPointed] = useState(false)
   return (
-    <button
-      className="group side-row list-row w-full text-left"
-      onClick={onOpen}
-      onMouseEnter={() => setPointed(true)}
-      onMouseLeave={() => setPointed(false)}
-    >
-      <span className="cap col-span-6 md:col-span-3">{p.year}</span>
-      <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
-        {/* first names only: the row is a quick index, the project page has the rest */}
-        <span className="title-m block">
-          <span data-light="hover" className="side-title">
-            {p.title.split(' ')[0]}
-          </span>
-          <span className="side-arrow"> ↗︎</span>
+    <button className="group side-row grid-12 rule-top w-full py-2.5 text-left" onClick={onOpen}>
+      <span className="cap col-span-3 text-muted">{p.year}</span>
+      <span className="dense col-span-9 md:col-span-6">
+        <span data-light="hover" className="side-title">
+          {p.title}
         </span>
-        <Clip project={p} play="view" className="mt-4 aspect-[16/10] md:hidden" />
-      </span>
-      <span className="hidden md:relative md:col-span-3 md:block">
-        <Clip project={p} play={pointed} className="grid-peek aspect-[16/10] md:absolute md:inset-x-0 md:top-0 md:z-10" />
+        <span className="text-muted"> · {p.kind}</span>
+        <span className="side-arrow"> ↗︎</span>
       </span>
     </button>
   )
@@ -270,13 +309,20 @@ function CaseRow({ n, study, onOpen }: { n: number; study: (typeof cases)[number
       onFocus={() => setPointed(true)}
       onBlur={() => setPointed(false)}
     >
-      <span className="cap col-span-6 md:col-span-3">/{pad(n)}</span>
-      <span className="order-last col-span-12 mt-2 md:order-none md:col-span-6 md:mt-0">
+      <span className="cap col-span-12 md:col-span-3">
+        /{pad(n)} <span className="text-muted">· {study.own}</span>
+      </span>
+      <span className="col-span-12 mt-2 md:col-span-6 md:mt-0">
         <span className="title-m block">
           <span data-light="hover" className="side-title">
             {study.short}
           </span>
           <span className="side-arrow"> ↗︎</span>
+        </span>
+        <span className="dense mt-3 block max-w-[52ch]">{study.problem}</span>
+        <span className="dense mt-2 block max-w-[52ch]">
+          <span className="cap text-muted">Result ↳ </span>
+          {study.result}
         </span>
       </span>
       <span className="hidden md:relative md:col-span-3 md:block">
@@ -323,13 +369,40 @@ function FitLine({ children }: { children: React.ReactNode }) {
   )
 }
 
+/** Which of the given sections the reading line (a third down the screen) is in */
+function useCurrentSection(ids: readonly string[]) {
+  const [current, setCurrent] = useState<string | null>(null)
+  useEffect(() => {
+    const check = () => {
+      const line = window.innerHeight / 3
+      let found: string | null = null
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= line) found = id
+      }
+      setCurrent(found)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+    // the ids are a constant list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return current
+}
+
 /** the space between parts */
 const Star = () => <div className="h-14 md:h-20" aria-hidden />
 
 type Job = (typeof experience)[number]
 
 function Job({ job, onCase }: { job: Job; onCase: (id: string) => void }) {
-  const [open, setOpen] = useState(false)
+  // open from the start: the detail is what a reader came for, the toggle only folds it away
+  const [open, setOpen] = useState(true)
   const to = job.links.find(l => l.label !== job.company)?.label
   return (
     <article>

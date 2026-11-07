@@ -172,9 +172,10 @@ export default function Page() {
 export function Intro({ greeting = true }: { greeting?: boolean }) {
   return (
     <>
-      {greeting ? 'Hi, I’m Petra, a frontend engineer' : 'A frontend engineer'} from Zagreb with five years of React,
-      React Native and TypeScript behind me. Most of what I build is the groundwork other teams and partners build on,
-      like design systems, partner SDKs and regulated product flows. Most recently at Coinme, now part of{' '}
+      {greeting ? 'Hi, I’m Petra, a frontend & product engineer' : 'A frontend & product engineer'} from Zagreb with five
+      years of React, React Native and TypeScript behind me. Most of what I build is the groundwork others build on:
+      design systems, partner SDKs and onchain product flows like ramps, wallets and KYC. Most recently at Coinme, now
+      part of{' '}
       <a className="link" href="https://polygon.technology/" target="_blank" rel="noreferrer">
         Polygon Labs
       </a>

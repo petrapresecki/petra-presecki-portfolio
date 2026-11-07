@@ -1,6 +1,6 @@
 # Petra Presečki
 
-> Frontend engineer in Zagreb, Croatia (CET, remote). Five years of React, React Native and TypeScript. Builds SDKs, product flows and design systems that run in production, and tools that coding agents use: MCP integrations, Claude Code agents and agent-readable docs.
+> Frontend & product engineer in Zagreb, Croatia (CET, remote). Five years of React, React Native and TypeScript. Builds SDKs, onchain product flows and design systems that run in production, and tools that coding agents use: MCP integrations, Claude Code agents and agent-readable docs.
 
 This file is for AI agents and LLMs. The human version is the portfolio at https://petra-presecki.pages.dev.
 
@@ -19,9 +19,9 @@ This file is for AI agents and LLMs. The human version is the portfolio at https
 ## Built for agents
 
 - An MCP integration and agent that syncs missing translation keys to Tolgee, plus a post-push hook that flags them. Adopted across the frontend organization, with least-privilege credentials.
-- The first Claude Code commands and agents for code review, tests, component scaffolding and merge request submission, which became the base of the team's shared plugin marketplace.
+- The first Claude Code commands and agents for code review, tests, component scaffolding and merge request submission, which became the base of the team's Claude Code plugin marketplace: 2 plugins, 17 skills and 11 subagents, in 12 repos.
 - An incremental CI code reviewer that reviews only what changed since its last pass.
-- Contributed to a context layer for coding agents, generated from git, that maps a 27-repo platform and cuts loaded context 6–16×.
+- Co-built a context layer for coding agents, generated from git, that maps a 27-repo platform and cuts loaded context 6–16×.
 - Agent skills and TSDoc for the partner SDKs, on a public partner docs site.
 
 ## SDKs and product flows
