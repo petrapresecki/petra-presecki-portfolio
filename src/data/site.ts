@@ -301,30 +301,6 @@ export const cases: Case[] = [
   },
 ]
 
-/** What I bring, said plainly, each with one thing that shows it */
-export const offer: { title: string; text: string; proof: string }[] = [
-  {
-    title: 'Foundations others build on',
-    text: 'Design systems, component libraries and theming, set up so a team and its partners move fast without the product falling apart visually.',
-    proof: 'Founded and led a design system for two years',
-  },
-  {
-    title: 'Product flows that have to be right',
-    text: 'From the design file to production, including everything that can go wrong: failed checks, declined payments, a bad network.',
-    proof: 'Owned identity checks and ATM cash-out',
-  },
-  {
-    title: 'Tools other developers use',
-    text: 'SDKs with clear APIs and proper docs, written for people and their coding agents, so other teams can plug in without me in the room.',
-    proof: 'Built two partner SDKs',
-  },
-  {
-    title: 'A faster team, with agents',
-    text: 'Claude Code agents, MCP integrations and CI tools that take the repetitive work off a team, with a person reviewing every change.',
-    proof: 'My commands became the team’s plugin marketplace',
-  },
-]
-
 /** the line above the contact links */
 export const ask = 'Looking for someone to own your design system, a tricky product flow, or your team’s AI tooling? Say hi.'
 

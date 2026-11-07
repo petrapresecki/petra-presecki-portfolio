@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { about, ask, cases, experience, offer, person, projects, skills } from '@/data/site'
+import { about, ask, cases, experience, person, projects, skills } from '@/data/site'
 import { ARROW, Clock, Intro } from '@/components/Page'
 import { GRID_CV } from '@/components/CvPaper'
 import { go, jobCases, pad, useOverlays } from '@/versions/parts'
@@ -11,7 +11,6 @@ import { prefersReducedMotion } from '@/lib/kit/gsap'
 
 /** the sections the bar links to, on every screen; phones get the short list */
 const NAV = [
-  ['offer', 'What I do', false],
   ['experience', 'Experience', true],
   ['cases', 'Cases', false],
   ['about', 'About', true],
@@ -24,7 +23,6 @@ const NAV = [
  * numbered index rows with black labels, and the wordmark again at the bottom.
  */
 const INDEX = [
-  ['offer', 'What I do'],
   ['experience', 'Experience'],
   ['about', 'About'],
   ['capabilities', 'Capabilities'],
@@ -110,30 +108,6 @@ export default function Grid() {
           </a>
         </section>
       </div>
-
-      <Star />
-
-      {/* what I bring, before the history: four plain lines, each with the one thing that shows it */}
-      <section id="offer" className="grid-12">
-        <h2 data-light className="title-l col-span-12 md:col-[4/span_9]">
-          What I do
-        </h2>
-        <div className="col-span-12 mt-8 md:col-[4/span_9]">
-          {offer.map((o, i) => (
-            <div key={o.title} className="grid grid-cols-9 gap-x-[var(--gap)] rule-top py-3">
-              <p className="col-span-9 md:col-span-3">
-                <span className="bar">
-                  /{i + 1}.0 {o.title}
-                </span>
-              </p>
-              <div className="col-span-9 mt-2 md:col-span-6 md:mt-0">
-                <p className="dense-b">{o.text}</p>
-                <p className="cap mt-2 text-muted">↳ {o.proof}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       <Star />
 
