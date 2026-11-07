@@ -137,3 +137,8 @@ li::before {
   text-transform: uppercase;
   padding-top: 1px;
 }
+
+/* in this layout page 1 ends right after the jobs, so projects open page 2 instead of leaving their heading behind */
+h2.projects {
+  break-before: page;
+}
