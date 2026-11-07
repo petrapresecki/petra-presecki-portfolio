@@ -2,7 +2,7 @@
 
 export const person = {
   name: 'Petra Presečki',
-  role: 'Frontend engineer',
+  role: 'Frontend & product engineer',
   focus: 'Design systems, product UI, AI agent tooling',
   stack: 'React · React Native · TS',
   place: 'Zagreb, CET · remote',
@@ -145,6 +145,11 @@ export interface Case {
   kind: string
   /** the label in the experience list */
   short: string
+  /** who did what, in a few words, beside the case in the list */
+  own: string
+  /** the case in two plain sentences: what was hard, and what came of it */
+  problem: string
+  result: string
   summary: string
   link?: { label: string; url: string }
   /** the case's short film, on its page and in the hover peek */
@@ -157,6 +162,11 @@ export const cases: Case[] = [
   {
     id: 'design-system',
     short: 'Design system',
+    own: 'Started it · led it',
+    problem:
+      'Every company embedding the widget wants it to look like their own app. Custom code for each would mean maintaining a dozen slightly different products.',
+    result:
+      'Every screen on iOS, Android and web runs on it, across 137 releases, and new partners get their brand through configuration, not a project.',
     title: 'A design system partners rebrand by config',
     kind: 'Founded and led · 2025–2026',
     summary:
@@ -184,6 +194,11 @@ export const cases: Case[] = [
   {
     id: 'flows',
     short: 'Flows & orchestrator',
+    own: 'Built it · owned it',
+    problem:
+      'Each partner needs its own mix of features, and the ones handling identity checks and real money are regulated, so mistakes are expensive.',
+    result:
+      'Live inside Trust Wallet’s Cash Deposits, with the risky flows failing closed whenever the backend isn’t clear.',
     title: 'One widget, a different app for every partner',
     kind: 'Built flows, wired them into the orchestrator · 2025–2026',
     summary:
@@ -222,6 +237,11 @@ export const cases: Case[] = [
   {
     id: 'sdks',
     short: 'Partner SDKs',
+    own: 'Built it',
+    problem:
+      'Partners building their own screens still need card numbers and SSNs, and handling that data themselves means heavy PCI DSS audits.',
+    result:
+      'Raw numbers never reach partner code, and the React Native onboarding SDK went from first commit to v1.0 in six days.',
     title: 'Partner SDKs that keep card and SSN data out of partner code',
     kind: 'Built · 2026',
     summary:
@@ -249,6 +269,11 @@ export const cases: Case[] = [
   {
     id: 'ai',
     short: 'AI agent tooling',
+    own: 'Started it · co-built',
+    problem:
+      'A team of 7–10 across 27 repos spent a lot of time on repeat work: reviews, tests, tickets, translations, releases.',
+    result:
+      'My early commands grew into the team’s plugin marketplace, now in 12 repos, and agents load 6–16× less context. A person still reviews every change.',
     title: 'How our frontend team works with coding agents',
     kind: 'Built and contributed · 2026',
     summary:
@@ -276,9 +301,36 @@ export const cases: Case[] = [
   },
 ]
 
+/** What I bring, said plainly, each with one thing that shows it */
+export const offer: { title: string; text: string; proof: string }[] = [
+  {
+    title: 'Foundations others build on',
+    text: 'Design systems, component libraries and theming, set up so a team and its partners move fast without the product falling apart visually.',
+    proof: 'Founded and led a design system for two years',
+  },
+  {
+    title: 'Product flows that have to be right',
+    text: 'From the design file to production, including everything that can go wrong: failed checks, declined payments, a bad network.',
+    proof: 'Owned identity checks and ATM cash-out',
+  },
+  {
+    title: 'Tools other developers use',
+    text: 'SDKs with clear APIs and proper docs, written for people and their coding agents, so other teams can plug in without me in the room.',
+    proof: 'Built two partner SDKs',
+  },
+  {
+    title: 'A faster team, with agents',
+    text: 'Claude Code agents, MCP integrations and CI tools that take the repetitive work off a team, with a person reviewing every change.',
+    proof: 'My commands became the team’s plugin marketplace',
+  },
+]
+
+/** the line above the contact links */
+export const ask = 'Looking for someone to own your design system, a tricky product flow, or your team’s AI tooling? Say hi.'
+
 export const about = {
   lines: [
-    'I’ve been building for the web for about five years, mostly React and React Native. Frontend is where I’m happiest, and the closer it gets to design, the better.',
+    'I’ve been building for the web for about five years, mostly React and React Native. I’m happiest where frontend meets product, and the closer it gets to design, the better.',
     'I’ve been deep in Claude Code for a while. Most of my day runs through it, along with an ever-growing collection of agents and tools I’ve built along the way.',
     'On the side I build sites for creative people, where I spend way too long on how one thing moves. Every piece I like ends up in my own little library, so no site starts from zero.',
     'Away from the screen it’s music and movies, usually some old Criterion film I’ll try to get you to watch too.',
@@ -299,7 +351,7 @@ export const experience = [
     role: 'Web Engineer',
     dates: '2024–2026',
     context:
-      'A white-label crypto widget that fintech and wallet apps embed in their iOS, Android and web apps: one deployment, rebranded per partner at runtime. Joined through Endava; hired directly by Polygon in Feb 2026. Frontend team of 7–10; about 270 merged MRs across 11 repositories.',
+      'A crypto widget that fintech and wallet apps put inside their own iPhone, Android and web apps. Each partner sees its own colours and features, but it’s one product underneath. Joined through Endava; hired directly by Polygon in Feb 2026. Frontend team of 7–10; about 270 merged MRs across 11 repositories.',
     groups: [
       {
         title: 'Design system & UI craft',
@@ -332,9 +384,10 @@ export const experience = [
         title: 'AI agent tooling',
         case: 'ai',
         items: [
-          'Used Claude Code agents daily before most of the team did; my early commands became the base of the team’s shared plugin marketplace',
-          'Built an MCP integration that syncs missing translation keys to Tolgee, plus a post-push hook that flags them',
-          'Made the CI AI code reviewer incremental; contributed to a context layer that cut agents’ loaded context 6–16× across 27 repos',
+          'Among the first on the team to go agent-first; my early commands became the base of the team’s Claude Code plugin marketplace: 2 plugins, 17 skills and 11 subagents, in 12 repos',
+          'Contributed to its agentic delivery workflow: subagents with scoped tools and pinned models, and every change ends in a merge request a person reviews',
+          'Built an MCP integration that syncs missing translation keys to Tolgee, plus a post-push hook that flags them; adopted org-wide and moved to least-privilege credentials',
+          'Co-built cx-spine, a context layer that cuts what agents load 6–16× across 27 repos; made the CI AI code reviewer incremental',
         ],
       },
       {
@@ -353,7 +406,7 @@ export const experience = [
     role: 'React / React Native Developer',
     dates: '2021–2026',
     context:
-      'Agency work on React and React Native apps for clients in fintech, hospitality and entertainment, working straight with their designers and backend teams. From Oct 2024 seconded to Coinme.',
+      'Agency work on React and React Native apps for clients in banking, music and nutrition, working straight with their designers and backend teams. From Oct 2024 seconded to Coinme.',
     groups: [
       {
         title: 'Practice',
@@ -377,7 +430,7 @@ export const experience = [
 ]
 
 export const skills: [string, string][] = [
-  ['Product engineering', 'React, React Native, TypeScript, Next.js, Expo, react-native-web, Redux Toolkit, TanStack Query, Node.js'],
+  ['Product engineering', 'React, React Native, TypeScript, Next.js, Expo, react-native-web, Redux Toolkit, TanStack Query'],
   ['UI systems & motion', 'Design tokens, theming, accessibility (WCAG), Storybook, Reanimated, Gesture Handler, GSAP, three.js, Tailwind'],
   ['AI & delivery', 'Claude Code (agents, skills, hooks, plugins), MCP, AI review in CI, Vitest, Jest, MSW, Vite, Turborepo, GitLab CI'],
 ]
