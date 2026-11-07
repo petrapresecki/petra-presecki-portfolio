@@ -193,11 +193,9 @@
 
     <h2>Profile</h2>
     <p>
-      Frontend and product engineer with 5 years of building web and mobile products in React, React Native and TypeScript, most of
-      it working directly with clients, their designers and their backend teams. At Coinme, now part of Polygon Labs, I
-      built what lets one product run as a different app for every partner: the design system, the configuration-driven
-      flows and the partner SDKs. I also helped build how our team works with coding agents, from MCP integrations to a
-      context layer across 27 repos, with a person reviewing every change before it ships.
+      Frontend and product engineer, 5 years in React, React Native and TypeScript. At Coinme, now part of Polygon Labs, I
+      was one of the first to bring coding agents into my team’s daily work, and owned what lets one product run as a
+      different app for every partner: the design system, the regulated flows and the partner SDKs.
     </p>
 
     <h2>Experience</h2>
@@ -206,70 +204,63 @@
       <h3>Web Engineer, <b>Coinme (now Polygon Labs)</b></h3>
       <p class="dates">Oct 2024 – Oct 2026</p>
       <p class="context">
-        A crypto widget that fintech and wallet apps put inside their own iOS, Android and web apps. Each partner sees its
-        own colours and features, but it’s one product underneath. Joined through Endava; hired directly by Polygon in Feb 2026.
-        Frontend team of 7–10; about 270 merged MRs across 11 repositories.
+        A crypto widget that fintech and wallet apps embed in their iOS, Android and web apps: one product, rebranded per
+        partner. Joined through Endava; hired directly by Polygon in Feb 2026. Team of 7–10; about 270 merged MRs.
       </p>
 
-      <h4>AI-native engineering &amp; agent tooling</h4>
+      <h4>AI agent tooling</h4>
       <ul>
-        <li>Among the first on the team to work agent-first in Claude Code. My commands for code review, scaffolding and end-to-end merge requests (GitLab, Jira, Slack) became the base of the team’s Claude Code plugin marketplace: 2 plugins, 17 skills and 11 subagents, now in <b>12 repos</b>.</li>
-        <li>Contributed to its agentic delivery workflow with a person approving every change: each skill asks every question up front, then hands off to a subagent with scoped tools and a pinned model (Opus for planning, Sonnet for mechanical work). Every path ends in a merge request a person reviews, with safety gates before anything is pushed.</li>
-        <li>Built an MCP integration and agent that syncs missing translation keys to Tolgee, plus a post-push hook that warns but never blocks. Adopted org-wide; I moved it to least-privilege, project-scoped credentials.</li>
-        <li>Co-built cx-spine, a context engineering layer across 27 repos: each repo’s working set is computed from git and loaded by a SessionStart hook, so a session loads 2,500–6,500 tokens instead of about 40,600 (<b>6–16× less</b>).</li>
-        <li>Made the CI AI code reviewer incremental, so it reviews only what changed since its last pass, and fixed its shallow-clone merge-base bugs.</li>
-        <li>Wrote the partner SDK docs for people and their coding agents: TSDoc on every export and agent skills on the public partner docs site.</li>
+        <li>Among the first on the team to work agent-first. My Claude Code commands became the base of the team’s plugin marketplace (2 plugins, 17 skills, 11 subagents), now in <b>12 repos</b>.</li>
+        <li>Contributed to its agentic delivery workflow: each skill hands off to a subagent with scoped tools and a pinned model (Opus to plan, Sonnet for mechanical work), and every path ends in a merge request a person reviews.</li>
+        <li>Co-built a context layer for coding agents across 27 repos, generated from git, that cuts what each session loads <b>6–16×</b>. Made the CI AI code reviewer incremental.</li>
+        <li>Built an MCP integration that syncs missing translations to Tolgee, plus a post-push hook that flags them. Adopted org-wide; I moved it to least-privilege credentials.</li>
+        <li>Wrote the partner SDK docs for people and their coding agents: TSDoc on every export and agent skills on the public docs site.</li>
       </ul>
 
-      <h4>A product configured per partner</h4>
+      <h4>Design system &amp; product platform</h4>
       <ul>
-        <li>Founded and led the cross-platform design system for two years: one React Native codebase behind every screen on iOS, Android and web, across <b>137 releases</b>. Built 13+ of its 34 components, including an interactive price chart (Reanimated, Gesture Handler).</li>
-        <li>Designed the theming model (design tokens, dark mode and a “host theme wins” merge) that became the white-label contract: partners override tokens, never components, and rebrand through configuration instead of forking code.</li>
-        <li>Wired flows into the orchestrator that reads each partner’s configuration and mounts its own mix of flows. Wrote four of its eighteen flow integrations, including the routing that holds flagged users before any transaction. Trust Wallet’s Cash Deposits runs on it.</li>
+        <li>Founded and led the cross-platform design system for two years: one React Native codebase behind every screen on iOS, Android and web, shipped across <b>137 releases</b>. Built 13+ of its 34 components.</li>
+        <li>Designed the theming model that became the white-label contract: partners rebrand through configuration, never by forking code.</li>
+        <li>Built 4 of the orchestrator’s 18 flow integrations, including the routing that stops flagged users before any transaction. Live in Trust Wallet’s Cash Deposits.</li>
       </ul>
 
       <h4>Regulated flows &amp; partner SDKs</h4>
       <ul>
-        <li>Owned the regulated flows for identity verification (KYC), enhanced due diligence (AML) and cash-out at ATMs, each an explicit state machine that fails closed when the backend isn’t clear. Main developer of the multi-chain wallet; cleared a major wallet partner’s launch blockers.</li>
-        <li>Built the customer-onboarding SDK for JS and React Native and took the React Native one from first commit to <b>production v1.0 in six days</b>, with over 200 tests. Defined the phone-verification interfaces first, so three engineers built its core, hooks and UI at the same time.</li>
-        <li>Built most of the card-collection SDK for vanilla JS, React and React Native. Card numbers and SSNs stay in vault-hosted fields, keeping partners <b>out of PCI DSS scope</b>. Ran end-to-end security testing on iOS and Android and corrected the partner security guidance where it didn’t match the SDK.</li>
+        <li>Owned identity verification (KYC), AML due diligence and ATM cash-out, each a state machine that fails closed. Main developer of the multi-chain wallet; cleared a major wallet partner’s launch blockers.</li>
+        <li>Took the React Native onboarding SDK from first commit to <b>production v1.0 in six days</b> (200+ tests), splitting the work so three engineers built it in parallel.</li>
+        <li>Built most of the card-collection SDK for JS, React and React Native, keeping partners <b>out of PCI DSS scope</b>, and ran its security testing on iOS and Android.</li>
       </ul>
+
     </article>
 
     <article class="job">
       <h3>React / React Native Developer, <b>Endava (ex FIVE)</b></h3>
       <p class="dates">Sep 2021 – Feb 2026</p>
       <p class="context">
-        From Oct 2024 seconded to Coinme. Before that, client-facing product work on React and React Native web and mobile
-        apps for banking, music and nutrition clients, working directly with their designers, backend teams and stakeholders.
+        Client-facing product work for banking, music and nutrition clients, straight with their designers and backend teams.
+        Seconded to Coinme from Oct 2024.
       </p>
       <ul>
-        <li>Presented demos to clients, led an in-house project and mentored a junior developer; ran technical interviews.</li>
-        <li>Helped set up the architecture and coding standards in modular monorepos (Redux Toolkit, RTK Query, TanStack Query, Jotai). Cut CI/CD build times and improved performance with lazy loading and code splitting.</li>
-        <li>Built accessible (WCAG) interfaces with over 80% unit-test coverage.</li>
-      </ul>
-
-      <h4>Selected clients</h4>
-      <ul>
-        <li><b>ASCAP</b> <span class="muted">2023 – 2024</span> · React Native app for artists to register works and manage royalties: a 12-step registration flow and onboarding animations (Reanimated, Lottie).</li>
-        <li><b>Opayo</b> <span class="muted">2023</span> · Payment gateway for a banking client with fully WCAG-compliant forms.</li>
-        <li><b>Cooking Light Diet</b> <span class="muted">2021 – 2022</span> · Meal-planning app and React Admin CMS, built from the ground up.</li>
+        <li>Led an in-house project, presented demos to clients, mentored a junior developer and ran technical interviews.</li>
+        <li>Set architecture and coding standards in modular monorepos, cut CI/CD build times, and shipped accessible (WCAG) UI with 80%+ test coverage.</li>
+        <li><b>ASCAP</b> <span class="muted">2023 – 2024</span> · React Native app for songwriters to register works and manage royalties.</li>
+        <li><b>Opayo</b> <span class="muted">2023</span> · WCAG-compliant payment forms for a banking client.</li>
+        <li><b>Cooking Light Diet</b> <span class="muted">2021 – 2022</span> · Meal-planning app and admin CMS, built from the ground up.</li>
       </ul>
     </article>
 
-    <h2>Projects</h2>
+    <h2 class="projects">Projects</h2>
     <ul>
-      <li><b>festival-discovery</b> <span class="muted">2026</span> · <a class="u" href="https://lineage-5qn.pages.dev/">lineage-5qn.pages.dev</a> · Taste-based discovery of small European electronic music festivals, built end to end. An agentic extraction pipeline turns festival websites into structured data with Claude and structured outputs (Zod), scored by evals against a hand-verified golden set of 473 acts: <b>98% lineup F1 at $0.31 per festival</b>, with the model chosen by comparing Opus, Sonnet and Haiku on accuracy and cost. A person reviews every extraction before it’s published (23 festivals, 1,339 performances so far). Built with Claude Code skills, subagents, hooks and read-only MCP servers.</li>
-      <li><b>creative-kit</b> <span class="muted">2026</span> · The library every site I build starts from: motion blocks, themes and grids, a Node CLI that copies them into new sites as source, and a Claude Code skill that turns it into concepts for a new site and checks each one against its manifesto.</li>
+      <li><b>festival-discovery</b> <span class="muted">2026</span> · <a class="u" href="https://lineage-5qn.pages.dev/">lineage-5qn.pages.dev</a> · Built end to end: an agentic pipeline turns festival websites into structured data, scored by evals against a hand-checked golden set at <b>98% lineup F1 for $0.31 per festival</b>, with the model picked on cost and accuracy. A person reviews every extraction.</li>
+      <li><b>creative-kit</b> <span class="muted">2026</span> · The library every site I build starts from: motion blocks, themes, a CLI that copies them in as source, and a Claude Code skill that drafts concepts.</li>
     </ul>
 
     <h2>Skills</h2>
     <dl class="skills">
-      <div><dt>AI &amp; agents</dt><dd>Claude Code (agents, subagents, skills, hooks, plugins), agentic workflows, Model Context Protocol (MCP), context engineering, evals (golden sets, precision / recall / F1), structured outputs, model selection on cost and accuracy, AI code review in CI, least-privilege agent credentials, agent-readable docs</dd></div>
-      <div><dt>Product &amp; frontend</dt><dd>TypeScript, JavaScript, React, React Native, Next.js, Expo, react-native-web</dd></div>
-      <div><dt>UI &amp; design systems</dt><dd>design systems and design tokens, theming, accessibility (WCAG), responsive design, Storybook, Tailwind, styled-components, NativeWind, Material UI, Reanimated, Gesture Handler, GSAP, three.js, Lottie</dd></div>
-      <div><dt>State &amp; architecture</dt><dd>configuration-driven multi-tenant UI, state machines, SDK design, Redux Toolkit, RTK Query, TanStack Query, Jotai, React Hook Form, server-sent events, monorepos, micro-frontends</dd></div>
-      <div><dt>Testing &amp; delivery</dt><dd>Jest, Vitest, React Testing Library, MSW, Vite, Turborepo, GitLab CI/CD, semantic-release</dd></div>
+      <div><dt>AI &amp; agents</dt><dd>Claude Code (agents, skills, hooks, plugins), MCP, agentic workflows, context engineering, evals, structured outputs, AI code review in CI</dd></div>
+      <div><dt>Frontend</dt><dd>TypeScript, React, React Native, Next.js, Expo, react-native-web</dd></div>
+      <div><dt>UI &amp; design systems</dt><dd>design tokens, theming, accessibility (WCAG), Storybook, Tailwind, Reanimated, GSAP, three.js</dd></div>
+      <div><dt>Architecture &amp; testing</dt><dd>configuration-driven UI, state machines, SDK design, Redux Toolkit, TanStack Query, monorepos, Jest, Vitest, React Testing Library, MSW, GitLab CI/CD</dd></div>
     </dl>
 
     <div class="split">
