@@ -55,6 +55,10 @@ h1 {
   text-transform: uppercase;
   text-align: right;
 }
+/* an address reads better as typed */
+.contact a[href^='mailto'] {
+  text-transform: none;
+}
 
 /* sections: a black bar, numbered */
 h2 {
@@ -104,24 +108,21 @@ h4 {
   text-transform: uppercase;
 }
 
-/* bullets numbered like the page's index rows: /section.item, running through each section */
+/* sections keep their numbers; bullets get a quiet dash, so the numbers don't crowd the text */
 h2 {
   counter-reset: item;
 }
 li {
-  counter-increment: item;
-  padding-left: 24px;
+  padding-left: 12px;
 }
 li::before {
-  content: '/' counter(sec) '.' counter(item);
+  content: '–';
   left: 0;
-  top: 0.18em;
+  top: 0;
   width: auto;
   height: auto;
   border-radius: 0;
   background: none;
-  font-size: 6.6pt;
-  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
