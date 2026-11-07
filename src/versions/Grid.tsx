@@ -9,6 +9,15 @@ import CutType from '@/components/kit/cut-type/CutType'
 import CaseFilm from '@/components/films/CaseFilm'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
 
+/** the sections the bar links to, on every screen; phones get the short list */
+const NAV = [
+  ['offer', 'What I do', false],
+  ['experience', 'Experience', true],
+  ['cases', 'Cases', false],
+  ['about', 'About', true],
+  ['contact', 'Contact', true],
+] as const
+
 /**
  * After abgd.it, without its cards: a fixed bar of tiny capitals, a huge grotesk wordmark, a page index,
  * dense small paragraphs with indented follow-ons, list rows with a black tag bar on the right edge,
@@ -19,13 +28,14 @@ const INDEX = [
   ['experience', 'Experience'],
   ['about', 'About'],
   ['capabilities', 'Capabilities'],
-  ['work', 'Side work'],
+  ['work', 'On the side'],
   ['contact', 'Contact'],
 ] as const
 
 export default function Grid() {
   const { openCv, openCase, openProject, overlays } = useOverlays(GridCase, GridProject)
   const light = useLightGuide()
+  const current = useCurrentSection(NAV.map(([id]) => id))
   return (
     <main className="grid-v">
       {/* the one light on the page, the same the case films are made of: four soft discs, each on its own loop. It sits
@@ -40,11 +50,23 @@ export default function Grid() {
       </div>
       <header className="grid-bar">
         <div className="grid-12 items-center py-2.5">
-          <a href="#top" className="cap col-span-6 md:col-span-3" onClick={e => go(e, 'top')}>
+          <a href="#top" className="cap col-span-4 md:col-span-3" onClick={e => go(e, 'top')}>
             {person.name}
           </a>
-          <p className="cap hidden md:col-span-3 md:block">/01 Frontend & product engineer</p>
-          <div className="cap col-span-6 flex items-center justify-end gap-2">
+          <nav className="bar-nav cap col-span-8 flex justify-end gap-x-3 md:col-span-6 md:justify-start md:gap-x-5" aria-label="Sections">
+            {NAV.map(([id, label, phone]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={current === id}
+                className={`link ${phone ? '' : 'hidden md:inline'}`}
+                onClick={e => go(e, id)}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="cap hidden items-center justify-end gap-2 md:col-span-3 md:flex">
             Zagreb <Clock /> <span className="dot" />
           </div>
         </div>
@@ -345,6 +367,32 @@ function FitLine({ children }: { children: React.ReactNode }) {
       {children}
     </span>
   )
+}
+
+/** Which of the given sections the reading line (a third down the screen) is in */
+function useCurrentSection(ids: readonly string[]) {
+  const [current, setCurrent] = useState<string | null>(null)
+  useEffect(() => {
+    const check = () => {
+      const line = window.innerHeight / 3
+      let found: string | null = null
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= line) found = id
+      }
+      setCurrent(found)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+    // the ids are a constant list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return current
 }
 
 /** the space between parts */
