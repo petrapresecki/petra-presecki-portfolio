@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { cases, projects, type Case, type Media, type Project } from '@/data/site'
 import CaseFilm from '@/components/films/CaseFilm'
+import { FilmLook, LEAD } from '@/components/films/Film'
 import { getLenis } from '@/lib/kit/lenis'
 import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
 import { useSwipeClose } from '@/lib/close-gestures'
@@ -144,7 +145,10 @@ export function CleanCase({ study, onClose, onCase }: { study: Case; onClose: ()
       {study.visual && (
         <div className="grid-12 pb-16">
           <div className="col-span-12 md:col-span-8 md:col-start-3">
-            <CaseFilm kind={study.visual} />
+            {/* the thermal look: heat-map lights, pill places, lime labels and the specimen frame */}
+            <FilmLook.Provider value={{ look: 'thermal', n, name: study.short, lead: LEAD[study.visual] }}>
+              <CaseFilm kind={study.visual} />
+            </FilmLook.Provider>
           </div>
         </div>
       )}
