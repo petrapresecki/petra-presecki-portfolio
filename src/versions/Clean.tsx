@@ -48,29 +48,20 @@ export default function Clean() {
         </div>
       </header>
 
-      {/* the first screen: the sentence, then along the bottom the email and the short version; the portrait waits for About */}
-      <section id="top" className="flex min-h-[100svh] flex-col pt-28 pb-6 md:pt-36">
-        <div className="grid-12">
-          <p className="c-lead c-in col-span-12 md:col-span-10 lg:col-span-9">
-            <Intro />
-          </p>
-        </div>
-
-        <div className="grid-12 mt-auto items-end gap-y-8 pt-16">
-          <div className="cap c-in col-span-12 md:col-span-4" style={{ '--i': 2 } as React.CSSProperties}>
+      {/* the first screen, as ksusharmony.com and sasha.miami open: mostly paper, one small block a little below the
+          middle (the email beside the hello, in reading size), and the way down at the bottom */}
+      <section id="top" className="flex min-h-[100svh] flex-col pt-24 pb-6">
+        <div className="grid-12 mt-auto mb-[14vh] gap-y-6">
+          <div className="cap c-in col-span-12 md:col-span-3 md:col-start-4 md:text-right" style={{ '--i': 1 } as React.CSSProperties}>
             <a href={`mailto:${person.email}`} className="link">
               {person.email}
             </a>
           </div>
-          <div className="cap c-in col-span-12 md:col-span-4 md:col-start-7" style={{ '--i': 3 } as React.CSSProperties}>
-            <p>
-              {person.focus}.
-              <br />
-              {person.stack}.
-              <br />
-              {person.place}.
+          <div className="c-in col-span-12 md:col-span-5 lg:col-span-4" style={{ '--i': 2 } as React.CSSProperties}>
+            <p className="c-body max-w-[42ch] text-[15px] leading-[1.55]">
+              <Intro />
             </p>
-            <p className="mt-6 flex flex-wrap gap-x-4">
+            <p className="cap mt-5 flex flex-wrap gap-x-4">
               <a href="#about" className="link" onClick={e => go(e, 'about')}>
                 (More about…)
               </a>
@@ -80,8 +71,8 @@ export default function Clean() {
             </p>
           </div>
         </div>
-        <div className="grid-12 mt-10">
-          <a href="#experience" className="cap col-span-12 w-fit" onClick={e => go(e, 'experience')}>
+        <div className="grid-12">
+          <a href="#experience" className="cap c-in col-span-12 w-fit" style={{ '--i': 3 } as React.CSSProperties} onClick={e => go(e, 'experience')}>
             ↓ Experience, 2021–2026
           </a>
         </div>
