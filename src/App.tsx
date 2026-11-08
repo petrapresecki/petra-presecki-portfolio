@@ -2,9 +2,10 @@ import { useEffect } from 'react'
 import { initLenis, destroyLenis } from '@/lib/kit/lenis'
 import Page from '@/components/Page'
 import Grid from '@/versions/Grid'
+import Clean from '@/versions/Clean'
 import Switch, { useVersion } from '@/versions/Switch'
 
-const PAGES = { original: Page, grid: Grid }
+const PAGES = { clean: Clean, original: Page, grid: Grid }
 
 export default function App() {
   const [version, pick] = useVersion()

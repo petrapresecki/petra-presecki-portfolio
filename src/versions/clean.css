@@ -1,0 +1,242 @@
+/* ---------- Clean: after ksusharmony.com (paper, tiny mono capitals, quiet B&W) with mariamarago.com's cursor ---------- */
+html[data-version='clean'] {
+  --color-paper: #f8f8f2;
+  --color-ink: #111110;
+  --color-mist: #ecebe3;
+  --color-muted: rgb(17 17 16 / 0.5);
+  --color-rule: rgb(17 17 16 / 0.12);
+  --font-sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --margin: 32px;
+  --gap: 20px;
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+@media (max-width: 759px) {
+  html[data-version='clean'] {
+    --margin: 18px;
+    --gap: 12px;
+  }
+}
+
+/* --- type: one grotesk to read, one mono for everything that labels --- */
+.clean-v .cap,
+.clean-view .cap {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.c-mark {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.c-body {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(17 17 16 / 0.86);
+  text-wrap: pretty;
+}
+.c-lead {
+  font-size: clamp(25px, 2.75vw, 44px);
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+  text-wrap: pretty;
+}
+.c-title {
+  font-size: clamp(30px, 3.6vw, 58px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+.c-big {
+  font-size: clamp(38px, 6.4vw, 112px);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+}
+.c-dim {
+  color: var(--color-muted);
+}
+.c-faint {
+  color: rgb(17 17 16 / 0.3);
+}
+.c-lead .link {
+  text-decoration-color: var(--color-rule);
+}
+.c-lead .link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* --- the bar: name left, sections in the middle, the time right --- */
+.c-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  background: rgb(248 248 242 / 0.86);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.c-bar a[aria-current='true'] {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* --- a section opens with a hairline and a mono line, as ksusharmony's ↓ SELECTED PROJECTS --- */
+.c-head {
+  border-top: 1px solid var(--color-rule);
+  padding-top: 10px;
+}
+
+/* --- lists: pointing at one row dims the rest, as mariamarago's menu does --- */
+.c-row {
+  transition: opacity 0.35s var(--ease-out-expo);
+}
+@media (hover: hover) {
+  .c-list:has(.c-row:hover) .c-row:not(:hover) {
+    opacity: 0.22;
+  }
+  .c-row .c-slide {
+    display: inline-block;
+    transition: transform 0.5s var(--ease-out-expo);
+  }
+  .c-row:hover .c-slide {
+    transform: translateX(14px);
+  }
+  .c-row .c-arrow {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .c-row:hover .c-arrow {
+    opacity: 1;
+  }
+}
+
+/* a folded area: the height eases between 0 and its content */
+.c-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.55s var(--ease-out-expo),
+    opacity 0.35s;
+}
+.c-fold[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .c-fold {
+    transition: none;
+  }
+}
+
+.c-points li + li {
+  border-top: 1px solid var(--color-rule);
+}
+
+/* --- the portrait: small, matte, like a contact print --- */
+.c-portrait {
+  aspect-ratio: 900 / 1237;
+  object-fit: cover;
+  background: var(--color-mist);
+}
+
+/* --- cursor: a white dot in difference, so it reads black on paper and white on pictures --- */
+.c-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  transition:
+    width 0.25s var(--ease-out-expo),
+    height 0.25s var(--ease-out-expo),
+    scale 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s;
+}
+.c-cursor.is-on {
+  opacity: 1;
+}
+.c-cursor.is-link {
+  width: 45px;
+  height: 45px;
+}
+.c-cursor.is-label {
+  width: 86px;
+  height: 86px;
+}
+.c-cursor.is-down {
+  scale: 1.35;
+  transition: scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.c-cursor span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.c-cursor.is-label span {
+  opacity: 1;
+}
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+/* a still that rides beside the cursor over the side projects */
+.c-peek {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  width: 300px;
+  aspect-ratio: 16 / 10;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.92;
+  transition:
+    opacity 0.3s,
+    scale 0.45s var(--ease-out-expo);
+}
+.c-peek.is-on {
+  opacity: 1;
+  scale: 1;
+}
+.c-peek img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* first paint: the hero settles in, line by line */
+@media (prefers-reduced-motion: no-preference) {
+  .c-in {
+    animation: c-in 1s var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 100ms);
+  }
+}
+@keyframes c-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
