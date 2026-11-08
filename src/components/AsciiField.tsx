@@ -5,6 +5,8 @@ import { readToken } from '@/lib/kit/tokens'
 const RAMP = '.:-=+*1%#0@'
 const FONT = 10
 const FPS = 30
+/** Phones get a lighter knot: fewer points, fewer frames, a 1x canvas */
+const PHONE = matchMedia('(pointer: coarse)').matches
 
 type Vec = [number, number, number]
 
@@ -27,7 +29,7 @@ export default function AsciiField() {
     const ctx = el.getContext('2d')!
     const color = readToken('--color-muted', '#77746d')
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const mesh = knot()
+    const mesh = PHONE ? knot(420, 28) : knot()
 
     let cw = 6
     let cols = 0
@@ -57,7 +59,7 @@ export default function AsciiField() {
     }
 
     const resize = () => {
-      const dpr = Math.min(devicePixelRatio, 2)
+      const dpr = PHONE ? 1 : Math.min(devicePixelRatio, 2)
       el.width = innerWidth * dpr
       el.height = innerHeight * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -105,10 +107,13 @@ export default function AsciiField() {
       lum.fill(0)
       const { pos, nrm } = mesh
       for (let i = 0; i < pos.length; i += 3) {
-        // rotate Z, then Y, then X; the same for the normal
-        let [x, y, z] = rot(pos[i], pos[i + 1], pos[i + 2], sz, cz, sy, cy, sx, cx)
-        const [nx, ny, nz] = rot(nrm[i], nrm[i + 1], nrm[i + 2], sz, cz, sy, cy, sx, cx)
+        // rotate Z, then Y, then X; the same for the normal (written into `out`, no allocation per point)
+        rot(nrm, i, sz, cz, sy, cy, sx, cx)
+        const nx = out[0], ny = out[1], nz = out[2]
         if (nz < -0.15) continue // facing away
+        rot(pos, i, sz, cz, sy, cy, sx, cx)
+        let x = out[0], y = out[1]
+        const z = out[2]
 
         const p = 5 / (5 - z) // gentle perspective
         x = ox + x * scale * p
@@ -149,7 +154,7 @@ export default function AsciiField() {
     let last = 0
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop)
-      if (document.hidden || now - last < 1000 / FPS) return
+      if (document.hidden || now - last < 1000 / (PHONE ? 20 : FPS)) return
       last = now
       draw(now / 1000)
     }
@@ -181,11 +186,16 @@ function poseAt(keys: { at: number; pose: Pose }[], s: number): Pose {
   return out
 }
 
-function rot(x: number, y: number, z: number, sz: number, cz: number, sy: number, cy: number, sx: number, cx: number): Vec {
-  ;[x, y] = [x * cz - y * sz, x * sz + y * cz]
-  ;[x, z] = [x * cy + z * sy, -x * sy + z * cy]
-  ;[y, z] = [y * cx - z * sx, y * sx + z * cx]
-  return [x, y, z]
+const out = new Float64Array(3)
+
+function rot(v: Float32Array, i: number, sz: number, cz: number, sy: number, cy: number, sx: number, cx: number) {
+  const x0 = v[i] * cz - v[i + 1] * sz
+  const y0 = v[i] * sz + v[i + 1] * cz
+  const x1 = x0 * cy + v[i + 2] * sy
+  const z0 = -x0 * sy + v[i + 2] * cy
+  out[0] = x1
+  out[1] = y0 * cx - z0 * sx
+  out[2] = y0 * sx + z0 * cx
 }
 
 /** Points and normals on a tube around a (2,3) torus knot, built once */
