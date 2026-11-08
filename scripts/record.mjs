@@ -75,7 +75,7 @@ async function grade(page, label, points, steps = 50) {
   await glide(page, [at[0] + points * 9, at[1]], steps)
   await page.mouse.up()
 }
-const charms = { rool: [580, 430], booklet: [870, 480], apuro: [630, 630], gabagool: [860, 710] }
+const charms = { rool: [600, 420], booklet: [870, 480], apuro: [645, 610], gabagool: [850, 700] }
 
 const takes = {
   // Iva Presečki: the paper-home keyring
@@ -116,9 +116,10 @@ const takes = {
     await page.mouse.move(...pointer)
     mark()
     await wait(600)
-    await glide(page, [1390, 29], 40)
+    // the header's INFO link
+    await glide(page, [1407, 24], 40)
     await wait(300)
-    await page.mouse.click(1390, 29)
+    await page.mouse.click(1407, 24)
     await wait(2200)
     await glide(page, [600, 520], 50)
     await wait(1200)
