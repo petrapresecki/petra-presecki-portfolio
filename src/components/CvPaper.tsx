@@ -16,7 +16,7 @@ const H = 1123
  * pinching it smaller than it fits closes it.
  */
 export default function CvPaper({ onClose }: { onClose: () => void }) {
-  const grid = document.documentElement.dataset.version === 'grid'
+  const grid = document.documentElement.dataset.version !== 'original'
   const pages = grid ? GRID_PAGES : PAGES
   const root = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLDivElement>(null)

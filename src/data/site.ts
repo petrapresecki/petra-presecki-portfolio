@@ -48,7 +48,7 @@ const clip = (name: string): Media => ({ src: `/work/clips/${name}.webm?v=${CLIP
 export const projects: Project[] = [
   {
     id: 'iva',
-    title: 'Iva Presečki',
+    title: 'Iva',
     kind: 'Portfolio · three.js',
     year: '2026',
     url: IVA_URL,

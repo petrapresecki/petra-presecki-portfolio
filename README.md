@@ -13,6 +13,7 @@ pnpm build   # VITE_IVA_URL / VITE_BYKRESO_URL override the live links
 ```
 
 - `src/data/site.ts`: every word on the site
+- `src/versions/`: the layouts. `Clean` is the default (after ksusharmony.com, with mariamarago.com's cursor); `?v=grid` and `?v=original` keep the earlier ones
 - `src/components/`: the page, the full-screen view for a closer look at Coinme work and side projects, and the interactive demos (design system, flows, agents)
 - `cv/cv.html`: the CV; `pnpm cv` prints it to `public/Petra-Presecki-CV.pdf` (A4, two pages) with the installed Chrome. `pnpm cv <file>` prints a tailored copy next to its source (`applications/` is gitignored)
 - `public/llms.txt`: the site's facts for AI agents; keep it in step with `src/data/site.ts`

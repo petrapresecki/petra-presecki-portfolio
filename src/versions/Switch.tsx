@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getLenis } from '@/lib/kit/lenis'
 
 export const VERSIONS = [
+  ['clean', 'Clean'],
   ['grid', 'Grid'],
   ['original', 'Original'],
 ] as const
@@ -10,16 +11,16 @@ export type Version = (typeof VERSIONS)[number][0]
 
 const read = (): Version => {
   const v = new URLSearchParams(location.search).get('v')
-  return VERSIONS.some(([id]) => id === v) ? (v as Version) : 'grid'
+  return VERSIONS.some(([id]) => id === v) ? (v as Version) : 'clean'
 }
 
-/** The version in ?v= (Grid when absent; ?v=original keeps the first site reachable), kept on <html> so each one can swap the page's tokens */
+/** The version in ?v= (Clean when absent; ?v=grid and ?v=original keep the earlier sites reachable), kept on <html> so each one can swap the page's tokens */
 export function useVersion() {
   const [version, setVersion] = useState<Version>(read)
   useEffect(() => {
     document.documentElement.dataset.version = version
     const url = new URL(location.href)
-    if (version === 'grid') url.searchParams.delete('v')
+    if (version === 'clean') url.searchParams.delete('v')
     else url.searchParams.set('v', version)
     history.replaceState(null, '', url)
   }, [version])
