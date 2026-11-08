@@ -1,0 +1,148 @@
+/*
+ * The CV in the Clean version's type (after ksusharmony.com), laid over cv.html so the words stay in one place.
+ * `pnpm cv --clean` prints it to public/Petra-Presecki-CV-Clean.pdf and public/cv/clean/.
+ * Archivo to read, IBM Plex Mono capitals for every label, sections opened by a hairline and a numbered mono line,
+ * as on the site. Printed on white; no colour, so it prints and parses cleanly.
+ */
+:root {
+  --paper: #ffffff;
+  --ink: #111110;
+  --muted: rgb(17 17 16 / 0.5);
+  --rule: rgb(17 17 16 / 0.14);
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+html {
+  font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 8.6pt;
+  line-height: 1.42;
+}
+body {
+  counter-reset: sec;
+}
+b {
+  font-weight: 600;
+}
+
+/* the labels: mono capitals, small and tracked */
+.title,
+.site,
+.contact,
+.dates,
+h2,
+h4,
+.skills dt {
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* header: the name, then what and where in mono, on a hairline */
+header {
+  align-items: flex-end;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+h1 {
+  font-size: 34pt;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+.title {
+  margin-top: 12px;
+  font-size: 6.8pt;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.site {
+  margin-top: 3px;
+  font-size: 6.8pt;
+}
+.contact {
+  font-size: 6.8pt;
+  line-height: 1.7;
+  text-align: right;
+}
+.site a.u,
+.contact a.u {
+  text-underline-offset: 2px;
+  text-decoration-thickness: 0.5pt;
+}
+
+/* sections, as the site opens them: a hairline, then (01) ↓ NAME */
+h2 {
+  counter-increment: sec;
+  display: block;
+  margin: 16px 0 7px;
+  padding-top: 4px;
+  border-top: 1px solid var(--rule);
+  font-size: 6.8pt;
+  line-height: 1.4;
+  color: var(--ink);
+}
+h2::before {
+  content: '(0' counter(sec) ')\00a0\00a0\00a0↓\00a0';
+}
+header + h2 {
+  border-top: 0;
+  padding-top: 0;
+}
+
+h3 {
+  font-size: 13.5pt;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+h3 b {
+  font-weight: 500;
+}
+.dates {
+  margin-top: 4px;
+  font-size: 6.6pt;
+  color: var(--muted);
+}
+.job + .job {
+  margin-top: 16px;
+}
+h4 {
+  margin: 9px 0 2px;
+  padding-top: 4px;
+  border-top: 1px solid var(--rule);
+  font-size: 6.6pt;
+}
+
+li {
+  padding-left: 12px;
+}
+li::before {
+  content: '–';
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+}
+
+.skills div {
+  padding-top: 3px;
+  border-top: 1px solid var(--rule);
+}
+.skills dt {
+  font-size: 6.6pt;
+  padding-top: 2px;
+}
+
+/* projects open page 2 rather than leaving their heading at the foot of page 1 */
+h2.projects {
+  break-before: page;
+}
+
+/* the section's own hairline already sits above the first skill */
+.skills div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}

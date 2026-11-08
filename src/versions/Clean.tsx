@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { about, ask, cases, experience, person, projects, skills } from '@/data/site'
 import { Clock, Intro } from '@/components/Page'
-import { GRID_CV } from '@/components/CvPaper'
+import { CLEAN_CV } from '@/components/CvPaper'
 import { go, pad, useOverlays } from '@/versions/parts'
 import { CleanCase, CleanProject } from '@/versions/CleanView'
 import Cursor from '@/versions/Cursor'
@@ -65,7 +65,7 @@ export default function Clean() {
               <a href="#about" className="link" onClick={e => go(e, 'about')}>
                 (More about…)
               </a>
-              <a href={GRID_CV} className="link" onClick={openCv}>
+              <a href={CLEAN_CV} className="link" onClick={openCv}>
                 (CV ↗)
               </a>
             </p>
@@ -170,7 +170,7 @@ export default function Clean() {
           <a className="link" href={`mailto:${person.email}`}>Email ↗</a>
           <a className="link" href={person.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
           <a className="link" href={person.github} target="_blank" rel="noreferrer">GitHub ↗</a>
-          <a className="link" href={GRID_CV} onClick={openCv}>CV ↗</a>
+          <a className="link" href={CLEAN_CV} onClick={openCv}>CV ↗</a>
         </div>
         <span className="cap c-dim col-span-12 md:col-span-3 md:text-right">© {new Date().getFullYear()} · Designed & built by me</span>
       </footer>
