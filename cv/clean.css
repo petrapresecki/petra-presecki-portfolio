@@ -2,10 +2,9 @@
  * The CV in the Clean version's type (after ksusharmony.com), laid over cv.html so the words stay in one place.
  * `pnpm cv --clean` prints it to public/Petra-Presecki-CV-Clean.pdf and public/cv/clean/.
  * Archivo to read, IBM Plex Mono capitals for every label, sections opened by a hairline and a numbered mono line,
- * as on the site. Printed on white; no colour, so it prints and parses cleanly.
+ * as on the site. Printed on the CV's own warm paper.
  */
 :root {
-  --paper: #ffffff;
   --ink: #111110;
   --muted: rgb(17 17 16 / 0.5);
   --rule: rgb(17 17 16 / 0.14);
