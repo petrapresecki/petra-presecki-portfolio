@@ -47,32 +47,57 @@ export default function Cursor() {
         p.classList.add('is-on')
       } else p.classList.remove('is-on')
     }
-    const frame = () => {
-      const k = reduce ? 1 : 0.25
+    // easing by elapsed time, not per frame: on a heavy page the frames thin out and a per-frame ease left the dot
+    // trailing far behind the pointer, so a click landed somewhere the dot had not reached yet
+    let last = performance.now()
+    const frame = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000)
+      last = now
+      const k = reduce ? 1 : 1 - Math.exp(-dt * 30)
+      const kp = reduce ? 1 : 1 - Math.exp(-dt * 8)
       cx += (mx - cx) * k
       cy += (my - cy) * k
-      px += (mx - px) * (reduce ? 1 : 0.12)
-      py += (my - py) * (reduce ? 1 : 0.12)
-      d.style.transform = `translate3d(${cx}px, ${cy}px, 0)`
-      // the still sits up and to the right of the pointer, flipped left near the right edge
-      const w = p.offsetWidth
-      const x = px + 28 + w > innerWidth - 16 ? px - 28 - w : px + 28
-      p.style.transform = `translate3d(${x}px, ${py - p.offsetHeight / 2}px, 0)`
+      d.style.translate = `calc(${cx}px - 50%) calc(${cy}px - 50%)`
+      // the still sits up and to the right of the pointer, flipped left near the right edge; measured only while shown
+      if (p.classList.contains('is-on')) {
+        px += (mx - px) * kp
+        py += (my - py) * kp
+        const w = p.offsetWidth
+        const x = px + 28 + w > innerWidth - 16 ? px - 28 - w : px + 28
+        p.style.transform = `translate3d(${x}px, ${py - p.offsetHeight / 2}px, 0)`
+      } else [px, py] = [mx, my]
       raf = requestAnimationFrame(frame)
     }
     const leave = () => {
       d.classList.remove('is-on')
       p.classList.remove('is-on')
     }
-    const down = () => d.classList.add('is-down')
-    const up = () => d.classList.remove('is-down')
-    // a scroll moves the page under a still pointer: look again at what is under it
-    const scroll = () => !first && over(document.elementFromPoint(mx, my))
+    // a press lands where the pointer is: bring the dot there at once so it never slides to the spot after the click
+    const down = (e: PointerEvent) => {
+      ;[mx, my, cx, cy] = [e.clientX, e.clientY, e.clientX, e.clientY]
+      d.style.translate = `calc(${cx}px - 50%) calc(${cy}px - 50%)`
+      d.classList.add('is-down')
+    }
+    // a scroll moves the page under a still pointer, a click opens a view under it: look again at what is under it
+    const recheck = () => !first && over(document.elementFromPoint(mx, my))
+    const up = () => {
+      d.classList.remove('is-down')
+      // after the click's render has landed
+      requestAnimationFrame(() => requestAnimationFrame(recheck))
+    }
+    const cancel = () => d.classList.remove('is-down')
+    // Firefox ignores -webkit-user-drag; a native drag freezes the dot and brings back the system cursor
+    const drag = (e: DragEvent) => {
+      if ((e.target as Element)?.closest?.('a, img')) e.preventDefault()
+    }
 
     window.addEventListener('pointermove', move, { passive: true })
     window.addEventListener('pointerdown', down)
     window.addEventListener('pointerup', up)
-    window.addEventListener('scroll', scroll, { passive: true })
+    window.addEventListener('pointercancel', cancel)
+    window.addEventListener('blur', cancel)
+    window.addEventListener('dragstart', drag)
+    window.addEventListener('scroll', recheck, { passive: true, capture: true })
     root.addEventListener('pointerleave', leave)
     raf = requestAnimationFrame(frame)
     return () => {
@@ -81,7 +106,10 @@ export default function Cursor() {
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerdown', down)
       window.removeEventListener('pointerup', up)
-      window.removeEventListener('scroll', scroll)
+      window.removeEventListener('pointercancel', cancel)
+      window.removeEventListener('blur', cancel)
+      window.removeEventListener('dragstart', drag)
+      window.removeEventListener('scroll', recheck, { capture: true })
       root.removeEventListener('pointerleave', leave)
     }
   }, [])

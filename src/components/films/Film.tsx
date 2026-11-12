@@ -118,13 +118,16 @@ export function Film({
   const thermal = look.look === 'thermal'
 
   const on = play === 'view' ? inView : play
+  // seconds already played, so scrolling away and back resumes the loop instead of starting it over
+  const played = useRef(0)
   useEffect(() => {
     if (prefersReducedMotion()) return setT(still)
     if (!on) return
-    const from = performance.now()
+    const from = performance.now() - played.current * 1000
     let raf = requestAnimationFrame(function tick(now) {
       // the first frame's timestamp can come before `from`, which would put t below zero
-      setT((Math.max(0, now - from) / 1000) % length)
+      played.current = (Math.max(0, now - from) / 1000) % length
+      setT(played.current)
       raf = requestAnimationFrame(tick)
     })
     return () => cancelAnimationFrame(raf)
