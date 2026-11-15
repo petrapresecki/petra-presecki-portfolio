@@ -16,7 +16,7 @@ const read = (): Version => {
 
 /** The version in ?v= (Clean when absent; ?v=grid and ?v=original keep the earlier sites reachable), kept on <html> so each one can swap the page's tokens */
 export function useVersion() {
-  const [version, setVersion] = useState<Version>(read)
+  const [version, setVersion] = useState<Version>(() => (import.meta.env.MODE === 'crypto' ? 'clean' : read()))
   useEffect(() => {
     document.documentElement.dataset.version = version
     const url = new URL(location.href)

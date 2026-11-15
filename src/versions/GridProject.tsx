@@ -4,6 +4,7 @@ import { prefersReducedMotion } from '@/lib/kit/gsap'
 import { ARROW } from '@/components/Page'
 import GridView, { Points, Row } from '@/versions/GridView'
 import { pad } from '@/versions/parts'
+import { playable } from '@/lib/video'
 
 /**
  * A side project in Grid, laid out as the cases are: name, lead and role on the left half with the facts as
@@ -100,7 +101,7 @@ function Film({ media, eager = false }: { media: Media; eager?: boolean }) {
   return (
     <video
       ref={video}
-      src={media.src}
+      src={playable(media)}
       poster={media.poster}
       muted
       loop

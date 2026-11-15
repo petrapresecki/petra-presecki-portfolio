@@ -4,13 +4,14 @@ import { createPortal } from 'react-dom'
 /**
  * After mariamarago.com: a 15px white dot in difference blend that eases after the pointer, grows to 45px over
  * anything you can click and bounces on press. Over an element with [data-cursor] it grows further and prints that
- * word inside; over one with [data-peek] a still rides beside it. Desktop pointers only; touch keeps its own.
+ * word inside; over one with [data-peek] a still rides beside it, playing its [data-peek-video] loop once that can play. Desktop pointers only; touch keeps its own.
  */
 export default function Cursor() {
   const dot = useRef<HTMLDivElement>(null)
   const word = useRef<HTMLSpanElement>(null)
   const peek = useRef<HTMLDivElement>(null)
   const img = useRef<HTMLImageElement>(null)
+  const clip = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const fine = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)')
@@ -20,6 +21,19 @@ export default function Cursor() {
     root.classList.add('has-cursor')
     const d = dot.current!
     const p = peek.current!
+    const v = clip.current!
+    // the loop shows over its still only once it is really playing, so a slow start shows the still, never a blank box
+    const ready = () => v.classList.add('is-ready')
+    v.addEventListener('playing', ready)
+    // fetch the stills and loops while the page is idle, so the first hover has them at hand
+    const warm = () =>
+      document.querySelectorAll('[data-peek]').forEach(el => {
+        const still = el.getAttribute('data-peek')
+        const loop = el.getAttribute('data-peek-video')
+        if (still) new Image().src = still
+        if (loop && !reduce) fetch(loop, { priority: 'low' } as RequestInit).catch(() => {})
+      })
+    const idle = 'requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 4000 }) : setTimeout(warm, 2000)
     let [mx, my, cx, cy, px, py] = [0, 0, 0, 0, 0, 0]
     let first = true
     let raf = 0
@@ -41,11 +55,23 @@ export default function Cursor() {
       d.classList.toggle('is-link', !!t && !label)
       d.classList.toggle('is-label', !!label)
       if (label) word.current!.textContent = label
-      const still = t?.closest('[data-peek]')?.getAttribute('data-peek')
+      const host = t?.closest('[data-peek]')
+      const still = host?.getAttribute('data-peek')
+      const loop = reduce ? null : host?.getAttribute('data-peek-video')
       if (still) {
         if (img.current!.getAttribute('src') !== still) img.current!.src = still
+        if (loop) {
+          if (v.getAttribute('src') !== loop) {
+            v.classList.remove('is-ready')
+            v.src = loop
+          }
+          if (v.paused) v.play().catch(() => {})
+        } else v.classList.remove('is-ready')
         p.classList.add('is-on')
-      } else p.classList.remove('is-on')
+      } else {
+        p.classList.remove('is-on')
+        if (!v.paused) v.pause()
+      }
     }
     // easing by elapsed time, not per frame: on a heavy page the frames thin out and a per-frame ease left the dot
     // trailing far behind the pointer, so a click landed somewhere the dot had not reached yet
@@ -71,6 +97,7 @@ export default function Cursor() {
     const leave = () => {
       d.classList.remove('is-on')
       p.classList.remove('is-on')
+      v.pause()
     }
     // a press lands where the pointer is: bring the dot there at once so it never slides to the spot after the click
     const down = (e: PointerEvent) => {
@@ -102,6 +129,10 @@ export default function Cursor() {
     raf = requestAnimationFrame(frame)
     return () => {
       cancelAnimationFrame(raf)
+      if ('requestIdleCallback' in window) cancelIdleCallback(idle as number)
+      else clearTimeout(idle)
+      v.removeEventListener('playing', ready)
+      v.pause()
       root.classList.remove('has-cursor')
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerdown', down)
@@ -118,6 +149,7 @@ export default function Cursor() {
   return createPortal(
     <>
       <div ref={peek} className="c-peek" aria-hidden>
+        <video ref={clip} muted loop playsInline preload="auto" />
         <img ref={img} alt="" />
       </div>
       <div ref={dot} className="c-cursor" aria-hidden>

@@ -20,3 +20,17 @@ pnpm build   # VITE_IVA_URL / VITE_BYKRESO_URL override the live links
 - `public/work/clips/`: the recordings, made by `scripts/record.mjs` from the real sites at 2x through Chrome's screencast (`scripts/screencast.mjs`)
 
 Deployed to Cloudflare Pages: `wrangler pages deploy dist --project-name petra-presecki --branch main`.
+
+## Crypto edition
+
+The same site for crypto teams, at its own URL: the Coinme onchain cases (wallet, KYC & AML, ATM cash-out, partner SDKs) from the 2026 crypto portfolio and Solana checkout in Side work, and the crypto CV. Clean layout only.
+
+```sh
+pnpm dev:crypto     # vite --mode crypto
+pnpm build:crypto   # to dist-crypto/
+```
+
+- `src/data/crypto.ts`: its words. In crypto mode `vite.config.ts` points `@/data/site` here; it re-exports everything else from `site.ts`
+- `src/data/llms.crypto.txt`: served as its `/llms.txt`; the page title and description are swapped in `vite.config.ts`
+- CV: `public/crypto/` holds the crypto CV in the Clean look, printed from `applications/crypto/cv.html` with `pnpm cv <copy of it> --clean`, pages made with `swift scripts/cv-pages.swift <pdf> public/crypto/cv`
+- Deploy: `wrangler pages deploy dist-crypto --project-name petra-presecki-crypto --branch main`

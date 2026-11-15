@@ -5,6 +5,7 @@ import View from '@/components/View'
 import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
 import { useBackCloses } from '@/lib/close-gestures'
+import { playable } from '@/lib/video'
 
 const NAV = [
   ['experience', 'Experience'],
@@ -297,13 +298,13 @@ export function ProjectView({ project, onClose, onProject }: { project: Project;
           {[project.hero, ...project.wide, ...project.cells].map((m, i) => (
             <figure key={m.name} className={i === 0 ? 'md:col-span-2' : ''}>
               <video
-                src={m.src}
+                src={playable(m)}
                 poster={m.poster}
                 muted
                 loop
                 playsInline
                 autoPlay
-                preload={i < 3 ? 'auto' : 'metadata'}
+                preload="metadata"
                 className="aspect-[16/10] w-full bg-mist object-cover"
               />
             </figure>
@@ -410,7 +411,7 @@ function Still({ project, onOpen }: { project: Project; onOpen: () => void }) {
         <img src={project.hero.poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <video
           ref={video}
-          src={project.hero.src}
+          src={playable(project.hero)}
           muted
           loop
           playsInline

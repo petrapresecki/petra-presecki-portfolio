@@ -2,10 +2,17 @@ import { useEffect, useRef, type RefObject } from 'react'
 import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
 
 /**
+ * Shared between the overlays and the views they open. `swap` is true while one view replaces another (the next case),
+ * so the new one keeps the paper up and fades only its words in, instead of fading in from nothing over the home page.
+ * `close` is the open view's own closing (with its fade), which the back button uses when there is one.
+ */
+export const view = { swap: false, close: null as null | (() => void) }
+
+/**
  * Touch gestures that close a full-screen view: swipe it off to the right, or pull it down while it's scrolled to the top.
  * The view follows the finger; let go past a third of the way, or with a flick, and it carries on out, else it springs back.
  */
-export function useSwipeClose(root: RefObject<HTMLElement | null>, onClose: () => void) {
+export function useSwipeClose(root: RefObject<HTMLElement | null>, onClose: () => void, scroller?: RefObject<HTMLElement | null>) {
   const close = useRef(onClose)
   close.current = onClose
 
@@ -37,7 +44,7 @@ export function useSwipeClose(root: RefObject<HTMLElement | null>, onClose: () =
         if (Math.hypot(dx, dy) < 10) return
         // a sideways swipe to the right, or a pull down that would otherwise only bounce the top; anything else is a scroll
         if (dx > 0 && dx > Math.abs(dy) * 1.5) axis = 'x'
-        else if (dy > 0 && dy > Math.abs(dx) && el.scrollTop <= 0) axis = 'y'
+        else if (dy > 0 && dy > Math.abs(dx) && (scroller?.current ?? el).scrollTop <= 0) axis = 'y'
         else return void (start = null)
       }
       e.preventDefault()
@@ -70,7 +77,7 @@ export function useSwipeClose(root: RefObject<HTMLElement | null>, onClose: () =
       el.removeEventListener('touchend', end)
       el.removeEventListener('touchcancel', end)
     }
-  }, [root])
+  }, [root, scroller])
 }
 
 /**
