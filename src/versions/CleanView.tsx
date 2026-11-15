@@ -2,10 +2,11 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { cases, projects, type Case, type Media, type Project } from '@/data/site'
 import CaseFilm from '@/components/films/CaseFilm'
 import { FilmLook, LEAD } from '@/components/films/Film'
-import { getLenis } from '@/lib/kit/lenis'
+import { getLenis, smoothBox } from '@/lib/kit/lenis'
 import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
-import { useSwipeClose } from '@/lib/close-gestures'
+import { useSwipeClose, view } from '@/lib/close-gestures'
 import { pad } from '@/versions/parts'
+import { playable } from '@/lib/video'
 
 /** Clean's full-screen page for a case or a side project: the same paper, bar and type as the home page */
 function View({
@@ -22,50 +23,64 @@ function View({
   children: ReactNode
 }) {
   const root = useRef<HTMLDivElement>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  const content = useRef<HTMLDivElement>(null)
   const leaving = useRef(false)
+  const mounted = useRef(false)
   const close = useRef(() => {})
   close.current = () => {
     if (leaving.current) return
     leaving.current = true
     if (prefersReducedMotion()) return onClose()
-    gsap.to(root.current, { autoAlpha: 0, y: 12, duration: 0.25, ease: 'power2.in', onComplete: onClose })
+    gsap.to(root.current, { opacity: 0, y: 12, duration: 0.25, ease: 'power2.in', onComplete: onClose })
+    // a hidden tab gets no animation frames, so the fade may never finish: close anyway
+    setTimeout(() => mounted.current && onClose(), 400)
   }
-  useSwipeClose(root, onClose)
+  useSwipeClose(root, onClose, scroller)
   useEffect(() => {
     getLenis()?.stop()
-    root.current?.focus()
-    if (!prefersReducedMotion()) gsap.fromTo(root.current, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'expo.out' })
+    mounted.current = true
+    // plain opacity, not autoAlpha: a hidden element can't take focus, and the keys should scroll this view at once
+    scroller.current?.focus({ preventScroll: true })
+    // one view replacing another keeps the paper up and brings only the words in, so the home page never shows between
+    // (set by every open, so it's never stale here, and read-only so Strict Mode's second run sees the same)
+    if (!prefersReducedMotion()) {
+      if (view.swap) gsap.fromTo(content.current, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' })
+      else gsap.fromTo(root.current, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' })
+    }
+    const smooth = smoothBox(scroller.current!, content.current!)
+    const closing = () => close.current()
+    view.close = closing
     const key = (e: KeyboardEvent) => e.key === 'Escape' && close.current()
     window.addEventListener('keydown', key)
     return () => {
       window.removeEventListener('keydown', key)
-      gsap.killTweensOf(root.current)
+      if (view.close === closing) view.close = null
+      smooth()
+      gsap.killTweensOf([root.current, content.current])
       getLenis()?.start()
+      mounted.current = false
     }
   }, [])
   return (
-    <div
-      ref={root}
-      tabIndex={-1}
-      role="dialog"
-      aria-modal="true"
-      aria-label={label}
-      data-lenis-prevent
-      className="clean-view fixed inset-0 z-[70] overflow-y-auto overscroll-y-contain bg-paper outline-none"
-    >
-      <header className="sticky top-0 z-10 bg-paper/90 backdrop-blur">
-        <div className="grid-12 items-center py-3.5">
-          <div className="cap col-span-9">{crumb}</div>
-          <button className="cap link col-span-3 justify-self-end" onClick={() => close.current()}>
-            Close <span className="c-dim max-md:hidden">(Esc)</span>
+    <div ref={root} role="dialog" aria-modal="true" aria-label={label} data-lenis-prevent className="clean-view fixed inset-0 z-[70] bg-paper">
+      <div ref={scroller} tabIndex={-1} className="absolute inset-0 overflow-y-auto overscroll-y-contain outline-none">
+        <div ref={content}>
+          <header className="sticky top-0 z-10 bg-paper/90 backdrop-blur">
+            <div className="grid-12 items-center py-3.5">
+              <div className="cap col-span-9">{crumb}</div>
+              <button className="cap link col-span-3 justify-self-end" onClick={() => close.current()}>
+                Close <span className="c-dim max-md:hidden">(Esc)</span>
+              </button>
+            </div>
+          </header>
+          {children}
+          <button onClick={next.go} className="c-row grid-12 mt-24 w-full border-t border-(--color-rule) pt-3 pb-20 text-left" data-cursor="Next">
+            <span className="cap col-span-12 md:col-span-4">↓ {next.label}</span>
+            <span className="c-big c-slide col-span-12 mt-4 md:col-span-8 md:mt-0">{next.title}</span>
           </button>
         </div>
-      </header>
-      {children}
-      <button onClick={next.go} className="c-row grid-12 mt-24 w-full border-t border-(--color-rule) pt-3 pb-20 text-left" data-cursor="Next">
-        <span className="cap col-span-12 md:col-span-4">↓ {next.label}</span>
-        <span className="c-big c-slide col-span-12 mt-4 md:col-span-8 md:mt-0">{next.title}</span>
-      </button>
+      </div>
     </div>
   )
 }
@@ -142,6 +157,16 @@ export function CleanCase({ study, onClose, onCase }: { study: Case; onClose: ()
           )
         }
       />
+      {study.stats && (
+        <dl className="grid-12 gap-y-8 pb-16">
+          {study.stats.map(([k, v]) => (
+            <div key={v} className="col-span-12 border-t border-(--color-rule) pt-3 md:col-span-4">
+              <dt className="c-big">{k}</dt>
+              <dd className="cap c-dim mt-3">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
       {study.visual && (
         <div className="grid-12 pb-16">
           <div className="col-span-12 md:col-span-8 md:col-start-3">
@@ -210,6 +235,11 @@ export function CleanProject({ project, onClose, onProject }: { project: Project
 
 /** A recording that plays while on screen */
 function Film({ media, eager = false }: { media: Media; eager?: boolean }) {
+  if (media.still) return <img src={media.src} alt="" className="w-full max-w-[800px] border border-(--color-rule) bg-mist" />
+  return <Recording media={media} eager={eager} />
+}
+
+function Recording({ media, eager }: { media: Media; eager: boolean }) {
   const video = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const v = video.current!
@@ -226,12 +256,12 @@ function Film({ media, eager = false }: { media: Media; eager?: boolean }) {
   return (
     <video
       ref={video}
-      src={media.src}
+      src={playable(media)}
       poster={media.poster}
       muted
       loop
       playsInline
-      preload={eager ? 'auto' : 'metadata'}
+      preload={eager ? 'auto' : 'none'}
       className="aspect-[16/10] w-full bg-mist object-cover"
     />
   )

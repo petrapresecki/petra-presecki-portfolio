@@ -1,0 +1,35 @@
+# Petra Presečki
+
+> Product engineer in Zagreb, Croatia (CET, remote), shipping across web, mobile and onchain. Five years of React, React Native and TypeScript, the last two in crypto: at Coinme (now part of Polygon) she built much of the licensed on/off-ramp that wallet and fintech apps embed, from KYC to the multi-chain wallet to cashing out at an ATM.
+
+This file is for AI agents and LLMs. The human version is the portfolio at https://petra-presecki-crypto.pages.dev.
+
+## Contact
+
+- Email: petra.presecki123@gmail.com
+- [GitHub](https://github.com/petrapresecki)
+- [LinkedIn](https://www.linkedin.com/in/petrapresecki)
+- [CV (PDF)](https://petra-presecki-crypto.pages.dev/crypto/Petra-Presecki-CV.pdf)
+
+## Experience
+
+- Web Engineer, Polygon Labs (Coinme), Oct 2024 – Oct 2026: Coinme-as-a-Service, a licensed crypto on/off-ramp that fintech and wallet apps embed in their iOS, Android and web apps. Live in Trust Wallet's Cash Deposits. Joined through Endava, hired directly by Polygon in Feb 2026. Team of 7–10; about 270 merged merge requests.
+- React / React Native Developer, Endava (ex FIVE), 2021–2026: product work for banking, music and nutrition clients. Seconded to Coinme from October 2024.
+
+## Onchain work at Coinme
+
+- Multi-chain wallet (started it, top committer): QR scan-to-send with BIP21 parsing, chain-aware address validation (USDC checked as an Ethereum address), memo and destination-tag input, per-chain balances, a price chart scaled so stablecoin noise doesn't read as a sawtooth. Rebuilt the address validator for 100+ chains as a typed package.
+- KYC and AML: owned the identity-verification failure paths and built enhanced due diligence end to end, each a state machine that fails closed. Routing that stops flagged users before any transaction.
+- ATM cash-out (majority author): live quotes that keep the last good price, OTP confirmation, status over server-sent events, multi-chain settlement on the v2 transaction API, 22 backend errors mapped to screens.
+- Partner SDKs: most of the card-collection SDK (VGS-hosted fields, partners stay out of PCI DSS scope); the React Native onboarding SDK from first commit to v1.0 in six days.
+
+## Side projects
+
+- [Solana checkout](https://petrapresecki.github.io/solana-checkout/): USDC payment links on Solana devnet, no backend. @solana/web3.js, wallet adapter and SPL Token; tracks each payment on chain by a reference key until finalized and checks what actually arrived.
+- [Iva Presečki](https://ivapresecki.com/): portfolio for a graphic designer, built with React Three Fiber.
+- [bykreso](https://bykreso.com/): portfolio for a videographer; the page takes on each film's colour.
+- creative-kit: the library of motion blocks and themes every site she builds starts from.
+
+## Skills
+
+Crypto and payments: on/off-ramps, custodial multi-chain wallets, address validation (BIP21, memos and destination tags), stablecoins (USDC), Solana (web3.js, wallet adapter, SPL Token), KYC/AML/EDD, PCI DSS, VGS tokenization, server-sent events. Also React, React Native, TypeScript, Next.js, Expo, Claude Code and MCP, design systems, Reanimated, GSAP, three.js, Vitest, Jest.

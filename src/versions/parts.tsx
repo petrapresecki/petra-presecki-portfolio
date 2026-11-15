@@ -4,7 +4,8 @@ import { CaseView, ProjectView } from '@/components/Page'
 import CvPaper from '@/components/CvPaper'
 import { getLenis } from '@/lib/kit/lenis'
 import { prefersReducedMotion } from '@/lib/kit/gsap'
-import { useBackCloses } from '@/lib/close-gestures'
+import { useBackCloses, view } from '@/lib/close-gestures'
+import { playable } from '@/lib/video'
 
 export const go = (e: React.MouseEvent, id: string) => {
   e.preventDefault()
@@ -23,11 +24,17 @@ export function useOverlays(Case: typeof CaseView = CaseView, Project: typeof Pr
     setCv(true)
   }
   useBackCloses(cv || !!open, () => {
+    if (view.close) return view.close()
     setOpen(null)
     setCv(false)
   })
-  const openCase = (id: string) => setOpen({ kind: 'case', id })
-  const openProject = (id: string) => setOpen({ kind: 'project', id })
+  const show = (next: NonNullable<Open>) =>
+    setOpen(prev => {
+      view.swap = prev !== null
+      return next
+    })
+  const openCase = (id: string) => show({ kind: 'case', id })
+  const openProject = (id: string) => show({ kind: 'project', id })
   const study = open?.kind === 'case' ? cases.find(c => c.id === open.id) : undefined
   const project = open?.kind === 'project' ? projects.find(p => p.id === open.id) : undefined
   const overlays = (
@@ -110,7 +117,7 @@ export function Clip({
       <img src={media.poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
       <video
         ref={video}
-        src={media.src}
+        src={playable(media)}
         muted
         loop
         playsInline

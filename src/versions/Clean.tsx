@@ -1,18 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { about, ask, cases, experience, person, projects, skills } from '@/data/site'
-import { Clock, Intro } from '@/components/Page'
-import { CLEAN_CV } from '@/components/CvPaper'
+import { about, ask, cases, edition, experience, intro, person, projects, skills } from '@/data/site'
+import { Clock } from '@/components/Page'
 import { go, pad, useOverlays } from '@/versions/parts'
 import { CleanCase, CleanProject } from '@/versions/CleanView'
 import Cursor from '@/versions/Cursor'
+import { peekSrc } from '@/lib/video'
 
+const CLEAN_CV = edition.cv.pdf
 const NAV = [
   ['experience', 'Experience'],
   ['cases', 'Cases'],
   ['work', 'Side work'],
   ['about', 'About'],
   ['contact', 'Contact'],
-] as const
+] as [string, string][]
 
 const PHOTO = '/me/petra.webp'
 
@@ -24,6 +25,14 @@ const PHOTO = '/me/petra.webp'
 export default function Clean() {
   const { openCv, openCase, openProject, overlays } = useOverlays(CleanCase, CleanProject)
   const current = useCurrentSection(NAV.map(([id]) => id))
+  // on a phone the sections fold into a menu under the bar
+  const [menu, setMenu] = useState(false)
+  useEffect(() => {
+    if (!menu) return
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(false)
+    window.addEventListener('keydown', key)
+    return () => window.removeEventListener('keydown', key)
+  }, [menu])
   return (
     <main className="clean-v">
       <Cursor />
@@ -44,22 +53,53 @@ export default function Clean() {
           </nav>
           <div className="cap col-span-5 flex justify-end gap-2 text-right md:col-span-3">
             <span className="c-dim max-md:hidden">Zagreb</span> <Clock />
+            <button className="link ml-3 md:hidden" aria-expanded={menu} aria-controls="c-menu" onClick={() => setMenu(m => !m)}>
+              {menu ? 'Close' : 'Menu'}
+            </button>
           </div>
         </div>
+        <nav id="c-menu" className="c-fold md:hidden" data-open={menu} inert={!menu} aria-label="Sections">
+          <div className="overflow-hidden">
+            <div className="cap px-(--margin) pb-2">
+              {NAV.map(([id, label], i) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  aria-current={current === id}
+                  className="flex justify-between border-t border-(--color-rule) py-3.5"
+                  onClick={e => {
+                    setMenu(false)
+                    go(e, id)
+                  }}
+                >
+                  {label} <span className="c-dim">({pad(i + 1)})</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </nav>
       </header>
 
       {/* the first screen, as ksusharmony.com and sasha.miami open: mostly paper, one small block a little below the
           middle (the email beside the hello, in reading size), and the way down at the bottom */}
       <section id="top" className="flex min-h-[100svh] flex-col pt-24 pb-6">
         <div className="grid-12 mt-auto mb-[14vh] gap-y-6">
-          <div className="cap c-in col-span-12 md:col-span-3 md:col-start-4 md:text-right" style={{ '--i': 1 } as React.CSSProperties}>
+          <div className="cap c-in col-span-12 md:col-span-6 md:col-start-1 md:text-right" style={{ '--i': 1 } as React.CSSProperties}>
             <a href={`mailto:${person.email}`} className="link">
               {person.email}
             </a>
           </div>
           <div className="c-in col-span-12 md:col-span-5 lg:col-span-4" style={{ '--i': 2 } as React.CSSProperties}>
             <p className="c-body max-w-[42ch] text-[15px] leading-[1.55]">
-              <Intro />
+              {intro.map((part, i) =>
+                typeof part === 'string' ? (
+                  part
+                ) : (
+                  <a key={i} className="link" href={part.url} target="_blank" rel="noreferrer">
+                    {part.link}
+                  </a>
+                ),
+              )}
             </p>
             <p className="cap mt-5 flex flex-wrap gap-x-4">
               <a href="#about" className="link" onClick={e => go(e, 'about')}>
@@ -73,7 +113,7 @@ export default function Clean() {
         </div>
         <div className="grid-12">
           <a href="#experience" className="cap c-in col-span-12 w-fit" style={{ '--i': 3 } as React.CSSProperties} onClick={e => go(e, 'experience')}>
-            ↓ Experience, 2021–2026
+            ↓ Scroll
           </a>
         </div>
       </section>
@@ -99,25 +139,10 @@ export default function Clean() {
         ))}
       </div>
 
-      <Head n={3} id="work" label="On the side" note="Sites for creative people, and tools" />
+      <Head n={3} id="work" label="On the side" note={edition.workNote} />
       <div className="c-list pb-8">
         {projects.map((p, i) => (
-          <button
-            key={p.id}
-            className="c-row grid-12 w-full border-b border-(--color-rule) py-4 text-left md:py-5"
-            data-cursor="View"
-            data-peek={p.hero.poster}
-            onClick={() => openProject(p.id)}
-          >
-            <span className="cap c-dim col-span-2 pt-1.5 md:col-span-1">{pad(i + 1)}.</span>
-            <span className="c-slide col-span-10 text-[clamp(22px,2.2vw,34px)] leading-[1.05] font-medium tracking-[-0.025em] md:col-span-7">{p.title}</span>
-            <span className="cap col-span-10 col-start-3 mt-2 md:col-span-3 md:col-start-auto md:mt-1">
-              {p.kind}
-              <br />
-              <span className="c-dim">{p.year}</span>
-            </span>
-            <span className="cap c-arrow col-span-1 hidden pt-2 text-right md:block">↗</span>
-          </button>
+          <ProjectRow key={p.id} n={i + 1} p={p} onOpen={openProject} />
         ))}
       </div>
 
@@ -183,7 +208,8 @@ export default function Clean() {
 /** A section's opening line: hairline, number, name, and a note at the right */
 function Head({ n, id, label, note }: { n: number; id: string; label: string; note?: string }) {
   return (
-    <div id={id} className="grid-12 mt-16 scroll-mt-20 md:mt-24">
+    // the first one follows the hero's own scroll cue, so it doesn't need the gap the others open with
+    <div id={id} className={`grid-12 scroll-mt-20 ${n === 1 ? 'mt-6' : 'mt-16 md:mt-24'}`}>
       <div className="c-head cap col-span-12 grid grid-cols-subgrid">
         <span className="col-span-2 md:col-span-1">({pad(n)})</span>
         <span className="col-span-10 md:col-span-6">↓ {label}</span>
@@ -272,6 +298,28 @@ function Group({ n, group: g, onCase }: { n: string; group: GroupT; onCase: (id:
         </div>
       </div>
     </section>
+  )
+}
+
+/** A project as a row: number, name, kind and year; opens its page */
+function ProjectRow({ n, p, onOpen }: { n: number; p: (typeof projects)[number]; onOpen: (id: string) => void }) {
+  return (
+    <button
+      className="c-row grid-12 w-full border-b border-(--color-rule) py-4 text-left md:py-5"
+      data-cursor="View"
+      data-peek={p.hero.peek?.poster ?? p.hero.poster}
+      data-peek-video={peekSrc(p.hero)}
+      onClick={() => onOpen(p.id)}
+    >
+      <span className="cap c-dim col-span-2 pt-1.5 md:col-span-1">{pad(n)}.</span>
+      <span className="c-slide col-span-10 text-[clamp(22px,2.2vw,34px)] leading-[1.05] font-medium tracking-[-0.025em] md:col-span-7">{p.title}</span>
+      <span className="cap col-span-10 col-start-3 mt-2 md:col-span-3 md:col-start-auto md:mt-1">
+        {p.kind}
+        <br />
+        <span className="c-dim">{p.year}</span>
+      </span>
+      <span className="cap c-arrow col-span-1 hidden pt-2 text-right md:block">↗</span>
+    </button>
   )
 }
 

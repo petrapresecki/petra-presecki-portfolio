@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { getLenis } from '@/lib/kit/lenis'
-import { prefersReducedMotion } from '@/lib/kit/gsap'
-import { person } from '@/data/site'
+import { gsap, prefersReducedMotion } from '@/lib/kit/gsap'
+import { view } from '@/lib/close-gestures'
+import { edition, person } from '@/data/site'
 
 /** The page images come from the printed PDF (`pnpm cv`, `pnpm cv --grid` or `pnpm cv --clean`), so the paper is exactly what you download. */
 const PAGES = ['/cv/page-1.jpg', '/cv/page-2.jpg']
 const GRID_PAGES = ['/cv/grid/page-1.jpg', '/cv/grid/page-2.jpg']
-const CLEAN_PAGES = ['/cv/clean/page-1.jpg', '/cv/clean/page-2.jpg']
+const CLEAN_PAGES = edition.cv.pages
 export const GRID_CV = '/Petra-Presecki-CV-Grid.pdf'
-export const CLEAN_CV = '/Petra-Presecki-CV-Clean.pdf'
+export const CLEAN_CV = edition.cv.pdf
 const W = 794
 const H = 1123
 
@@ -23,25 +24,46 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
   const root = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLDivElement>(null)
   const shadow = useRef<HTMLDivElement>(null)
+  // the close with its fade, kept current so the effect below needn't rerun when the parent hands a new onClose
+  const leaving = useRef(false)
+  const mounted = useRef(false)
+  const close = useRef(() => {})
+  close.current = () => {
+    if (leaving.current) return
+    leaving.current = true
+    if (prefersReducedMotion()) return onClose()
+    gsap.to(root.current, { opacity: 0, duration: 0.25, ease: 'power2.in', onComplete: onClose })
+    // a hidden tab gets no animation frames, so the fade may never finish: close anyway
+    setTimeout(() => mounted.current && onClose(), 400)
+  }
   const st = useRef({ ry: -16, rx: 10, vy: 0, vx: 0, zoom: 1, drag: null as null | { x: number; y: number }, target: null as null | number })
 
   useEffect(() => {
     getLenis()?.stop()
+    mounted.current = true
     root.current?.focus()
     const s = st.current
     const reduce = prefersReducedMotion()
+    if (!reduce) gsap.fromTo(root.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' })
+    const closing = () => close.current()
+    view.close = closing
     let raf = 0
+    let last = performance.now()
     const fit = () => Math.min((innerHeight - 140) / H, (innerWidth - 32) / W)
-    const frame = () => {
+    const frame = (now: number) => {
+      // the easing was tuned per frame at 60Hz: scale it by the time that really passed, so a 120Hz screen turns it at the same pace
+      const f = Math.min(6, ((now - last) / 1000) * 60)
+      last = now
+      const ease = (k: number) => 1 - Math.pow(1 - k, f)
       if (!s.drag) {
         if (s.target !== null) {
-          s.ry += (s.target - s.ry) * (reduce ? 1 : 0.14)
+          s.ry += (s.target - s.ry) * (reduce ? 1 : ease(0.14))
           if (Math.abs(s.target - s.ry) < 0.1) s.target = null
         } else {
-          s.ry += s.vy
-          s.vy *= 0.93
+          s.ry += s.vy * f
+          s.vy *= Math.pow(0.93, f)
         }
-        s.rx += (4 - s.rx) * 0.05
+        s.rx += (4 - s.rx) * ease(0.05)
       }
       s.rx = Math.max(-35, Math.min(35, s.rx))
       const scale = fit() * s.zoom
@@ -57,7 +79,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
     // flip to whichever side is facing away, landing square on the page
     const flip = () => (s.target = Math.round(s.ry / 180) * 180 + 180)
     const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') close.current()
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ') {
         e.preventDefault()
         flip()
@@ -67,9 +89,12 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('keydown', key)
+      if (view.close === closing) view.close = null
+      gsap.killTweensOf(root.current)
       getLenis()?.start()
+      mounted.current = false
     }
-  }, [onClose])
+  }, [])
 
   // pointer: one finger or the mouse turns the sheet, two fingers zoom it
   const pts = useRef(new Map<number, PointerEvent>())
@@ -104,7 +129,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
   }
   const up = (e: React.PointerEvent) => {
     // pinched right down past where it fits, the paper puts itself away, like a photo
-    if (pts.current.size === 2 && st.current.zoom < 0.7) return onClose()
+    if (pts.current.size === 2 && st.current.zoom < 0.7) return close.current()
     pts.current.delete(e.pointerId)
     if (!pts.current.size) st.current.drag = null
   }
@@ -126,7 +151,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
         <a className="link col-span-6 justify-self-end md:col-span-3 md:col-start-4 md:justify-self-start" href={pdf} download>
           Download PDF ↓
         </a>
-        <button className="link col-span-12 justify-self-end max-md:hidden md:col-span-1 md:col-start-12" onClick={onClose}>
+        <button className="link col-span-12 justify-self-end max-md:hidden md:col-span-1 md:col-start-12" onClick={() => close.current()}>
           Close <span className="text-muted">Esc</span>
         </button>
       </div>
@@ -146,7 +171,7 @@ export default function CvPaper({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </div>
-      <button className="link absolute right-[var(--margin)] bottom-5 z-10 md:hidden" onClick={onClose}>
+      <button className="link absolute right-[var(--margin)] bottom-5 z-10 md:hidden" onClick={() => close.current()}>
         Close
       </button>
     </div>

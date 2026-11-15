@@ -89,6 +89,22 @@ html[data-version='clean'] {
   text-underline-offset: 0.3em;
 }
 
+/* on a touch screen the small mono links and buttons get a finger-sized hit area, without moving anything */
+@media (pointer: coarse) {
+  .clean-v .link,
+  .clean-view .link,
+  .cv-paper .link {
+    position: relative;
+  }
+  .clean-v .link::after,
+  .clean-view .link::after,
+  .cv-paper .link::after {
+    content: '';
+    position: absolute;
+    inset: -12px -6px;
+  }
+}
+
 /* --- a section opens with a hairline and a mono line, as ksusharmony's ↓ SELECTED PROJECTS --- */
 .c-head {
   border-top: 1px solid var(--color-rule);
@@ -232,10 +248,22 @@ html.has-cursor img {
   opacity: 1;
   scale: 1;
 }
-.c-peek img {
+.c-peek img,
+.c-peek video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+/* the still lies over its loop and fades off once the loop plays; the loop itself is never hidden,
+   or Chrome takes a muted video it can't see for one nobody watches and pauses it */
+.c-peek img {
+  z-index: 1;
+  transition: opacity 0.2s;
+}
+.c-peek:has(video.is-ready) img {
+  opacity: 0;
 }
 
 /* first paint: the hero settles in, line by line */

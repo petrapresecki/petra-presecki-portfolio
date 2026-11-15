@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:crypto": "vite --mode crypto",
     "build": "tsc -b && vite build",
+    "build:crypto": "tsc -b && vite build --mode crypto",
     "preview": "vite preview",
     "record": "node scripts/record.mjs",
     "cv": "node scripts/cv.mjs"

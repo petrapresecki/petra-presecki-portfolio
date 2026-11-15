@@ -10,3 +10,4 @@ private/
 
 # CVs and letters tailored to one application
 applications/
+dist-crypto

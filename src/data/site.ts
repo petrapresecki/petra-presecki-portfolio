@@ -12,6 +12,23 @@ export const person = {
   cv: '/Petra-Presecki-CV.pdf',
 }
 
+/** The opening paragraph: plain text, with links as { link, url } */
+export type IntroPart = string | { link: string; url: string }
+export const intro: IntroPart[] = [
+  'Hi, I’m Petra, a frontend & product engineer from Zagreb with five years of React, React Native and TypeScript behind me. ',
+  'Most of what I build is the groundwork others build on: design systems, partner SDKs and onchain product flows like ramps, wallets and KYC. ',
+  'Most recently at Coinme, now part of ',
+  { link: 'Polygon Labs', url: 'https://polygon.technology/' },
+  '.',
+]
+
+/** What changes between the editions beyond the words: the CV the paper shows, section notes, and which extras appear */
+export const edition = {
+  /** the Clean CV: the PDF to download and its pages as images (pnpm cv --clean) */
+  cv: { pdf: '/Petra-Presecki-CV-Clean.pdf', pages: ['/cv/clean/page-1.jpg', '/cv/clean/page-2.jpg'] },
+  workNote: 'Sites for creative people, and tools',
+}
+
 // Live builds; VITE_IVA_URL / VITE_BYKRESO_URL override them (e.g. to point at local servers)
 const IVA_URL = import.meta.env.VITE_IVA_URL ?? 'https://ivapresecki.com/'
 const BYKRESO_URL = import.meta.env.VITE_BYKRESO_URL ?? 'https://bykreso.com/'
@@ -21,6 +38,12 @@ export interface Media {
   /** file name shown as the caption */
   name: string
   poster?: string
+  /** a still image instead of a recording (src is the image) */
+  still?: boolean
+  /** the same recording in H.264, for browsers that can't play VP9 WebM */
+  mp4?: string
+  /** a small, short loop of it (640px, 8s) for the preview beside the cursor */
+  peek?: { webm: string; mp4: string; poster: string }
 }
 
 export interface Project {
@@ -43,7 +66,13 @@ export interface Project {
 // /work/* is cached for a week, so bump this whenever clips are re-recorded or browsers keep the old ones
 const CLIPS = '2026-11-09'
 /** A recording from scripts/record.mjs: public/work/clips/<name>.webm with its first frame as the poster */
-const clip = (name: string): Media => ({ src: `/work/clips/${name}.webm?v=${CLIPS}`, poster: `/work/clips/${name}.jpg?v=${CLIPS}`, name: `${name.replace('-', '_')}.webm` })
+const clip = (name: string, peek = false): Media => ({
+  src: `/work/clips/${name}.webm?v=${CLIPS}`,
+  mp4: `/work/clips/${name}.mp4?v=${CLIPS}`,
+  poster: `/work/clips/${name}.jpg?v=${CLIPS}`,
+  name: `${name.replace('-', '_')}.webm`,
+  ...(peek && { peek: { webm: `/work/peek/${name}.webm?v=${CLIPS}`, mp4: `/work/peek/${name}.mp4?v=${CLIPS}`, poster: `/work/peek/${name}.jpg?v=${CLIPS}` } }),
+})
 
 export const projects: Project[] = [
   {
@@ -52,7 +81,7 @@ export const projects: Project[] = [
     kind: 'Portfolio · three.js',
     year: '2026',
     url: IVA_URL,
-    hero: clip('iva-keyring'),
+    hero: clip('iva-keyring', true),
     cells: [clip('iva-rool'), clip('iva-apuro'), clip('iva-gabagool'), clip('iva-about')],
     wide: [clip('iva-pull'), clip('iva-booklet')],
     summary:
@@ -75,7 +104,7 @@ export const projects: Project[] = [
     kind: 'Portfolio · video',
     year: '2026',
     url: BYKRESO_URL,
-    hero: clip('bykreso-strip'),
+    hero: clip('bykreso-strip', true),
     cells: [clip('bykreso-colour'), clip('bykreso-work'), clip('bykreso-about'), clip('bykreso-list')],
     wide: [clip('bykreso-player'), clip('bykreso-page')],
     summary:
@@ -98,7 +127,7 @@ export const projects: Project[] = [
     kind: 'Instrument · Web Audio',
     year: '2026',
     url: 'https://frame-score.pages.dev/',
-    hero: clip('fs-grade'),
+    hero: clip('fs-grade', true),
     cells: [],
     wide: [],
     summary:
@@ -120,7 +149,7 @@ export const projects: Project[] = [
     title: 'creative-kit',
     kind: 'Library · motion blocks',
     year: '2026',
-    hero: clip('kit-home'),
+    hero: clip('kit-home', true),
     cells: [clip('kit-dither'), clip('kit-strips'), clip('kit-index'), clip('kit-inspo')],
     wide: [clip('kit-orbit'), clip('kit-blocks')],
     summary:
@@ -154,6 +183,8 @@ export interface Case {
   link?: { label: string; url: string }
   /** the case's short film, on its page and in the hover peek */
   visual?: 'theme' | 'flows' | 'sdk' | 'agent'
+  /** a few numbers, big, under the opening */
+  stats?: [string, string][]
   sections: { title: string; items: string[] }[]
 }
 
